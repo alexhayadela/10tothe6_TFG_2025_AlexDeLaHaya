@@ -1,1 +1,6 @@
 python-dotenv
+yfinance
+matplotlib
+pandas
+feedparser
+re

@@ -1,7 +1,17 @@
-### dotenv ###
+### environment ###
 .env
 venv/
 
-### txt ###
-*.txt
-!requirements.txt
+### commands ###
+commands.txt
+
+### pycache ###
+__pycache__
+*.pyc
+
+### .vs ###
+.vs/
+
+### test ###
+A_test.ipynb
+A_test.py
