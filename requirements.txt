@@ -3,4 +3,3 @@ yfinance
 matplotlib
 pandas
 feedparser
-re
