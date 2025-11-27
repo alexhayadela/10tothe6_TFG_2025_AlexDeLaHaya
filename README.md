@@ -104,7 +104,7 @@ I send a daily newsletter (automatically at 9.00 a.m UTC) containing the top-10 
 The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
 
 #### Newsletter example
-![image](imgs/freakbob.png)
+![image](imgs/polite_newsletter.png)
 ----
 ## Author
 
