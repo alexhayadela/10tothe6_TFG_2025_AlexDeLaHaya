@@ -1,5 +1,0 @@
-python-dotenv
-yfinance
-matplotlib
-pandas
-feedparser

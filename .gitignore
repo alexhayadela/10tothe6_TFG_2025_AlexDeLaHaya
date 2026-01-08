@@ -13,8 +13,8 @@ __pycache__
 .vs/
 
 ### test ###
-A_test.ipynb
-A_test.
 
-#temp
-yfinance.ipynb
+A_test.py
+
+### notebooks ### (test)
+*.ipynb

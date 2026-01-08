@@ -67,12 +67,12 @@ This will load the python virtualenv for the project.
 Make sure you are in the root of the project folder and that your virtualenv is activated (you should see `(venv)` in your terminal prompt).
 And then install all the packages listed in `requirements.txt` with:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements/all.txt
 ```
 
 If you need to add more packages in the future, you can install them with pip and then update `requirements.txt` with:
 ```bash
-pip freeze > requirements.txt
+pip freeze > requirements/all.txt
 ```
 
 ### Create .env file 

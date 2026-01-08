@@ -1,0 +1,25 @@
+ohlcv(
+    ticker TEXT,
+    date DATE,
+    open REAL,
+    high REAL,
+    low REAL,
+    close REAL,
+    volume REAL,
+    PRIMARY KEY (ticker, date)
+)
+
+news(
+    ticker TEXT,
+    datetime TIMESTAMP,
+    source TEXT,
+    title TEXT,
+    sentiment REAL
+)
+
+generalinfo(
+    ticker TEXT,
+    sector TEXT
+    longname TEXT
+    PRIMARY KEY (ticker)
+)

@@ -1,0 +1,27 @@
+name: Newsletter
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # every day at 10 AM Madrid
+  workflow_dispatch:      
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements/newsletter_auto.txt
+
+      - name: Send newsletter
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TARGET_USER: ${{ secrets.EMAIL_TARGET_USER }}
+        run: python news/send_email.py
