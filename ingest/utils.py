@@ -1,4 +1,3 @@
-
 def get_ibex_tickers():
     
     tickers = [

@@ -24,4 +24,4 @@ jobs:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TARGET_USER: ${{ secrets.EMAIL_TARGET_USER }}
-        run: python news/send_newsletter.py
+        run: python -m news.send_newsletter

@@ -13,8 +13,9 @@ __pycache__
 .vs/
 
 ### test ###
-
 A_test.py
 
 ### notebooks ### (test)
 *.ipynb
+
+!models/arima.ipynb

@@ -3,3 +3,5 @@ pandas
 yfinance
 feedparser
 python-dotenv
+statsmodels
+scikit-learn
