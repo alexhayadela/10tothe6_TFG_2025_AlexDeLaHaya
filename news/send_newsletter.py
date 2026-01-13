@@ -6,13 +6,13 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 import datetime 
-from news_rss import relevant_feeds, feeds_to_html
+from news.news_rss import relevant_feeds, feeds_to_html
 
 
 def send_newsletter(text, html):
 
     # Load .env only if it exists (local run)
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    dotenv_path = Path(__file__).resolve().parent.parent / ".env"
     if os.path.exists(dotenv_path):
         load_dotenv(dotenv_path)
     

@@ -14,8 +14,8 @@ __pycache__
 
 ### test ###
 A_test.py
+A_test.ipynb
 
-### notebooks ### (test)
-*.ipynb
+### queries ###
+ingest/**/*.ipynb
 
-!models/arima.ipynb

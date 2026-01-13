@@ -6,15 +6,18 @@ This repository contains the code for my final degree thesis. The goal is to bui
 
 ```
 /10tothe6_TFG_2025_AlexDeLaHaya
-├── .github/workflows           # Contains daily email scheduler
-├── imgs                        # Contains images 
-├── .env                        # Environment variables for configuration (e.g., email password)
-├── .gitignore                  # Specifies files and directories to be ignored by Git
-├── requirements.txt            # Lists Python package dependencies
-├── news_rss.py                 # Collect news from online newspaper
-├── newsletter_example.html     # Newsletter example in html
-├── send_email.py               # Send email with newsletter
-└── README.md                   # Project documentation and usage instructions
+├── .github/workflows           # Automation scheduling and execution
+|
+├── data/                       # Stored OHLCV market data
+├── imgs/ 
+|
+├── ingest/                     # Market data ingestion pipelines
+├── models/                     # Financial time-series models
+├── news/                       # News ingestion and newsletter automation
+|
+├── requirements/               # Python dependency specifications
+├── .gitignore                  # Git ignore rules
+└── README.md                   # Project overview and usage
 ```
 
 ----
@@ -97,14 +100,24 @@ Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypt
 ----
 ## Project description
 
-### First Deliverable: Email Automation
+### First Deliverable: Newsletter Automation
 
-I send a daily newsletter (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news of today.
+A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news of today.
 
 The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
 
 #### Newsletter example
 ![image](imgs/polite_newsletter.png)
+
+### Second Deliverable: Database Ingestion Automation
+
+From Monday to Friday after the Spanish market closes, Open, High, Low, Close, and Volume (OHLCV) data are automatically fetched for all IBEX35 companies and appended to the database.
+
+We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term predictions unreliable. 
+
+#### Arima log returns 
+![image](imgs/arima_log_returns.png)
+
 ----
 ## Author
 
