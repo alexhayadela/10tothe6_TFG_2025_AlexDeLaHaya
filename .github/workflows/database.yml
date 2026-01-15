@@ -6,7 +6,7 @@ on:
   workflow_dispatch:     
 
 jobs:
-  send:
+  database:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,9 +31,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          if git status --porcelain | grep -q "data/market.db"; then
+          if git status --porcelain | grep -q "data/ibex35.db"; then
             TODAY=$(date -u +"%Y-%m-%d")
-            git add data/market.db
+            git add data/ibex35.db
             git commit -m "chore(db): daily OHLCV update ${TODAY}"
             git push
           else

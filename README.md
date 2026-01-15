@@ -109,7 +109,7 @@ The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Emp
 #### Newsletter example
 ![image](imgs/polite_newsletter.png)
 
-### Second Deliverable: Database Ingestion Automation
+### Second Deliverable: Database Ingestion and Time Series Modeling
 
 From Monday to Friday after the Spanish market closes, Open, High, Low, Close, and Volume (OHLCV) data are automatically fetched for all IBEX35 companies and appended to the database.
 
