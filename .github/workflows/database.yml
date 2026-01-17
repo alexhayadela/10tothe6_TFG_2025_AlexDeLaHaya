@@ -5,6 +5,8 @@ on:
     - cron: '0 18 * * MON-FRI'  #  Monday - Friday at 7 PM Madrid 
   workflow_dispatch:     
 
+permissions:
+  contents: write
 jobs:
   database:
     runs-on: ubuntu-latest
