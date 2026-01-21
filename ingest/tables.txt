@@ -7,19 +7,30 @@ ohlcv(
     close REAL,
     volume REAL,
     PRIMARY KEY (ticker, date)
-)
+);
 
 news(
-    ticker TEXT,
-    datetime TIMESTAMP,
-    source TEXT,
+    id INTEGER PRIMARY KEY,
+    date DATE,
     title TEXT,
-    sentiment REAL
-)
+    body TEXT,
+    url TEXT,
+    category TEXT,
+    sentiment_gpt TEXT,
+    sentiment REAL,
+    relevance REAL
+);
+
+news_entities(
+    news_id INTEGER,
+    ticker TEXT
+    PRIMARY KEY (news_id, ticker)
+    FOREIGN KEY (news_id) REFERENCES news(id)
+);
 
 generalinfo(
     ticker TEXT,
-    sector TEXT
-    longname TEXT
+    sector TEXT,
+    longname TEXT,
     PRIMARY KEY (ticker)
 )

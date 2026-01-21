@@ -16,6 +16,8 @@ __pycache__
 A_test.py
 A_test.ipynb
 
-### queries ###
+### sporadic queries ###
 ingest/**/*.ipynb
 
+### db ###
+data/news.db

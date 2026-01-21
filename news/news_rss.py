@@ -1,96 +1,96 @@
 import feedparser
 import re 
-import pandas as pd
 import datetime
 
-def fetch_rss():
-    # RSS feeds from Expansión
-    feeds = {"mercados": "https://e01-expansion.uecdn.es/rss/mercados.xml", 
-            "ahorro": "https://e01-expansion.uecdn.es/rss/ahorro.xml", 
-            "economia": "https://e01-expansion.uecdn.es/rss/empresas.xml"}
 
-    # Read / Process / Store RSS feeds data
-    feeds_data = []
+def fetch_rss() -> list[dict]:
+    feeds = {
+        "mercados": "https://e01-expansion.uecdn.es/rss/mercados.xml",
+        "ahorro": "https://e01-expansion.uecdn.es/rss/ahorro.xml",
+        "economia": "https://e01-expansion.uecdn.es/rss/empresas.xml"
+    }
+
+    items = []
+    rss_format = "%a, %d %b %Y %H:%M:%S %z"
+
     for section, url in feeds.items():
         feed = feedparser.parse(url)
+
         for entry in feed.entries:
+            summary = re.sub("<.*?>", "", entry.get("summary", ""))
+            summary = summary.replace("&nbsp;Leer", " ").strip()
 
-            # Get data
-            title = entry.get("title")
-            pre_summary = entry.get("summary")
-            date = entry.get("published")
-            link = entry.get("link")
-            pre_tags = entry.get("tags")
-            
-            # Transform data: Process summary & tags
-            pre_summary = re.sub("<.*?>", "", pre_summary)
-            summary = pre_summary.replace("&nbsp;Leer", " ").strip()
-            tags = []
-            tags = []
-            if pre_tags:
-                for tag in pre_tags:
-                    tags.append(tag.get("term"))  
+            date = datetime.datetime.strptime(
+                entry.get("published"),
+                rss_format
+            ).date()
 
-            # Append data
-            feeds_data.append({"section": section, "title": title, "summary": summary, "date": date, "link": link, "tags": tags })
-            # Debug
-            # print("Section: ", section)
-            # print("Title: ", title)
-            # print("Summary: ", summary)
-            # print("Date: ", date)
-            # # print("Link: ", link)
-            # print("Tags: ", tags)
+            items.append({
+                "source": "expansion",
+                "section": section,
+                "title": entry.get("title"),
+                "summary": summary,
+                "link": entry.get("link"),
+                "date": date,
+                "tags": [t.get("term") for t in entry.get("tags", [])]
+            })
 
-    df_feeds = pd.DataFrame(feeds_data)
-    # Format date
-    # df_feeds["date"]  = pd.to_datetime(df_feeds["date"]).dt.date (it failed due to hour change)
-    rss_format = "%a, %d %b %Y %H:%M:%S %z"
-    df_feeds["date"] = df_feeds["date"].apply(lambda x: datetime.datetime.strptime(x,rss_format).date())
+    # dedupe by link
+    unique = {item["link"]: item for item in items}
+    return list(unique.values())
 
-    # Remove duplicates (rss feeds may overlap)
-    df_feeds.drop_duplicates(subset=["title", "summary"])
 
-    return df_feeds
-
-def relevant_feeds():
-    # Get most relevant feeds for todays newsletter
-    df_feeds = fetch_rss()
-
-    # Filter date to yesterday only (newsletter 9.00 am)
+def last_news() -> list[dict]:
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
-    #df_feeds = df_feeds[df_feeds["date"].isin([today,yesterday])]
-    df_feeds = df_feeds[df_feeds["date"] == yesterday]
 
-    # Drop columns we don't want to show
-    df_feeds = df_feeds.drop(columns=["date", "tags", "section"])
-    #print(df_feeds.columns)
+    items = fetch_rss()
+    filtered = [
+        item for item in items
+        if item["date"] == yesterday
+    ]
+    return filtered
 
-    # keep top 10 only (UPDATE LOGIC!!!)
-    df_feeds = df_feeds.head(10)
 
-    return df_feeds
+def top_news(items: list[dict],k) -> list[dict]:
+    top_news = sorted(
+    items,
+    key=lambda x: x["relevance_score"],
+    reverse=True
+)[:k]
 
-def feeds_to_html(df_feeds):
-    # Format feeds into html
-    html = """"""
-    for i,row in enumerate(df_feeds.itertuples(), start=1):
-    
+    return top_news
+
+
+def newsletter_ready(news_list: list[dict]) -> list[dict]:
+    return [
+        {
+            "title": n["title"],
+            "summary": n["summary"],
+            "link": n["link"],
+        }
+        for n in news_list
+    ]
+
+
+def html_news(items: list[dict]) -> str:
+    html = ""
+    for i, item in enumerate(items, 1):
         html += f"""<div class="news-item">
-            <h2>{i}. {row.title}</h2>
-            <p>{row.summary} 
-                <a href="{row.link}">See more</a>
+            <h2>{i}. {item['title']}</h2>
+            <p>{item['summary']} 
+                <a href="{item['link']}">See more</a>
             </p>
         </div>
-    """
-
+        """
     return html
+
 
 # Test
 if __name__ == "__main__" :
 
-    df_feeds = relevant_feeds()
-    print(df_feeds)
+    news = last_news()
+    print(news)
     
-    feeds_html = feeds_to_html(df_feeds)
-    print(feeds_html)
+    news_html = html_news(news)
+    print(news_html)

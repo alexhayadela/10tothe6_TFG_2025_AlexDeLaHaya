@@ -5,6 +5,7 @@ from typing import List, Dict
 import pandas as pd
 import yfinance as yf
 
+from ingest.base import sqlite_connection
 from ingest.utils import get_ibex_tickers
 
 # Configuration
@@ -12,14 +13,9 @@ DB_PATH = Path(__file__).resolve().parent.parent / "data" / "ibex35.db"
 DB_PATH.parent.mkdir(exist_ok=True)
 
 
-# Connection
-def get_connection():
-    return sqlite3.connect(DB_PATH)
-
-
 # Schema
 def init_db():
-    with get_connection() as conn:
+    with sqlite_connection(DB_PATH) as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS ohlcv (
@@ -41,7 +37,7 @@ def init_db():
 
 # Ingestion
 def get_last_date(ticker: str):
-    with get_connection() as conn:
+    with sqlite_connection(DB_PATH) as conn:
         cur = conn.execute(
             "SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker,)
         )
@@ -72,7 +68,7 @@ def download_ohlcv(ticker: str, start=None):
 def append_ohlcv(df: pd.DataFrame):
     if df.empty:
         return 0
-    with get_connection() as conn:
+    with sqlite_connection(DB_PATH) as conn:
         df.to_sql("ohlcv", conn, if_exists="append", index=False)
     return len(df)
 
@@ -86,7 +82,8 @@ def update_ticker(ticker: str):
     df = download_ohlcv(ticker, start=start)
     return append_ohlcv(df)
 
-def update_universe(tickers: List[str]):
+
+def update_tickers(tickers: List[str]):
     init_db()
     inserted = 0
     for t in tickers:
@@ -113,7 +110,7 @@ def load_ohlcv(
         query += " AND date <= ?"
         params.append(end)
 
-    with get_connection() as conn:
+    with sqlite_connection(DB_PATH) as conn:
         df = pd.read_sql(query, conn, params=params, parse_dates=["date"])
     return df
 
@@ -121,6 +118,6 @@ def load_ohlcv(
 if __name__ == "__main__":
    
 
-    n = update_universe(get_ibex_tickers())
+    n = update_tickers(get_ibex_tickers())
     print(f"Inserted {n} new OHLCV rows")
     
