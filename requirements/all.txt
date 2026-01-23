@@ -8,3 +8,4 @@ statsmodels
 scikit-learn
 arch
 openai
+supabase

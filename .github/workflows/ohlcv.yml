@@ -1,0 +1,32 @@
+name: Database
+
+on:
+  schedule:
+    - cron: '0 8 * * TUE-SAT'  
+  workflow_dispatch:     
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with: 
+          persist-credentials: true
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements/database_auto.txt
+
+      - name: Update database
+        env: 
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          
+        run: python -m ingest.ohlcv.ingest_supabase
+      

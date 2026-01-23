@@ -1,3 +1,7 @@
+import pandas as pd
+import yfinance as yf
+
+
 def get_ibex_tickers():
     
     tickers = [
@@ -8,6 +12,7 @@ def get_ibex_tickers():
     "PUIG.MC", "RED.MC", "SAB.MC", "SAN.MC", "TEF.MC", "UNI.MC"
     ]
     return tickers
+
 
 def get_ibex_tickers_name():
     tickers = [
@@ -43,3 +48,28 @@ def get_ibex_tickers_name():
     'Unicaja Banco, S.A.'
     ]
     return tickers
+
+
+def download_tickers(ticker: str, start=None, safe=True):
+    tk = yf.Ticker(ticker)
+    df = tk.history(start=start, auto_adjust=False)
+    if df.empty:
+        return df
+
+    df = df.reset_index()
+    df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+    df = df.rename(columns={
+        "Date": "date",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        "Volume": "volume",
+    })
+    df["ticker"] = ticker
+    # Coarse correction: remove data from markets that haven't closed yet
+    if safe and len(df) > 0:
+        if df["date"].iloc[-1] >= pd.Timestamp.utcnow().strftime("%Y-%m-%d"):
+            df = df.drop(df.tail(1))
+
+    return df[["ticker", "date", "open", "high", "low", "close", "volume"]]

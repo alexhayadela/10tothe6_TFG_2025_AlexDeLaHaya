@@ -19,5 +19,5 @@ A_test.ipynb
 ### sporadic queries ###
 ingest/**/*.ipynb
 
-### db ###
-data/news.db
+### db's ###
+data/

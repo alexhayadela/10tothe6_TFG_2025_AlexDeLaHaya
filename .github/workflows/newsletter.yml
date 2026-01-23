@@ -2,7 +2,7 @@ name: Newsletter
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # every day at 10 AM Madrid
+    - cron: '0 8 * * *'  
   workflow_dispatch:      
 
 jobs:
@@ -24,4 +24,5 @@ jobs:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TARGET_USER: ${{ secrets.EMAIL_TARGET_USER }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python -m news.send_newsletter
