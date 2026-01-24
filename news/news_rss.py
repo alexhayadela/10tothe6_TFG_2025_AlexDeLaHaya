@@ -7,7 +7,8 @@ def fetch_rss() -> list[dict]:
     feeds = {
         "mercados": "https://e01-expansion.uecdn.es/rss/mercados.xml",
         "ahorro": "https://e01-expansion.uecdn.es/rss/ahorro.xml",
-        "economia": "https://e01-expansion.uecdn.es/rss/empresas.xml"
+        "economia": "https://e01-expansion.uecdn.es/rss/empresas.xml",
+        "empresas": "https://e01-expansion.uecdn.es/rss/empresas.xml"
     }
 
     items = []
@@ -19,12 +20,11 @@ def fetch_rss() -> list[dict]:
         for entry in feed.entries:
             summary = re.sub("<.*?>", "", entry.get("summary", ""))
             summary = summary.replace("&nbsp;Leer", " ").strip()
-
             date = datetime.datetime.strptime(
                 entry.get("published"),
                 rss_format
-            ).date()
-
+            ).strftime("%Y-%m-%d")
+    
             items.append({
                 "source": "expansion",
                 "section": section,
@@ -41,8 +41,7 @@ def fetch_rss() -> list[dict]:
 
 
 def last_news() -> list[dict]:
-    today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1)
+    yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
     items = fetch_rss()
     filtered = [

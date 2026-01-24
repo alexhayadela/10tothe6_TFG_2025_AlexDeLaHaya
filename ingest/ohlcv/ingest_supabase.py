@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 from ingest.base import supabase_client
-from ingest.utils import get_ibex_tickers, download_tickers
+from ingest.ohlcv.utils import get_ibex_tickers, download_tickers
 import datetime
 
 

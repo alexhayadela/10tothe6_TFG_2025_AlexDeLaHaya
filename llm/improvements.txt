@@ -1,0 +1,105 @@
+File: llm/rate_limit.py
+
+import time
+from collections import deque
+
+class RateLimitState:
+    def __init__(self, tpm_limit: int = 8000, rpm_limit: int = 30):
+        self.tpm_limit = tpm_limit
+        self.rpm_limit = rpm_limit
+        self.token_events = deque()   # (timestamp, tokens)
+        self.request_events = deque() # timestamps only
+
+    def _prune(self, now: float):
+        """Remove events older than 60 seconds."""
+        while self.token_events and now - self.token_events[0][0] > 60:
+            self.token_events.popleft()
+        while self.request_events and now - self.request_events[0] > 60:
+            self.request_events.popleft()
+
+    def wait_for_slot(self, estimated_tokens: int):
+        """
+        Checks if a request is allowed.
+        Sleeps if necessary until the window allows the request.
+        """
+        while True:
+            now = time.time()
+            self._prune(now)
+
+            used_tokens = sum(t for _, t in self.token_events)
+            used_requests = len(self.request_events)
+
+            sleep_seconds = 0.0
+
+            # Check RPM
+            if used_requests + 1 > self.rpm_limit:
+                sleep_seconds = 60 - (now - self.request_events[0])
+
+            # Check TPM
+            if used_tokens + estimated_tokens > self.tpm_limit:
+                t_sleep = 60 - (now - self.token_events[0][0])
+                sleep_seconds = max(sleep_seconds, t_sleep)
+
+            if sleep_seconds > 0:
+                print(f"⏳ Rate limit exceeded, sleeping {sleep_seconds:.2f}s")
+                time.sleep(sleep_seconds)
+            else:
+                break  # ok to proceed
+
+    def record(self, tokens_used: int):
+        now = time.time()
+        self.token_events.append((now, tokens_used))
+        self.request_events.append(now)
+
+llm/query.py
+import json
+from .client import create_llm_client, get_default_model
+from .rate_limit import RateLimitState
+
+rate_limit = RateLimitState()  # global singleton
+
+def query_llm(system_prompt: str, user_prompt: str, estimated_tokens: int = None):
+    """Handles automatic rate-limiting and returns parsed JSON output."""
+    if estimated_tokens is None:
+        estimated_tokens = estimate_tokens(system_prompt + user_prompt)
+
+    # ---- BLOCK until request can be made ----
+    rate_limit.wait_for_slot(estimated_tokens)
+
+    client = create_llm_client()
+    model = get_default_model()
+
+    response = client.responses.create(
+        model=model,
+        input=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+
+    # record tokens & request
+    total_tokens = response.usage.total_tokens
+    rate_limit.record(total_tokens)
+
+    # parse JSON output
+    data = json.loads(response.output_text)
+
+    usage = {
+        "input_tokens": response.usage.input_tokens,
+        "output_tokens": response.usage.output_tokens,
+        "total_tokens": total_tokens,
+    }
+
+    return {"data": data, "usage": usage}
+
+
+EXAMPLE USAGE:
+
+from llm.query import query_llm
+from llm.utils import estimate_tokens
+
+system_prompt = news_classifier_prompt()
+user_prompt = build_news_batch_prompt(batch)
+
+est_tokens = estimate_tokens(system_prompt + user_prompt)
+output = query_llm(system_prompt, user_prompt, estimated_tokens=est_tokens)

@@ -1,21 +1,14 @@
-import sqlite3
 from pathlib import Path
-from datetime import datetime
-from typing import List, Dict
-import pandas as pd
-import yfinance as yf
 
-from ingest_old.base import sqlite_connection
+from ingest.base import sqlite_connection
 from news.classification import classify_news
 from news.news_rss import last_news
 
 
-# Configuration
-DB_PATH = Path(__file__).resolve().parent.parent / "data" / "news.db"
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "news.db"
 DB_PATH.parent.mkdir(exist_ok=True)
 
 
-# Schema
 def init_db():
     with sqlite_connection(DB_PATH) as conn:
         conn.execute("""
@@ -74,7 +67,7 @@ def ingest_news(news_list):
                     n.get("link"),
                     n.get("category"),
                     n.get("sentiment"),
-                    None,  # numeric sentiment (later)
+                    None,   # numeric sentiment (later)
                     n.get("relevance_score"),
                 )
             )
@@ -96,11 +89,19 @@ def ingest_news(news_list):
                     (news_id, company)
                 )
 
+def get_last_date():
+    with sqlite_connection(DB_PATH) as conn:
+        cur = conn.execute("SELECT MAX(date) FROM news")
+        row = cur.fetchone()
+        return row[0]
+
+    
 if __name__ == "__main__":
 
     db = init_db()
-
+   
     news = last_news()
+    
     classified_news = classify_news(news)
 
     ingest_news(classified_news)

@@ -4,7 +4,7 @@ from typing import List
 
 
 from ingest.base import sqlite_connection
-from ingest.utils import get_ibex_tickers, download_tickers
+from ingest.ohlcv.utils import get_ibex_tickers, download_tickers
 
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "ibex35.db"

@@ -118,6 +118,9 @@ We then apply ARIMA models to BBVA.MC prices and log returns over short-term and
 #### Arima log returns 
 ![image](imgs/arima_log_returns.png)
 
+
+### Second Deliverable: Database Ingestion and Time Series Modeling
+!!!!!!! ADD supabase db creation do before deliverables
 ----
 ## Author
 

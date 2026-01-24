@@ -1,7 +1,7 @@
 import pandas as pd
 from supabase import Client
 from typing import List
-from ingest.utils import get_ibex_tickers
+from ingest.ohlcv.utils import get_ibex_tickers
 from ingest.base import supabase_client
 from ingest.ohlcv.ingest_sqlite import init_db, get_last_date, append_ohlcv
 

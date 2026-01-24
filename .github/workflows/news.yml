@@ -2,15 +2,19 @@ name: News
 
 on:
   schedule:
-    - cron: '0 9 * * *' 
+    - cron: '0 8 * * *' 
   workflow_dispatch:      
 
 jobs:
-  send:
+  database:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with: 
+          persist-credentials: true
+          fetch-depth: 0
+          
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -19,10 +23,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements/news_auto.txt
 
-      - name: Fetch news
-        env:
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_TARGET_USER: ${{ secrets.EMAIL_TARGET_USER }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        run: python -m news.classification
+      - name: Update database
+        env: 
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          
+        run: python -m ingest.news.ingest_supabase
+      
