@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 from ingest.base import supabase_client
-from ingest.ohlcv.utils import get_ibex_tickers, download_tickers
+from ingest.ohlcv.utils import get_ibex_tickers, download_ticker
 import datetime
 
 
@@ -47,7 +47,7 @@ def update_ticker(ticker: str):
     if last_date:
         start = pd.to_datetime(last_date) + pd.Timedelta(days=1)
 
-    df = download_tickers(ticker, start=start)
+    df = download_ticker(ticker, start=start)
     return append_ohlcv(df)
 
 

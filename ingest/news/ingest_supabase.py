@@ -33,7 +33,9 @@ def ingest_news_supabase(news_list: list[dict], supabase):
 
 
 if __name__ == "__main__":
+   
     news = last_news()
+    
     classified_news = classify_news(news)
     supabase = supabase_client()
     ingest_news_supabase(classified_news, supabase)

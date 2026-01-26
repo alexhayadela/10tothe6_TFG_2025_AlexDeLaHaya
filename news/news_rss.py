@@ -42,7 +42,6 @@ def fetch_rss() -> list[dict]:
 
 def last_news() -> list[dict]:
     yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-
     items = fetch_rss()
     filtered = [
         item for item in items

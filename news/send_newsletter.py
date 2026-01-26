@@ -12,7 +12,7 @@ from news.classification import classify_news
 def send_newsletter(text, html):
 
     # Load .env only if it exists (local run)
-    dotenv_path = Path(__file__).resolve().parent / ".env"
+    dotenv_path = Path(__file__).resolve().parent.parent / ".env"
     if os.path.exists(dotenv_path):
         load_dotenv(dotenv_path)
     
@@ -128,7 +128,7 @@ def send_newsletter(text, html):
 
 # Test    
 if __name__ == "__main__":
-
+   
     news = last_news()
     classified_news = classify_news(news)
     top_10 = top_news(classified_news,10)
@@ -137,6 +137,3 @@ if __name__ == "__main__":
     
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
     send_newsletter(text, news_html)
-
-
-

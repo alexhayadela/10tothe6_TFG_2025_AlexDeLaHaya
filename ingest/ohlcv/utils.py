@@ -50,13 +50,14 @@ def get_ibex_tickers_name():
     return tickers
 
 
-def download_tickers(ticker: str, start=None, safe=True):
+def download_ticker(ticker: str, start=None, safe=True):
     tk = yf.Ticker(ticker)
     df = tk.history(start=start, auto_adjust=False)
     if df.empty:
         return df
 
     df = df.reset_index()
+    df = df.drop(columns=["Dividends", "Stock Splits"])
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
     df = df.rename(columns={
         "Date": "date",
@@ -72,4 +73,4 @@ def download_tickers(ticker: str, start=None, safe=True):
         if df["date"].iloc[-1] >= pd.Timestamp.utcnow().strftime("%Y-%m-%d"):
             df = df.drop(df.tail(1))
 
-    return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
+    return df

@@ -3,7 +3,6 @@ name: Database
 on:
   schedule:
     - cron: '0 8 * * TUE-SAT'  
-  workflow_dispatch:     
 
 jobs:
   database:
