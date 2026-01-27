@@ -42,11 +42,9 @@ def append_ohlcv(df: pd.DataFrame) -> int:
 
 def update_ticker(ticker: str):
     last_date = get_last_date(ticker)
-    last_date = datetime.date.today() - datetime.timedelta(days=3)
     start = None
     if last_date:
         start = pd.to_datetime(last_date) + pd.Timedelta(days=1)
-
     df = download_ticker(ticker, start=start)
     return append_ohlcv(df)
 

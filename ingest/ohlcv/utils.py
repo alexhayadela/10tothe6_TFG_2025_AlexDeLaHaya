@@ -55,9 +55,7 @@ def download_ticker(ticker: str, start=None, safe=True):
     df = tk.history(start=start, auto_adjust=False)
     if df.empty:
         return df
-
     df = df.reset_index()
-    df = df.drop(columns=["Dividends", "Stock Splits"])
     df["Date"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
     df = df.rename(columns={
         "Date": "date",
@@ -71,6 +69,6 @@ def download_ticker(ticker: str, start=None, safe=True):
     # Coarse correction: remove data from markets that haven't closed yet
     if safe and len(df) > 0:
         if df["date"].iloc[-1] >= pd.Timestamp.utcnow().strftime("%Y-%m-%d"):
-            df = df.drop(df.tail(1))
-
-    return df
+            df = df.iloc[:-1]
+    
+    return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
