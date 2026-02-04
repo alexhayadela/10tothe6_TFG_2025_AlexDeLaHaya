@@ -49,6 +49,15 @@ def get_ibex_tickers_name():
     ]
     return tickers
 
+def get_macro_tickers():
+    # Consider adding VIBEX, VSTOXX, VIX (30 day - volatility expectation)
+    tickers = ["^IBEX", "^STOXX50E", "^GSPC"]
+    return tickers
+
+def get_all_tickers():
+    ibex = get_ibex_tickers()
+    macro = get_macro_tickers()
+    return ibex + macro
 
 def download_ticker(ticker: str, start=None, safe=True):
     tk = yf.Ticker(ticker)
@@ -72,3 +81,4 @@ def download_ticker(ticker: str, start=None, safe=True):
             df = df.iloc[:-1]
     
     return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
+

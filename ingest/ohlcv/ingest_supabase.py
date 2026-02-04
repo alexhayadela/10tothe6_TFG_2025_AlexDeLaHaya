@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 from ingest.base import supabase_client
-from ingest.ohlcv.utils import get_ibex_tickers, download_ticker
+from ingest.ohlcv.utils import get_all_tickers, download_ticker
 import datetime
 
 
@@ -62,6 +62,6 @@ def update_tickers(tickers: List[str]):
     return inserted
 
 if __name__ == "__main__":
-    n = update_tickers(get_ibex_tickers())
+    n = update_tickers(get_all_tickers())
     print(f"Inserted {n} new OHLCV rows into Supabase")
 
