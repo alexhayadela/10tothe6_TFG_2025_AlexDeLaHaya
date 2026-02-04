@@ -50,8 +50,8 @@ def get_ibex_tickers_name():
     return tickers
 
 def get_macro_tickers():
-    # Consider adding VIBEX, VSTOXX, VIX (30 day - volatility expectation)
-    tickers = ["^IBEX", "^STOXX50E", "^GSPC"]
+    
+    tickers = ["^IBEX","^GSPC","^VIX" ]
     return tickers
 
 def get_all_tickers():

@@ -1,7 +1,7 @@
 import pandas as pd
 from supabase import Client
 from typing import List
-from ingest.ohlcv.utils import get_ibex_tickers
+from ingest.ohlcv.utils import get_all_tickers
 from ingest.base import supabase_client
 from ingest.ohlcv.ingest_sqlite import init_db, get_last_date, append_ohlcv
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     n = sync_from_supabase(
         supabase,
-        get_ibex_tickers(),
+        get_all_tickers(),
     )
 
     print(f"Pulled {n} rows from Supabase into SQLite")
