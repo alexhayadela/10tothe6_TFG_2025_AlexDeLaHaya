@@ -50,8 +50,7 @@ def get_ibex_tickers_name():
     return tickers
 
 def get_macro_tickers():
-    
-    tickers = ["^IBEX","^GSPC","^VIX" ]
+    tickers = ["^IBEX","^GSPC","^VIX"]
     return tickers
 
 def get_all_tickers():
