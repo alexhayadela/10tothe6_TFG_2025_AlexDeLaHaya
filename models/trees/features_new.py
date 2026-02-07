@@ -89,52 +89,6 @@ def cross_micro_features(df:pd.DataFrame):
     return df
 
 
-def macro_features(df: pd.DataFrame, df_macro: pd.DataFrame):
-    assert_columns(df,["date", "log_ret_5", "log_ret_20", "vol_20"])
-    assert_columns(df_macro, ["date", "ticker", "close"])
-    df = df.copy()
-    
-    macro = (
-        df_macro
-        .set_index(["date", "ticker"])["close"]
-        .unstack("ticker")
-        .rename(columns={
-            "^IBEX": "ibx_close",
-            "^GSPC": "sp_close",
-            "^VIX": "vix_close",
-        })
-    )
-    df = df.join(macro, on="date")
-
-    df[f"ibx_log_ret_1"] = np.log(df["ibx_close"] / df["ibx_close"].shift(1))
-    df[f"sp_log_ret_1"] = np.log(df["sp_close"] / df["sp_close"].shift(1))
-    
-    for w in [5,20]:
-        df[f"ibx_log_ret_{w}"] = np.log(df["ibx_close"] / df["ibx_close"].shift(w))
-
-    for w in [10,20,60]:
-        df[f"ibx_vol_{w}"] = df["ibx_log_ret_1"].rolling(w).std()
-    for w in [20,100]:
-        df[f"sp_vol_{w}"] = df["sp_log_ret_1"].rolling(w).std()
-    df["ibx_vol_ratio_10_60"] = df["ibx_vol_10"] / df["ibx_vol_60"]
-    df["sp_vol_ratio_20_100"] = df["sp_vol_20"] / df["sp_vol_100"]
-    
-    df["vix_chg_1"] = df["vix_close"].pct_change(fill_method=None)
-    df["vix_chg_z_5"] = df["vix_chg_1"] / df["vix_chg_1"].rolling(5).std()
-    # signal, not statistical purity
-    df["vix_pctile_250"] = (
-    df["vix_close"]
-    .rolling(250)
-    .apply(lambda x: (x <= x[-1]).mean(), raw=True)
-    )   
-
-    df["rel_ret_5"] = df["log_ret_5"] - df["ibx_log_ret_5"]
-    df["rel_ret_20"] = df["log_ret_20"] - df["ibx_log_ret_20"]
-    df["rel_vol_20"] = df["vol_20"] / df["ibx_vol_20"]
-
-    return df
-  
-
 def target_feature(df:pd.DataFrame, horizon):
     df = df.copy()
     df["future_log_ret"] = np.log(df["close"].shift(-horizon) / df["close"])
@@ -185,23 +139,27 @@ def build_features(df_micro:pd.DataFrame, df_macro:pd.DataFrame, horizon:int) ->
     
     df_micro = df_micro.sort_values(["ticker", "date"]).reset_index(drop=True)
     df_macro = df_macro.sort_values("date").reset_index(drop=True)
+    macro = macro_features(df_macro)
     for ticker, df_t in df_micro.groupby("ticker"):
         
         df_t = micro_features(df_t)
-        df_t = macro_features(df_t, df_macro)   
+        df_t = df_t.merge(macro, on="date", how="left")  
         df_t = target_feature(df_t,horizon)
         df_t["ticker"] = ticker
         
         df_final.append(df_t)
     df_final = pd.concat(df_final, ignore_index=True)
     df_final = cross_micro_features(df_final)
-    df_final = final_features(df_final)
+    #df_final = final_features(df_final)
     
     return df_final
 
 # FIX TO NANS, compute macro outside
 
-def build_macro_features(df_macro):
+def macro_features(df_macro: pd.DataFrame):
+
+    assert_columns(df_macro, ["date", "ticker", "close"])
+
     macro = (
         df_macro
         .set_index(["date", "ticker"])["close"]
@@ -220,21 +178,24 @@ def build_macro_features(df_macro):
     macro["ibx_vol_60"] = macro["ibx_log_ret_1"].rolling(60).std()
     macro["ibx_vol_ratio_10_60"] = macro["ibx_vol_10"] / macro["ibx_vol_60"]
 
-    # SP (lagged!)
-    macro["sp_log_ret_1"] = np.log(macro["sp_close"].shift(1) / macro["sp_close"].shift(2))
+
+    macro["sp_log_ret_1"] = np.log(macro["sp_close"] / macro["sp_close"].shift(1))
     macro["sp_vol_20"] = macro["sp_log_ret_1"].rolling(20).std()
     macro["sp_vol_100"] = macro["sp_log_ret_1"].rolling(100).std()
     macro["sp_vol_ratio_20_100"] = macro["sp_vol_20"] / macro["sp_vol_100"]
 
-    # VIX (lagged!)
-    macro["vix_chg_1"] = macro["vix_close"].shift(1).pct_change()
+    macro["vix_chg_1"] = macro["vix_close"].pct_change()
     macro["vix_chg_z_5"] = macro["vix_chg_1"] / macro["vix_chg_1"].rolling(5).std()
     macro["vix_pctile_250"] = (
-        macro["vix_close"].shift(1)
+        macro["vix_close"]
         .rolling(250)
         .apply(lambda x: (x <= x[-1]).mean(), raw=True)
     )
-
-    return macro.reset_index()
+    return macro.reset_index()    
+"""
+df["rel_ret_5"] = df["log_ret_5"] - df["ibx_log_ret_5"]
+    df["rel_ret_20"] = df["log_ret_20"] - df["ibx_log_ret_20"]
+    df["rel_vol_20"] = df["vol_20"] / df["ibx_vol_20"]
+"""
 
 
