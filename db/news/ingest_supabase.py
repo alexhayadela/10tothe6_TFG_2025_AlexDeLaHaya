@@ -1,6 +1,6 @@
 from news.classification import classify_news
 from news.news_rss import last_news
-from ingest.base import supabase_client
+from db.base import supabase_client
 
 
 def ingest_news_supabase(news_list: list[dict], supabase):
@@ -10,19 +10,18 @@ def ingest_news_supabase(news_list: list[dict], supabase):
             "section": n.get("section"),
             "date": n.get("date"),
             "title": n.get("title"),
-            "body": n.get("summary"),
-            "url": n.get("link"),
+            "body": n.get("body"),
+            "url": n.get("url"),
             "category": n.get("category"),
-            "sentiment_gpt": n.get("sentiment"),
-            "sentiment": None,
-            "relevance": n.get("relevance_score")
+            "sentiment": n.get("sentiment"),
+            "relevance": n.get("relevance")
         }, on_conflict="url").execute()
 
         # 2. Fetch the assigned ID (needed for entities)
         news_id = res.data[0]["id"] if res.data else None
         if not news_id:
             # fallback: fetch ID by URL
-            news_id = supabase.table("news").select("id").eq("url", n["link"]).execute().data[0]["id"]
+            news_id = supabase.table("news").select("id").eq("url", n["url"]).execute().data[0]["id"]
 
         # 3. Insert entities
         for company in n.get("companies", []):

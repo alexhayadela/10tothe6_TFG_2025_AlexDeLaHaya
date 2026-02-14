@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ingest.base import sqlite_connection
+from db.base import sqlite_connection
 from news.classification import classify_news
 from news.news_rss import last_news
 
@@ -20,8 +20,7 @@ def init_db():
                 body TEXT,
                 url TEXT UNIQUE,
                 category TEXT,
-                sentiment_gpt TEXT,
-                sentiment REAL,
+                sentiment TEXT,
                 relevance REAL
             );
         """)
@@ -53,22 +52,20 @@ def ingest_news(news_list):
                     body,
                     url,
                     category,
-                    sentiment_gpt,
                     sentiment,
-                    relevance
+                    relevance,
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     n.get("section"),
                     n.get("date"),
                     n.get("title"),
-                    n.get("summary"),
-                    n.get("link"),
+                    n.get("body"),
+                    n.get("url"),
                     n.get("category"),
                     n.get("sentiment"),
-                    None,   # numeric sentiment (later)
-                    n.get("relevance_score"),
+                    n.get("relevance"),
                 )
             )
 
@@ -76,7 +73,7 @@ def ingest_news(news_list):
             if news_id == 0:
                 news_id = conn.execute(
                     "SELECT id FROM news WHERE url = ?",
-                    (n["link"],)
+                    (n["url"],)
                 ).fetchone()[0]
 
             # 3. Insert entities

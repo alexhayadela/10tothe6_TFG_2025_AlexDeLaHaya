@@ -6,10 +6,12 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 import datetime 
-from news.news_rss import last_news, html_news, newsletter_ready, top_news
-from news.classification import classify_news
+from news.news_rss import html_news #last_news,newsletter_ready, top_news
+# from news.classification import classify_news
+from db.newsletter.queries import get_recipients
+from db.news.queries import get_news
 
-def send_newsletter(text, html):
+def send_newsletter(text, html, recipients):
 
     # Load .env only if it exists (local run)
     dotenv_path = Path(__file__).resolve().parent.parent / ".env"
@@ -19,13 +21,12 @@ def send_newsletter(text, html):
     # Load from Github Secrets 
     sender = os.environ.get("EMAIL_USER")
     password = os.environ.get("EMAIL_PASSWORD")
-    recipient = os.environ.get("EMAIL_TARGET_USER")
 
     # Construct email
     message = MIMEMultipart()
     message['From'] = sender
-    recipients = [sender,recipient]
-    message['To'] = ', '.join(recipients)
+    message['To'] = sender
+    message['Bcc'] = ', '.join(recipients)
 
     today_date = datetime.date.today()
     subject = f"10**6 Boletín {today_date}"
@@ -126,14 +127,20 @@ def send_newsletter(text, html):
         server.login(sender, password)
         server.sendmail(sender, recipients, message.as_string())
 
+
 # Test    
 if __name__ == "__main__":
    
+    news = get_news(datetime.date.today() - datetime.timedelta(days=1))
+    """ Don't process news twice, read from db
     news = last_news()
     classified_news = classify_news(news)
     top_10 = top_news(classified_news,10)
     ready = newsletter_ready(top_10)
-    news_html = html_news(ready)
+    """
+    news_html = html_news(news)
     
+
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
-    send_newsletter(text, news_html)
+    recipients = get_recipients()
+    send_newsletter(text, news_html, recipients)

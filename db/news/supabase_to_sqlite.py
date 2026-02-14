@@ -1,6 +1,6 @@
 from pathlib import Path
-from ingest.news.ingest_sqlite import get_last_date
-from ingest.base import supabase_client, sqlite_connection
+from db.news.ingest_sqlite import get_last_date
+from db.base import supabase_client, sqlite_connection
 
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "news.db"
@@ -19,7 +19,6 @@ def fetch_supabase_news(supabase, since_date: str = None) -> list[dict]:
         body,
         url,
         category,
-        sentiment_gpt,
         sentiment,
         relevance,
         news_entities(ticker)
@@ -41,15 +40,14 @@ def ingest_news(supabase, since_date: str = None):
             cur = conn.execute("""
                 INSERT INTO news (
                     section, date, title, body, url,
-                    category, sentiment_gpt, sentiment, relevance
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    category, sentiment, relevance
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(url) DO UPDATE SET
                     section=excluded.section,
                     date=excluded.date,
                     title=excluded.title,
                     body=excluded.body,
                     category=excluded.category,
-                    sentiment_gpt=excluded.sentiment_gpt,
                     sentiment=excluded.sentiment,
                     relevance=excluded.relevance
             """, (
@@ -59,7 +57,6 @@ def ingest_news(supabase, since_date: str = None):
                 n["body"],
                 n["url"],
                 n["category"],
-                n["sentiment_gpt"],
                 n["sentiment"],
                 n["relevance"]
             ))

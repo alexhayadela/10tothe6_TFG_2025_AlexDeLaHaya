@@ -1,6 +1,6 @@
 from typing import List
 import pandas as pd 
-from ingest.base import sqlite_connection
+from db.base import sqlite_connection
 from pathlib import Path 
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "ibex35.db"

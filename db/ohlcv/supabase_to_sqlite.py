@@ -1,9 +1,9 @@
 import pandas as pd
 from supabase import Client
 from typing import List
-from ingest.ohlcv.utils import get_all_tickers
-from ingest.base import supabase_client
-from ingest.ohlcv.ingest_sqlite import init_db, get_last_date, append_ohlcv
+from db.ohlcv.utils import get_all_tickers
+from db.base import supabase_client
+from db.ohlcv.ingest_sqlite import init_db, get_last_date, append_ohlcv
 
 
 def fetch_ohlcv_from_supabase(

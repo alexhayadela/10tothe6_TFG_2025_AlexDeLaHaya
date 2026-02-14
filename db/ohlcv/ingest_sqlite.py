@@ -1,18 +1,13 @@
 import pandas as pd
-from pathlib import Path
 from typing import List
 
 
-from ingest.base import sqlite_connection
-from ingest.ohlcv.utils import get_ibex_tickers, download_ticker
-
-
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "ibex35.db"
-DB_PATH.parent.mkdir(exist_ok=True)
+from db.base import sqlite_connection
+from db.ohlcv.utils import get_ibex_tickers, download_ticker
 
 
 def init_db():
-    with sqlite_connection(DB_PATH) as conn:
+    with sqlite_connection() as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS ohlcv (
@@ -33,7 +28,7 @@ def init_db():
 
 
 def get_last_date(ticker: str):
-    with sqlite_connection(DB_PATH) as conn:
+    with sqlite_connection() as conn:
         cur = conn.execute(
             "SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker,)
         )
@@ -44,7 +39,7 @@ def get_last_date(ticker: str):
 def append_ohlcv(df: pd.DataFrame):
     if df.empty:
         return 0
-    with sqlite_connection(DB_PATH) as conn:
+    with sqlite_connection() as conn:
         df.to_sql("ohlcv", conn, if_exists="append", index=False)
     return len(df)
 

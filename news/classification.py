@@ -1,7 +1,5 @@
 from news.news_rss import last_news
-from llm.gpt_service import query_llm, estimate_tokens
-from llm.rate_limit_state import RateLimitState
-import time
+from llm.gpt_service import query_llm
 
 IMPORTANT_KEYWORDS = {
     "resultados",
@@ -57,7 +55,7 @@ def build_news_batch_prompt(news_batch: list[dict]) -> str:
     return "\n".join(
         f"id: {i}\n"
         f"title: {item['title']}\n"
-        f"summary: {item['summary']}\n"
+        f"body: {item['body']}\n"
         for i, item in enumerate(news_batch, start=1)
     )
 
@@ -77,7 +75,7 @@ def extract_keywords_hit(text: str, keywords: set[str]) -> list[str]:
     return [k for k in keywords if k in text]
 
 
-def compute_relevance_score(
+def compute_relevance(
     category: str,
     companies: list[str],
     sentiment: str,
@@ -107,32 +105,23 @@ def classify_news(news: list[dict]) -> list[dict]:
     all_outputs = []
 
     system_prompt = news_classifier_prompt()
-    est_system = estimate_tokens(system_prompt)
-    rate_limit = RateLimitState()
     for batch in batches:
         user_prompt = build_news_batch_prompt(batch)
-        est_user = estimate_tokens(user_prompt)
-        estimated_tokens = (est_system + est_user)*4/3
-        sleep_time = rate_limit.can_make_request(estimated_tokens)
-        if sleep_time > 0:
-            print(f"⏳ Sleeping {sleep_time:.2f}s to respect rate limits")
-            time.sleep(sleep_time)
         output = query_llm(system_prompt,user_prompt)
-        print(output["usage"])
-        rate_limit.record(int(output["usage"]["total_tokens"]))
         all_outputs.extend(output["data"])
 
-    assert len(all_outputs) == len(news)
+    if len(all_outputs) != len(news):
+        raise ValueError("LLM output missmatch")
 
     scored_news = []
 
     for feed, llm_out in zip(news, all_outputs):
         keywords_hit = extract_keywords_hit(
-            feed["title"] + " " + feed["summary"],
+            feed["title"] + " " + feed["body"],
             IMPORTANT_KEYWORDS
         )
 
-        relevance = compute_relevance_score(
+        relevance = compute_relevance(
             category=llm_out["category"],
             companies=llm_out["companies"],
             sentiment=llm_out["sentiment"],
@@ -142,7 +131,7 @@ def classify_news(news: list[dict]) -> list[dict]:
         scored_news.append({
             **feed,
             **llm_out,
-            "relevance_score": relevance
+            "relevance": relevance
         })
 
     return scored_news
@@ -156,7 +145,7 @@ if __name__ == "__main__":
     """
     top_news = sorted(
     classified_news,
-    key=lambda x: x["relevance_score"],
+    key=lambda x: x["relevance"],
     reverse=True
 )[:10]
     """

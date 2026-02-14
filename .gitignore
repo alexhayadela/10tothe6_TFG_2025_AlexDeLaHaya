@@ -17,7 +17,10 @@ A_test.py
 A_test.ipynb
 
 ### sporadic queries ###
-ingest/**/*.ipynb
+db/**/*.ipynb
 
 ### db's ###
 data/
+
+### init setup
+tfg_init.bat

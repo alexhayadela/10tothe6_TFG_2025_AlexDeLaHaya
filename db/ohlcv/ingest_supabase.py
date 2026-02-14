@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
-from ingest.base import supabase_client
-from ingest.ohlcv.utils import get_all_tickers, download_ticker
+from db.base import supabase_client
+from db.ohlcv.utils import get_all_tickers, download_ticker
 import datetime
 
 

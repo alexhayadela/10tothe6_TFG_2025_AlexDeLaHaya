@@ -18,8 +18,8 @@ def fetch_rss() -> list[dict]:
         feed = feedparser.parse(url)
 
         for entry in feed.entries:
-            summary = re.sub("<.*?>", "", entry.get("summary", ""))
-            summary = summary.replace("&nbsp;Leer", " ").strip()
+            body = re.sub("<.*?>", "", entry.get("summary", ""))
+            body = body.replace("&nbsp;Leer", " ").strip()
             date = datetime.datetime.strptime(
                 entry.get("published"),
                 rss_format
@@ -29,14 +29,14 @@ def fetch_rss() -> list[dict]:
                 "source": "expansion",
                 "section": section,
                 "title": entry.get("title"),
-                "summary": summary,
-                "link": entry.get("link"),
+                "body": body,
+                "url": entry.get("link"),
                 "date": date,
                 "tags": [t.get("term") for t in entry.get("tags", [])]
             })
 
     # dedupe by link
-    unique = {item["link"]: item for item in items}
+    unique = {item["url"]: item for item in items}
     return list(unique.values())
 
 
@@ -53,7 +53,7 @@ def last_news() -> list[dict]:
 def top_news(items: list[dict],k) -> list[dict]:
     top_news = sorted(
     items,
-    key=lambda x: x["relevance_score"],
+    key=lambda x: x["relevance"],
     reverse=True
 )[:k]
 
@@ -64,8 +64,8 @@ def newsletter_ready(news_list: list[dict]) -> list[dict]:
     return [
         {
             "title": n["title"],
-            "summary": n["summary"],
-            "link": n["link"],
+            "body": n["body"],
+            "url": n["url"],
         }
         for n in news_list
     ]
@@ -76,8 +76,8 @@ def html_news(items: list[dict]) -> str:
     for i, item in enumerate(items, 1):
         html += f"""<div class="news-item">
             <h2>{i}. {item['title']}</h2>
-            <p>{item['summary']} 
-                <a href="{item['link']}">See more</a>
+            <p>{item['body']} 
+                <a href="{item['url']}">See more</a>
             </p>
         </div>
         """
