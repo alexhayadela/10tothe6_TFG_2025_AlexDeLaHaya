@@ -1,5 +1,6 @@
 from news.news_rss import last_news
-from llm.gpt_service import query_llm
+from llm.gpt_service import LLMService
+
 
 IMPORTANT_KEYWORDS = {
     "resultados",
@@ -18,69 +19,14 @@ CATEGORY_WEIGHTS = {
 }
 
 
-def news_classifier_prompt():
-    prompt ="""
-You are a financial news classifier.
-
-For EACH news item, classify it into ONE category:
-
-- company_specific
-- macro_economic
-- market_sentiment
-- generic_noise
-
-Also extract:
-- companies mentioned
-- sentiment: positive, negative, neutral
-
-Respond strictly in JSON.
-The output MUST be a list with the same length and order as the input.
-
-JSON format:
-[
-  {
-    "category": "...",
-    "companies": [],
-    "sentiment": "..."
-  }
-]
-"""
-    return prompt
-
-
-def build_news_batch_prompt(news_batch: list[dict]) -> str:
-    """
-    Builds structured LLM input for a batch of news items.
-    """
-    return "\n".join(
-        f"id: {i}\n"
-        f"title: {item['title']}\n"
-        f"body: {item['body']}\n"
-        for i, item in enumerate(news_batch, start=1)
-    )
-
-
-def split_into_batches(
-    items: list[dict],
-    batch_size: int = 10
-) -> list[list[dict]]:
-    return [
-        items[i:i + batch_size]
-        for i in range(0, len(items), batch_size)
-    ]
-
-
 def extract_keywords_hit(text: str, keywords: set[str]) -> list[str]:
+    """Extracts keywords."""
     text = text.lower()
     return [k for k in keywords if k in text]
 
 
-def compute_relevance(
-    category: str,
-    companies: list[str],
-    sentiment: str,
-    keywords_hit: list[str]
-) -> float:
+def compute_relevance(category: str,companies: list[str],sentiment: str,keywords_hit: list[str]) -> float:
+    """Computes relevance of news."""
     score = 0.0
     score += CATEGORY_WEIGHTS.get(category, 0.0)
 
@@ -98,8 +44,57 @@ def compute_relevance(
     return round(min(score, 1.0), 3)
 
 
+def news_classifier_prompt():
+    "Returns prompt for news classification."
+    prompt ="""
+    You are a financial news classifier.
+
+    For EACH news item, classify it into ONE category:
+
+    - company_specific
+    - macro_economic
+    - market_sentiment
+    - generic_noise
+
+    Also extract:
+    - companies mentioned
+    - sentiment: positive, negative, neutral
+
+    Respond strictly in JSON.
+    The output MUST be a list with the same length and order as the input.
+
+    JSON format:
+    [
+    {
+        "category": "...",
+        "companies": [],
+        "sentiment": "..."
+    }
+    ]"""
+    return prompt
+
+
+def build_news_batch_prompt(news_batch: list[dict]) -> str:
+    """Builds structured LLM input for a batch of news items."""
+    return "\n".join(
+        f"id: {i}\n"
+        f"title: {item['title']}\n"
+        f"body: {item['body']}\n"
+        for i, item in enumerate(news_batch, start=1)
+    )
+
+
+def split_into_batches(items: list[dict],batch_size: int = 10) -> list[list[dict]]:
+    """Splits news items into batches."""
+    return [
+        items[i:i + batch_size]
+        for i in range(0, len(items), batch_size)
+    ]
+
+
 def classify_news(news: list[dict]) -> list[dict]:
-    
+    """Classifies news items."""
+    llm = LLMService()
     batches = split_into_batches(news, batch_size=10)
 
     all_outputs = []
@@ -107,7 +102,7 @@ def classify_news(news: list[dict]) -> list[dict]:
     system_prompt = news_classifier_prompt()
     for batch in batches:
         user_prompt = build_news_batch_prompt(batch)
-        output = query_llm(system_prompt,user_prompt)
+        output = llm.query(system_prompt,user_prompt)
         all_outputs.extend(output["data"])
 
     if len(all_outputs) != len(news):
@@ -137,7 +132,6 @@ def classify_news(news: list[dict]) -> list[dict]:
     return scored_news
 
 
-# Test    
 if __name__ == "__main__":
 
     news = last_news()
@@ -147,7 +141,7 @@ if __name__ == "__main__":
     classified_news,
     key=lambda x: x["relevance"],
     reverse=True
-)[:10]
+    )[:10]
     """
     for new in classified_news:
         print(new)

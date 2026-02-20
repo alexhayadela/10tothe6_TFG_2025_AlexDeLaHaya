@@ -1,9 +1,10 @@
-import feedparser
 import re 
 import datetime
+import feedparser
 
 
 def fetch_rss() -> list[dict]:
+    """Fetch news items from rss."""
     feeds = {
         "mercados": "https://e01-expansion.uecdn.es/rss/mercados.xml",
         "ahorro": "https://e01-expansion.uecdn.es/rss/ahorro.xml",
@@ -41,6 +42,7 @@ def fetch_rss() -> list[dict]:
 
 
 def last_news() -> list[dict]:
+    """Returns news from now <-> 24h earlier."""
     yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     items = fetch_rss()
     filtered = [
@@ -51,6 +53,7 @@ def last_news() -> list[dict]:
 
 
 def top_news(items: list[dict],k) -> list[dict]:
+    """Sorts news items by relevance."""
     top_news = sorted(
     items,
     key=lambda x: x["relevance"],
@@ -61,6 +64,7 @@ def top_news(items: list[dict],k) -> list[dict]:
 
 
 def newsletter_ready(news_list: list[dict]) -> list[dict]:
+    """Converts news items into newsletter ready."""
     return [
         {
             "title": n["title"],
@@ -72,6 +76,7 @@ def newsletter_ready(news_list: list[dict]) -> list[dict]:
 
 
 def html_news(items: list[dict]) -> str:
+    """Embeds news items into html."""
     html = ""
     for i, item in enumerate(items, 1):
         html += f"""<div class="news-item">
@@ -84,7 +89,6 @@ def html_news(items: list[dict]) -> str:
     return html
 
 
-# Test
 if __name__ == "__main__" :
 
     news = last_news()

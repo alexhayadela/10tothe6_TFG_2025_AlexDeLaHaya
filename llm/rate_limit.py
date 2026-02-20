@@ -8,14 +8,14 @@ class RateLimitState:
         self.token_events = deque()   # (timestamp, tokens)
         self.request_events = deque() # timestamps only
 
-    def _prune(self, now: float):
+    def _prune(self, now: float) -> None:
         """Remove events older than 60 seconds."""
         while self.token_events and now - self.token_events[0][0] > 60:
             self.token_events.popleft()
         while self.request_events and now - self.request_events[0] > 60:
             self.request_events.popleft()
 
-    def wait_for_slot(self, estimated_tokens: int):
+    def wait_for_slot(self, estimated_tokens: int) -> None:
         """
         Checks if a request is allowed.
         Sleeps if necessary until the window allows the request.
@@ -44,7 +44,8 @@ class RateLimitState:
             else:
                 break  # ok to proceed
 
-    def record(self, tokens_used: int):
+    def record(self, tokens_used: int) -> None:
+        """Records tokens used."""
         now = time.time()
         self.token_events.append((now, tokens_used))
         self.request_events.append(now)

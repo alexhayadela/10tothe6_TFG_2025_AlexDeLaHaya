@@ -3,7 +3,7 @@ import yfinance as yf
 
 
 def get_ibex_tickers():
-    
+    """Returns ibex tickers acronym."""
     tickers = [
     "ACS.MC", "ACX.MC", "AENA.MC", "AMS.MC", "ANA.MC", "ANE.MC",
     "BBVA.MC", "BKT.MC", "CABK.MC", "CLNX.MC", "COL.MC", "ELE.MC",
@@ -15,6 +15,7 @@ def get_ibex_tickers():
 
 
 def get_ibex_tickers_name():
+    "Returns ibex tickers full name."
     tickers = [
     'ACS, Actividades de Construcción y Servicios, S.A.',
     'Acerinox, S.A.',
@@ -49,16 +50,22 @@ def get_ibex_tickers_name():
     ]
     return tickers
 
+
 def get_macro_tickers():
+    "Returns macro tickers acronym."
     tickers = ["^IBEX","^GSPC","^VIX"]
     return tickers
 
+
 def get_all_tickers():
+    "Returns all tickers acronym."
     ibex = get_ibex_tickers()
     macro = get_macro_tickers()
     return ibex + macro
 
+
 def download_ticker(ticker: str, start=None, safe=True):
+    """Downloads data for a single ticker from Yahoo Finance API."""
     tk = yf.Ticker(ticker)
     df = tk.history(start=start, auto_adjust=False)
     if df.empty:

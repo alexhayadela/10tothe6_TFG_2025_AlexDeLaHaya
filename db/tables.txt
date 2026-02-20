@@ -28,9 +28,11 @@ news_entities(
     FOREIGN KEY (news_id) REFERENCES news(id)
 );
 
+"""
 generalinfo(
     ticker TEXT,
     sector TEXT,
     longname TEXT,
     PRIMARY KEY (ticker)
 )
+"""
