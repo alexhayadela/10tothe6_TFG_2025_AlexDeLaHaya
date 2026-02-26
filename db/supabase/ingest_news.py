@@ -1,11 +1,16 @@
+from supabase import Client
+
+from utils import load_env
+from db.base import supabase_client
 from news.classification import classify_news
 from news.news_rss import last_news
-from db.base import supabase_client
 
 
-def ingest_news_supabase(news_list: list[dict], supabase):
+def ingest_news(supabase: Client, news_list: list[dict]) -> None:
+    """
+    Store classified news items and related entities in the database.
+    """
     for n in news_list:
-        # 1. Insert or update news
         res = supabase.table("news").upsert({
             "section": n.get("section"),
             "date": n.get("date"),
@@ -17,13 +22,12 @@ def ingest_news_supabase(news_list: list[dict], supabase):
             "relevance": n.get("relevance")
         }, on_conflict="url").execute()
 
-        # 2. Fetch the assigned ID (needed for entities)
+        # Fetch the assigned ID (needed for entities)
         news_id = res.data[0]["id"] if res.data else None
         if not news_id:
             # fallback: fetch ID by URL
             news_id = supabase.table("news").select("id").eq("url", n["url"]).execute().data[0]["id"]
 
-        # 3. Insert entities
         for company in n.get("companies", []):
             supabase.table("news_entities").upsert({
                 "news_id": news_id,
@@ -32,9 +36,10 @@ def ingest_news_supabase(news_list: list[dict], supabase):
 
 
 if __name__ == "__main__":
-   
-    news = last_news()
+    load_env()
     
+    news = last_news()
     classified_news = classify_news(news)
+
     supabase = supabase_client()
-    ingest_news_supabase(classified_news, supabase)
+    ingest_news(supabase, classified_news)

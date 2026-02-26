@@ -27,5 +27,5 @@ jobs:
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           
-        run: python -m db.ohlcv.ingest_supabase
+        run: python -m db.supabase.ingest_ohlcv
       

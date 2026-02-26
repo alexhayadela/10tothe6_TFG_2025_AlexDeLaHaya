@@ -29,5 +29,5 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           
-        run: python -m db.news.ingest_supabase
+        run: python -m db.supabase.ingest_news
       
