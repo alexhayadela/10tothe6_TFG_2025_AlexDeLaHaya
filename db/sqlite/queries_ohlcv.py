@@ -7,7 +7,7 @@ from db.base import sqlite_connection
 def _get_last_date(conn: Connection, ticker: str) -> str | None:
     """Returns last date for a ticker."""
     cur = conn.execute(
-        "SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker))
+        "SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker,))
     row = cur.fetchone()
     return row[0]
 

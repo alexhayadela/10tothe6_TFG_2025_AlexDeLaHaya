@@ -1,5 +1,6 @@
 from sqlite3 import Connection
 
+from utils import load_env
 from db.base import sqlite_connection
 from news.classification import classify_news
 from news.news_rss import last_news
@@ -42,9 +43,7 @@ def ingest_news(conn: Connection, news_items: list[dict]) -> None:
             n.get("sentiment"),
             n.get("relevance")))
 
-        news_id = cur.lastrowid
-        if news_id == 0:
-            news_id = conn.execute(
+        news_id = conn.execute(
                 "SELECT id FROM news WHERE url = ?",
                 (n["url"],)
             ).fetchone()[0]
@@ -64,7 +63,8 @@ def ingest_news(conn: Connection, news_items: list[dict]) -> None:
 
     
 if __name__ == "__main__":
-
+    load_env()
+    
     news = last_news()
     classified_news = classify_news(news)
     

@@ -42,4 +42,4 @@ if __name__ == "__main__":
     classified_news = classify_news(news)
 
     supabase = supabase_client()
-    ingest_news(classified_news, supabase)
+    ingest_news(supabase, classified_news)

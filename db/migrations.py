@@ -16,7 +16,7 @@ from db.supabase.queries_ohlcv import fetch_ohlcv_since
 
 def news_migration(supabase: Client, conn: Connection) -> None:
     """Migrate news from supabase -> sqlite."""
-    news_items = _fetch_news_since(supabase, get_last_date_news())
+    news_items = _fetch_news_since(supabase, get_last_date_news(conn))
     ingest_news(conn, news_items)
 
 
@@ -26,7 +26,7 @@ def ohlcv_migration(supabase: Client, conn: Connection) -> None:
 
     tickers = get_all_tickers()
     for t in tickers:
-        last_date = get_last_date_ohlcv
+        last_date = get_last_date_ohlcv(conn,t)
         df = fetch_ohlcv_since(supabase, t, last_date)
         if not df.empty:
              df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d") # Sqlite compatible
