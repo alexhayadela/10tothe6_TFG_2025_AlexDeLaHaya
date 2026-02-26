@@ -102,7 +102,7 @@ Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypt
 
 ### First Deliverable: Newsletter Automation
 
-A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news of today.
+A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news articles of today.
 
 The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
 
@@ -113,16 +113,23 @@ The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Emp
 
 From Monday to Friday after the Spanish market closes, Open, High, Low, Close, and Volume (OHLCV) data are automatically fetched for all IBEX35 companies and appended to the database.
 
-We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term predictions unreliable. 
+We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term forecasts unreliable. 
 
-#### Arima log returns 
+#### Arima forecast 
 ![image](imgs/arima_log_returns.png)
 
+### Third Deliverable: Further Time Series Modeling and news Ingestion
 
-### Second Deliverable: Database Ingestion and Time Series Modeling
-!!!!!!! ADD supabase db creation do before deliverables
+We then incorporate a GARCH model to better capture volatility dynamics. Variance is now not assumed constant and prediction residuals are heteroskedastic, reflecting the clustering of shocks over time. Confidence bands are provided around the forecasts, illustrating how uncertainty expands as the prediction horizon increases. 
 
-supabase query
+#### Garch forecast
+![image](imgs/garch_volatility.png)
+
+Stock-related news articles are processed on a daily basis. A Large Language Model (LLM) extracts mentioned companies, performs sentiment analysis and determines relevance. Then they are stored. 
+
+**How is information stored?**
+Initially, a GitHub automation bot fetched data, appended it to a local database, and committed updates directly to the repository. The system has now evolved to use a cloud database provider. 
+
 ----
 ## Author
 
