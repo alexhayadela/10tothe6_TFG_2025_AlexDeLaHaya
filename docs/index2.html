@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10^6 | Model Methodology</title>
+<link rel="stylesheet" href="style2.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <img src="../imgs/freakbob.png" alt="10^6 banner">
+    </div>
+
+    <h1>Model Transparency Portal</h1>
+
+    <section>
+        <h2>1. What Is Being Predicted?</h2>
+        <p>
+            The model predicts the probability that the <strong>IBEX 35</strong> will have a 
+            positive return at horizon 1 (next trading day).
+        </p>
+        <p>
+            Output is a probability between 0 and 1.
+        </p>
+    </section>
+
+    <section>
+        <h2>2. Model Specification</h2>
+        <ul>
+            <li><strong>Model:</strong> Random Forest (Tree-Based Ensemble)</li>
+            <li><strong>Horizon:</strong> 1 day ahead</li>
+            <li><strong>Training:</strong> Expanding window (no lookahead bias)</li>
+            <li><strong>Target:</strong> Sign of next-day return</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>3. How Predictions Are Selected for Email</h2>
+        <p>
+            Each day, all asset probabilities are computed.
+        </p>
+        <p>
+            The top 3 assets shown in the email are those with the highest
+            absolute deviation from 0.5:
+        </p>
+
+        <div class="formula-box">
+            | P - 0.5 |
+        </div>
+
+        <p>
+            This measures model confidence. The further from 0.5, the stronger the signal.
+        </p>
+    </section>
+
+    <section>
+        <h2>4. How To Interpret Probabilities</h2>
+        <div class="interpretation">
+            <p><strong>0.70+</strong> → Strong bullish bias</p>
+            <p><strong>0.55 – 0.69</strong> → Moderate bullish bias</p>
+            <p><strong>0.45 – 0.54</strong> → Neutral zone</p>
+            <p><strong>0.30 – 0.44</strong> → Moderate bearish bias</p>
+            <p><strong>Below 0.30</strong> → Strong bearish bias</p>
+        </div>
+    </section>
+
+    <!-- FUTURE PREDICTIONS SECTION -->
+    <section id="daily-predictions">
+        <h2>5. Daily Predictions (Live Section)</h2>
+
+        <div class="placeholder">
+            <p>
+                This section will automatically display daily predictions 
+                from a CSV file in future updates.
+            </p>
+            <p>
+                (Integration prepared for GitHub Actions automation.)
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <h2>6. Risk Disclaimer</h2>
+        <p>
+            Predictions are probabilistic and not financial advice.
+            Market conditions can change rapidly. Past performance 
+            does not guarantee future results.
+        </p>
+    </section>
+
+    <div class="footer">
+        <p>Alex De La Haya © 2026 | 10^6 Quant Project</p>
+    </div>
+
+</div>
+
+</body>
+</html>
