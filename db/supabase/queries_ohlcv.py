@@ -1,8 +1,9 @@
+import datetime
 import pandas as pd
 from supabase import Client
 
 from db.base import supabase_client
-
+from db.utils_ohlcv import get_ibex_tickers
 
 def _get_last_date(supabase: Client, ticker: str) -> str | None:
     """Return the latest stored ohlcv date."""
@@ -44,6 +45,27 @@ def fetch_ohlcv_since(supabase: Client, ticker: str, start_date: str | None = No
     if start_date:
         query = query.gt("date", start_date)
 
+    res = query.execute()
+
+    if not res.data:
+        return pd.DataFrame()
+    
+    return  pd.DataFrame(res.data)
+
+
+def top_k_predictions(k:int, date: datetime.date) -> pd.DataFrame:
+    supabase = supabase_client()
+    tickers = get_ibex_tickers()
+    
+    query = (
+        supabase
+        .table("predictions")
+        .select("ticker,date,pred,proba")
+        .eq("date", date)
+        .in_("ticker", tickers)
+        .order("proba", desc=True)
+        .limit(k)
+    )
     res = query.execute()
 
     if not res.data:

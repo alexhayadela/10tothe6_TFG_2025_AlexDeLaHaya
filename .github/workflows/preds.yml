@@ -2,7 +2,7 @@ name: Newsletter
 
 on:
   schedule:
-    - cron: '0 9 * * *'  
+    - cron: '30 8 * * MON-FRI'  
 
 jobs:
   send:
@@ -16,13 +16,11 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install -r requirements/newsletter_auto.txt
+        run: pip install -r requirements/preds_auto.txt
 
-      - name: Send newsletter
+      - name: Upload preds
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           
-        run: python -m newsletter.send
+        run: python -m db.supabase.upload_preds.py

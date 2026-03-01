@@ -63,36 +63,8 @@ def top_news(items: list[dict],k) -> list[dict]:
     return top_news
 
 
-def newsletter_ready(news_list: list[dict]) -> list[dict]:
-    """Converts news items into newsletter ready."""
-    return [
-        {
-            "title": n["title"],
-            "body": n["body"],
-            "url": n["url"],
-        }
-        for n in news_list
-    ]
-
-
-def html_news(items: list[dict]) -> str:
-    """Embeds news items into html."""
-    html = ""
-    for i, item in enumerate(items, 1):
-        html += f"""<div class="news-item">
-            <h2>{i}. {item['title']}</h2>
-            <p>{item['body']} 
-                <a href="{item['url']}">See more</a>
-            </p>
-        </div>
-        """
-    return html
-
-
 if __name__ == "__main__" :
 
     news = last_news()
     print(news)
     
-    news_html = html_news(news)
-    print(news_html)
