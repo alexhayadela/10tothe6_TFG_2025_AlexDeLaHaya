@@ -23,6 +23,7 @@ db/**/*.ipynb
 data/
 
 artifacts/*
+!artifacts/
 !artifacts/rf_h1_full.pkl
 
 ### init setup
