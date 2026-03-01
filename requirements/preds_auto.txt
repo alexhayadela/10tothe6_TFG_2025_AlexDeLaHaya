@@ -1,0 +1,6 @@
+joblib
+numpy
+pandas
+python-dotenv
+supabase
+scikit-learn

@@ -19,8 +19,11 @@ A_test.ipynb
 ### sporadic queries ###
 db/**/*.ipynb
 
-### db's ###
+### data / models ###
 data/
+
+artifacts/*
+!artifacts/rf_h1_full.pkl
 
 ### init setup
 tfg_init.bat

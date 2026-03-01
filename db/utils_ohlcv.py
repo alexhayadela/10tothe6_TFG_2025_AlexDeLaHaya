@@ -14,6 +14,42 @@ def get_ibex_tickers():
     return tickers
 
 
+def ticker_to_name():
+    """Maps ticker to short name."""
+    ticker_to_name = {
+        "ACS.MC": "ACS",
+        "ACX.MC": "Acerinox",
+        "AENA.MC": "Aena",
+        "AMS.MC": "Amadeus",
+        "ANA.MC": "Acciona",
+        "ANE.MC": "Acciona Energía",
+        "BBVA.MC": "BBVA",
+        "BKT.MC": "Bankinter",
+        "CABK.MC": "CaixaBank",
+        "CLNX.MC": "Cellnex",
+        "COL.MC": "Colonial",
+        "ELE.MC": "Endesa",
+        "ENG.MC": "Enagás",
+        "FDR.MC": "Fluidra",
+        "FER.MC": "Ferrovial",
+        "GRF.MC": "Grifols",
+        "IAG.MC": "IAG",
+        "IBE.MC": "Iberdrola",
+        "ITX.MC": "Inditex",
+        "LOG.MC": "Logista",
+        "MAP.MC": "Mapfre",
+        "MRL.MC": "Merlin",
+        "MTS.MC": "ArcelorMittal",
+        "NTGY.MC": "Naturgy",
+        "PUIG.MC": "Puig",
+        "RED.MC": "Redeia",
+        "SAB.MC": "Sabadell",
+        "SAN.MC": "Santander",
+        "TEF.MC": "Telefónica",
+        "UNI.MC": "Unicaja"
+    }
+    return ticker_to_name
+
 def get_ibex_tickers_name():
     "Returns ibex tickers full name."
     tickers = [

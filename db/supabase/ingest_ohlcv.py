@@ -10,7 +10,7 @@ from db.supabase.queries_ohlcv import _get_last_date
 def ingest_ohlcv(supabase: Client, df: pd.DataFrame) -> None:
     """Enters new ohlcv values in database."""
     if df.empty:
-        return 0
+        return None
 
     records = df.to_dict(orient="records")
 

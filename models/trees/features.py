@@ -237,3 +237,28 @@ def safe_final_features(df:pd.DataFrame):
     df = df.copy()
     df = df.drop(columns=drop_micro)
     return df
+
+
+def safe_readyy(df_micro: pd.DataFrame,
+               horizon: int,
+               feature_cols: list[str]):
+
+    df = safe_build_features(df_micro, horizon)
+    df = df.sort_values("date").reset_index(drop=True)
+
+    remove_cols = [
+        "ticker","date","open","high","low","close",
+        "volume","target","future_log_ret"
+    ]
+
+    X = df.drop(columns=remove_cols)
+    X = X[feature_cols]              # enforce same columns as training
+    X = X.replace([np.inf, -np.inf], np.nan)
+
+    mask = X.notna().all(axis=1)
+
+    X = X.loc[mask]
+    y = df.loc[mask, "target"]
+
+    return df, X, y, mask
+#use values for ml ttain or not

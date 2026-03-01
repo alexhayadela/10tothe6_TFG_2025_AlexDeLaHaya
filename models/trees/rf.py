@@ -13,12 +13,12 @@ from sklearn.metrics import (
 )
 
 from models.trees.features import safe_build_features
-from db.ohlcv.queries import load_ohlcv
+from db.sqlite.queries_ohlcv import fetch_ohlcv
 from db.utils_ohlcv import get_ibex_tickers
 from models.utils import get_artifacts_path
 
 tickers = get_ibex_tickers()
-df_micro = load_ohlcv(tickers)
+df_micro = fetch_ohlcv(tickers)
 
 df_micro = df_micro[df_micro["volume"] > 0]
 

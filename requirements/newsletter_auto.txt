@@ -1,5 +1,3 @@
-feedparser
 pandas
 python-dotenv
 supabase
-openai
