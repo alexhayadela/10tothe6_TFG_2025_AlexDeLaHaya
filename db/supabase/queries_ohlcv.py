@@ -33,7 +33,7 @@ def fetch_ohlcv(tickers: list[str], count:int) -> pd.DataFrame:
 
 
 def fetch_ohlcv_since(supabase: Client, ticker: str, start_date: str | None = None) -> pd.DataFrame:
-    """Fetch ohlcv from a list of tickers."""
+    """Fetch ohlcv from a ticker.""" # Can be done all at once.
     query = (
         supabase
         .table("ohlcv")
@@ -66,6 +66,27 @@ def top_k_predictions(k:int, date: datetime.date) -> pd.DataFrame:
         .order("proba", desc=True)
         .limit(k)
     )
+    res = query.execute()
+
+    if not res.data:
+        return pd.DataFrame()
+    
+    return  pd.DataFrame(res.data)
+
+
+def fetch_predictions_since(supabase: Client, ticker: str, start_date: str | None = None) -> pd.DataFrame:
+    query = (
+        supabase
+        .table("predictions")
+        .select("ticker,date,pred,proba,model")
+        .eq("ticker", ticker)
+       
+        .order("date", desc=False)
+    )
+    
+    if start_date:
+        query = query.gt("date", start_date)
+
     res = query.execute()
 
     if not res.data:

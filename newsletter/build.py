@@ -19,7 +19,6 @@ def add_header(date: datetime.date):
         padding:0;
         background-color:#ffffff;
         font-family: Arial, Helvetica, sans-serif;
-        font-weight:600px;
     }
 
     .container {
@@ -39,12 +38,13 @@ def add_header(date: datetime.date):
         text-align:center;
         color:darkblue;
         font-size:28px;
-        margin:30px 0 30px 0;
+        margin:30px 0;
     }
 
     h2 {
         color: darkblue;
         font-size:18px;
+        margin:0;
     }
 
     p {
@@ -64,50 +64,15 @@ def add_header(date: datetime.date):
         text-align: justify;
     }
 
-    .predictions {
-        display:flex;
-        justify-content:space-between;
-        gap:18px;
+    .predictions-table {
+        width:100%;
+        margin-bottom:30px;
     }
 
-    .prediction {
-        flex:1;
-        background-color:#ffffff;
-        border-radius:10px;
-        overflow:hidden;
-        box-shadow:0 4px 12px rgba(0,0,0,0.08);
-        border:1px solid #e2e2e2;
-        height:100px;
-        display:flex;
-        flex-direction:column;
-        margin:0 0 30px 0;
+    .predictions-table td {
+        padding:0 9px;
+        vertical-align:top;
     }
-
-    .prediction-top {
-        flex:4;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .prediction-bottom {
-        flex:3;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-family: "Courier New", monospace;
-        font-weight: bold;
-    }
-
-    .buy {
-        background-color:#5fcf92;
-    }
-
-    .sell {
-        background-color:#e07b7b;
-    }
-
-
     </style>
     </head>
 
@@ -116,10 +81,11 @@ def add_header(date: datetime.date):
     <div class="container">
 
     <div class="header">
-        <img src="cid:freakbob" alt="freakbob"
-        width="479" height="242"
-        style="display:block; margin:0 auto; border-radius:6px;">
-    </div>"""
+        <img src="cid:freakbob"
+            width="479" height="242"
+            style="display:block; margin:0 auto; border-radius:6px;">
+    </div>
+"""
 
     html += f"""<h1>Informe diario — {date.day}/{date.month}</h1>"""
     
@@ -161,19 +127,37 @@ def format_predictions(df_pred: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_predictions(items: pd.DataFrame) -> str:
-    html = """<div class="predictions">"""
+    html = """<table class="predictions-table" cellpadding="0" cellspacing="0">
+    <tr>"""
     for _, item in items.iterrows():
-        html += f"""<div class="prediction">
-        <div class="prediction-top">
-            <h2>{item["name"]}</h2>
-        </div>
-        <div class="prediction-bottom {item["action"].lower()}">
-            <p>P({item["action"]}|Xₜ)= {item["proba.2f"]}</p>
-        </div>
-        </div>"""
-    html += "</div>"
-    return html
+        html += f"""
+        <td width="33%" align="center">
+    <table width="100%" cellpadding="0" cellspacing="0"
+           style="background:#ffffff;
+                  border-radius:10px;
+                  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+                  border:1px solid #e2e2e2;">
 
+        <tr>
+            <td align="center" style="padding:20px 10px;">
+            <h2 style="line-height:1;">{item["name"]}</h2>
+        </td>
+        </tr>
+        <tr>
+            <td align="center"
+                bgcolor="#5fcf92"
+                style="padding:12px 10px;
+                       font-family:'Courier New', monospace;
+                       font-weight:bold;">
+            P({item["action"]}|Xₜ)= {item["proba.2f"]}
+        </td>
+        </tr>
+        </table>
+        </td>"""
+    html += """</tr>
+    </table>"""
+
+    return html
 
 def build_newsletter() -> str:
     today = datetime.date.today()

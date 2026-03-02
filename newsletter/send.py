@@ -53,7 +53,6 @@ if __name__ == "__main__":
     ready = newsletter_ready(top_10)
     """
     html = build_newsletter()
-    print(html)
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
     recipients = get_recipients()
 

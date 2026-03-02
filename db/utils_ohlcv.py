@@ -102,6 +102,7 @@ def get_all_tickers():
 def download_ticker(ticker: str, start=None, safe=True):
     import yfinance as yf
     """Downloads data for a single ticker from Yahoo Finance API."""
+    import yfinance as yf
     tk = yf.Ticker(ticker)
     df = tk.history(start=start, auto_adjust=False)
     if df.empty:
