@@ -10,7 +10,6 @@ body {
     padding:0;
     background-color:#ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    font-weight:600px;
 }
 
 .container {
@@ -30,12 +29,13 @@ h1 {
     text-align:center;
     color:darkblue;
     font-size:28px;
-    margin:30px 0 30px 0;
+    margin:30px 0;
 }
 
 h2 {
     color: darkblue;
     font-size:18px;
+    margin:0;
 }
 
 p {
@@ -55,50 +55,6 @@ footer {
     text-align: justify;
 }
 
-.predictions {
-    display:flex;
-    justify-content:space-between;
-    gap:18px;
-}
-
-.prediction {
-    flex:1;
-    background-color:#ffffff;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-    border:1px solid #e2e2e2;
-    height:100px;
-    display:flex;
-    flex-direction:column;
-    margin:0 0 30px 0;
-}
-
-.prediction-top {
-    flex:4;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.prediction-bottom {
-    flex:3;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family: "Courier New", monospace;
-    font-weight: bold;
-}
-
-.buy {
-    background-color:#5fcf92;
-}
-
-.sell {
-    background-color:#e07b7b;
-}
-
-
 </style>
 </head>
 
@@ -107,16 +63,18 @@ footer {
 <div class="container">
 
 <div class="header">
-    <img src="C:\Users\alexd\Documents\TFG_inversion_bolsa\imgs\freakbob.png" alt="freakbob"
-    width="479" height="242"
-    style="display:block; margin:0 auto; border-radius:6px;">
+    <img src="../imgs/freakbob.png"
+         width="479" height="242"
+         style="display:block; margin:0 auto; border-radius:6px;">
 </div>
 
 <h1>Informe diario — 28/02</h1>
 
+
 <div class="news-item">
     <h2>1. El Ibex se deja un 0,8% en la semana y pierde los 16.000 puntos</h2>
-    <p> Jornada de caídas generalizadas en las Bolsas europeas,
+    <p>
+        Jornada de caídas generalizadas en las Bolsas europeas,
         con las tecnológicas en el punto de mira de los inversores.
         <a href="https://www.expansion.com/mercados/cronica-bolsa/2025/11/07/690d9751e5fdea4f2a8b45a1.html" target="_blank">
         See more</a>
@@ -125,7 +83,8 @@ footer {
 
 <div class="news-item">
     <h2>2. Cómo ajustar las carteras para limitar los riesgos de corrección</h2>
-    <p> Los analistas consultados coinciden en los ajustes recomendados
+    <p>
+        Los analistas consultados coinciden en los ajustes recomendados
         para añadir mayor protección a las carteras.
         <a href="https://www.expansion.com/mercados/2025/11/07/690c94fde5fdea54648b457d.html" target="_blank">
         See more</a>
@@ -136,7 +95,6 @@ footer {
     <p>Alex De La Haya © 2026 | 10**6, Boletín</p>
 </footer>
 
-
-  </div>
+</div>
 </body>
 </html>

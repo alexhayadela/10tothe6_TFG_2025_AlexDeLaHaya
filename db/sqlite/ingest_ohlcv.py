@@ -1,5 +1,7 @@
 import pandas as pd
-from sqlite3 import Connection 
+from sqlite3 import Connection
+
+import supabase 
 
 from db.base import sqlite_connection
 from db.utils_ohlcv import get_all_tickers, download_ticker
@@ -37,6 +39,11 @@ def update_tickers(conn: Connection, tickers: list[str]) -> pd.DataFrame:
         return pd.DataFrame()
  
     return pd.concat(dfs, ignore_index=True)
+
+
+def ingest_predictions(conn: Connection, df: pd.DataFrame) -> None:
+    """Insert prediction rows into the database."""
+    df.to_sql("predictions", conn, if_exists="append", index=False)
 
 
 if __name__ == "__main__":

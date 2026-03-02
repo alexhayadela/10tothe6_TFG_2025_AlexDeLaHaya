@@ -8,6 +8,7 @@ def init_db(conn: Connection) -> None:
     create_news_table(conn)
     create_entities_table(conn)
     create_ohlcv_table(conn)
+    create_predictions_table(conn)
 
 
 def create_news_table(conn: Connection) -> None:
@@ -58,6 +59,21 @@ def create_ohlcv_table(conn: Connection) -> None:
     
     conn.execute("CREATE INDEX IF NOT EXISTS idx_ohlcv_date ON ohlcv(date);")
 
+def create_predictions_table(conn: Connection) -> None:
+    """Initialize predictions table."""
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS predictions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL,
+            date DATE NOT NULL,
+            pred REAL,
+            proba REAL,
+            model TEXT NOT NULL,
+            UNIQUE(ticker, date, model)
+        );""")
+    
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_predictions_date ON predictions(date);")
 
 if __name__ == "__main__":
     with sqlite_connection() as conn:
