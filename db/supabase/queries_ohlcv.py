@@ -53,7 +53,7 @@ def fetch_ohlcv_since(supabase: Client, ticker: str, start_date: str | None = No
     return  pd.DataFrame(res.data)
 
 
-def top_k_predictions(k:int, date: datetime.date) -> pd.DataFrame:
+def top_k_predictions(k:int, date: str) -> pd.DataFrame:
     supabase = supabase_client()
     tickers = get_ibex_tickers()
     
@@ -93,3 +93,5 @@ def fetch_predictions_since(supabase: Client, ticker: str, start_date: str | Non
         return pd.DataFrame()
     
     return  pd.DataFrame(res.data)
+
+
