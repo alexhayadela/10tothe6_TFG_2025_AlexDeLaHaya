@@ -1,4 +1,4 @@
-name: Newsletter
+name: Predictions
 
 on:
   schedule:
@@ -23,4 +23,4 @@ jobs:
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           
-        run: python -m db.supabase.upload_preds.py
+        run: python -m db.supabase.upload_preds
