@@ -163,18 +163,20 @@ def build_newsletter() -> str:
     today = datetime.date.today()
     weekday = today.weekday()
     rel_date = today - datetime.timedelta(days=1)
-    
+
     header = add_header(today)
     footer = add_footer(today)
     closing = add_closing()
 
-    news = top_k_news(k=1, date= rel_date)
+    news = top_k_news(k=10, date= str(rel_date))
     news_html = add_news(news)
 
     # market closed on weekends
     if weekday not in {5,6}:
-        rel_date = rel_date - datetime.timedelta(days=2)
-        preds = top_k_predictions(k=3, date=rel_date)
+        # handle fri <- mon
+        rel_date = rel_date - datetime.timedelta(days=2) if weekday == 0 else rel_date
+
+        preds = top_k_predictions(k=3, date= str(rel_date))
         preds = format_predictions(preds)
         preds_html = add_predictions(preds)
         html = header + preds_html + news_html + footer + closing

@@ -1,11 +1,12 @@
-name: Newsletter
+name: Predictions
 
 on:
   schedule:
     - cron: '30 8 * * MON-FRI'  
+  workflow_dispatch:
 
 jobs:
-  send:
+  calculate_and_upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

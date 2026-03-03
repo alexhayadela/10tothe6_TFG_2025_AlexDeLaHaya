@@ -3,9 +3,10 @@ name: Database
 on:
   schedule:
     - cron: '0 8 * * TUE-SAT'  
-
+  workflow_dispatch:
+    
 jobs:
-  database:
+  fetch_and_upload:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

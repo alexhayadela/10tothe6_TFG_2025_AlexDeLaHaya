@@ -4,7 +4,7 @@ from supabase import Client
 from db.base import supabase_client
 
 
-def top_k_news(k: int, date: datetime.date) -> list[dict]:
+def top_k_news(k: int, date: str) -> list[dict]:
     """Returns top-k most relevant news of that day."""
     supabase = supabase_client()
     query = (supabase
