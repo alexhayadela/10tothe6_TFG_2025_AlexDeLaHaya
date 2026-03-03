@@ -3,7 +3,8 @@ name: Predictions
 on:
   schedule:
     - cron: '30 8 * * MON-FRI'  
-
+  workflow_dispatch:   
+     
 jobs:
   send:
     runs-on: ubuntu-latest
