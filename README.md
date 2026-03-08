@@ -107,7 +107,7 @@ A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10
 The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
 
 #### Newsletter example
-![image](imgs/polite_newsletter.png)
+![image](imgs/p_newsletter.png)
 
 ### Second Deliverable: Database Ingestion and Time Series Modeling
 
@@ -116,14 +116,14 @@ From Monday to Friday after the Spanish market closes, Open, High, Low, Close, a
 We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term forecasts unreliable. 
 
 #### Arima forecast 
-![image](imgs/arima_log_returns.png)
+![image](imgs/arima.png)
 
 ### Third Deliverable: Further Time Series Modeling and news Ingestion
 
 We then incorporate a GARCH model to better capture volatility dynamics. Variance is now not assumed constant and prediction residuals are heteroskedastic, reflecting the clustering of shocks over time. Confidence bands are provided around the forecasts, illustrating how uncertainty expands as the prediction horizon increases. 
 
 #### Garch forecast
-![image](imgs/garch_volatility.png)
+![image](imgs/garch.png)
 
 Stock-related news articles are processed on a daily basis. A Large Language Model (LLM) extracts mentioned companies, performs sentiment analysis and determines relevance. Then they are stored. 
 

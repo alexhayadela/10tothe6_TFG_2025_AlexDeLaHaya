@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 
-from utils import load_env
+from config import load_env
 from db.supabase.queries_news import top_k_news
 from db.supabase.queries_ohlcv import top_k_predictions
 from db.utils_ohlcv import ticker_to_name
@@ -55,8 +55,8 @@ def add_header(date: datetime.date):
 
     footer {
         text-align:center;
-        margin-top:30px;
         font-size:12px;
+        margin-top:10px;
     }
 
     .news-item {
@@ -73,6 +73,13 @@ def add_header(date: datetime.date):
         padding:0 9px;
         vertical-align:top;
     }
+
+    .signature{
+        display:block;
+        width:120px;       
+        height:auto;
+        margin:30px auto 10px auto;  
+    }
     </style>
     </head>
 
@@ -81,7 +88,7 @@ def add_header(date: datetime.date):
     <div class="container">
 
     <div class="header">
-        <img src="cid:freakbob"
+        <img src="cid:freakbob" alt=freakbob
             width="479" height="242"
             style="display:block; margin:0 auto; border-radius:6px;">
     </div>
@@ -93,7 +100,9 @@ def add_header(date: datetime.date):
 
 
 def add_footer(date: datetime.date) -> str:
-    html = f"""<footer>
+    html = f"""
+    <img class="signature" src="cid:67" alt="67"/>
+    <footer>
     <p>Alex De La Haya © {date.year} | 10**6, Boletín</p>
     </footer>"""
     return html

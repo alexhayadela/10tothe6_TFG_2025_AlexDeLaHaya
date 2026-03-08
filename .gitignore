@@ -20,7 +20,7 @@ A_test.ipynb
 db/**/*.ipynb
 
 ### data / models ###
-data/
+data/universe.db
 
 artifacts/*
 !artifacts/
@@ -29,5 +29,3 @@ artifacts/*
 ### init setup
 tfg_init.bat
 
-#temp
-docs/

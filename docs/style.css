@@ -1,0 +1,239 @@
+/* =========================
+   GLOBAL
+========================= */
+
+html, body {
+    margin:0;
+    padding:0;
+    font-family: Arial, Helvetica, sans-serif;
+
+    background-color: rgb(200,235,255);
+    background-image: url("../imgs/b_telli.png");
+    background-repeat: repeat;
+    background-size: auto;
+}
+
+.math {
+    font-family:'Fira Code','Consolas','Courier New';
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+h1{
+    color:darkblue;
+    font-size:28px;
+    text-align:center;
+    margin:30px 0 30px 0;
+}
+
+h2{
+    color:darkblue;
+    font-size:18px;
+}
+
+p, li{
+    color:black;
+    font-size:14px;
+    line-height:1.6;
+    text-align:justify;
+}
+
+.top{ margin-top:0; }
+.bottom{ margin-bottom:0; }
+
+footer{
+    font-size:12px;
+    text-align:center;
+    margin:0 0 30px 0;
+}
+
+/* =========================
+   BANNER
+========================= */
+
+.banner{
+    position:sticky;
+    top:0;
+    width:100%;
+    z-index:1000;
+}
+
+.banner img{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+/* =========================
+   CONTAINERS
+========================= */
+
+.container{
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* container types */
+
+.preds{
+    background-color:#f0f0f0;
+    margin:30px;
+    position:relative;
+}
+
+.info{
+    background-color:#d4f8ff;
+}
+
+/* =========================
+   PREDICTIONS GRID
+========================= */
+
+.slider{
+    overflow:hidden;
+    width:100%;
+}
+
+.predictions{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    transition:transform 0.35s ease;
+}
+
+.predictions a{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+}
+
+.pred{
+    height:100px;
+    background:#ffffff;
+    border-radius:10px;
+    border:1px solid #e2e2e2;
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+
+    cursor:pointer;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pred:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* prediction sections */
+
+.pred-top{
+    flex:4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.pred-bottom{
+    flex:3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-family:"Courier New", monospace;
+    font-weight:bold;
+}
+
+/* prediction states */
+
+.buy{ background-color:#5fcf92; }
+.sell{ background-color:#e07b7b; }
+
+/* =========================
+   SLIDER ARROWS
+========================= */
+
+.arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:200px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+}
+
+.arrow img{
+    width:100%;
+    height:auto;
+    display:block;
+    transition:transform 0.2s ease;
+}
+
+.arrow.left{ left:-75px; }
+.arrow.right{ right:-75px; }
+
+.arrow.right img{
+    transform:rotate(180deg);
+}
+
+.arrow img:hover{
+    transform:scale(1.2);
+}
+
+.arrow.right img:hover{
+    transform:rotate(180deg) scale(1.2);
+}
+
+.arrow.disabled{
+    opacity:0.3;
+    pointer-events:none;
+}
+
+/* =========================
+   INFO LAYOUT
+========================= */
+
+.columns{
+    margin:30px;
+    display:flex;
+    gap:30px;
+}
+
+.col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:30px;
+}
+
+.info img{
+    width:100%;
+    height:auto;
+    border-radius:8px;
+}
+
+/* =========================
+   MISC
+========================= */
+
+.signature{
+    display:block;
+    width:120px;
+    height:auto;
+    margin:30px auto 10px auto;
+}
+
+.disclaimer{
+    font-weight:bold;
+    color:darkred;
+}

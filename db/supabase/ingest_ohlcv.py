@@ -1,7 +1,7 @@
 import pandas as pd
 from supabase import Client
 
-from utils import load_env
+from config import load_env
 from db.base import supabase_client
 from db.utils_ohlcv import get_all_tickers, download_ticker
 from db.supabase.queries_ohlcv import _get_last_date

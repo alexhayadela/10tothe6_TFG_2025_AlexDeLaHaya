@@ -2,12 +2,11 @@ import os
 import datetime
 import smtplib 
 from pathlib import Path
-from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-from utils import load_env
+from config import load_env
 from db.supabase.queries_news import get_recipients
 from newsletter.build import build_newsletter
 
@@ -26,13 +25,16 @@ def send_newsletter(text, html, recipients):
     subject = f"10**6 Boletín {today.strftime('%d/%m/%Y')}"
     message['Subject'] = subject
 
-    # Add image
-    img_path = Path(__file__).resolve().parent.parent / "imgs" / "freakbob.png"
-    with open(img_path, "rb") as f:
-        img_data = f.read()
-    image = MIMEImage(img_data)
-    image.add_header("Content-ID", "<freakbob>")
-    message.attach(image)
+    # Add images
+    img_names = ["freakbob", "67"]
+    for name in img_names:
+        full_name = name + ".png"
+        img_path = Path(__file__).resolve().parents[1] / "imgs" / full_name 
+        with open(img_path, "rb") as f:
+            img_data = f.read()
+        image = MIMEImage(img_data)
+        image.add_header("Content-ID", f"<{name}>")
+        message.attach(image)
 
     # Add text
     message.attach(MIMEText(text, "plain"))
@@ -55,5 +57,5 @@ if __name__ == "__main__":
     html = build_newsletter()
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
     recipients = get_recipients()
-
+    
     send_newsletter(text, html, recipients)
