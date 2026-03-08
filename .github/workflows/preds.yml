@@ -19,9 +19,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements/preds_auto.txt
 
-      - name: Upload preds
+      - name: Compute & upload preds cloud
         env:
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           
-        run: python -m db.supabase.upload_preds.py
+        run: python -m db.supabase.upload_preds
+        
+      - name: Update repo with preds 
+        run: |
+          git config user.name "gitgub-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git status --porcelain | grep -q "data/predictions.json"; then
+            TODAY=$(date -u +"%Y-%m-%d")
+            git add data/predictions.json
+            git commit -m "Chore: Daily preds ${TODAY}"
+            git push
+            else
+              echo "No database changes to commit"
+            fi

@@ -1,6 +1,6 @@
 from sqlite3 import Connection
 
-from utils import load_env
+from config import load_env
 from db.base import sqlite_connection
 from news.classification import classify_news
 from news.news_rss import last_news

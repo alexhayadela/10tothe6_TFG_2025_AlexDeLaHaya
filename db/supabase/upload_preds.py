@@ -1,7 +1,7 @@
 import pandas as pd
 from supabase import Client
 
-from utils import load_env
+from config import load_env, DATA_PATH
 from db.base import supabase_client
 from models.predict import get_predictions
 
@@ -28,4 +28,10 @@ if __name__ == "__main__":
     supabase = supabase_client()
 
     predictions = get_predictions()
+
+    # Update daily predictions repo
+    path = DATA_PATH / "predictions.json"
+    predictions[["ticker", "pred", "proba", "date"]].to_json(path, orient="records",index=False)
+
+    # Upload predictions cloud
     upload_preds(supabase, predictions)

@@ -3,7 +3,7 @@ from pathlib import Path
 from supabase import Client
 from sqlite3 import Connection
 
-from utils import load_env
+from config import load_env
 from db.base import supabase_client, sqlite_connection
 from db.utils_ohlcv import get_all_tickers
 from db.sqlite.ingest_news import ingest_news 

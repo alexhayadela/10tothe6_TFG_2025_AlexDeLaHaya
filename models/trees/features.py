@@ -1,14 +1,20 @@
-import pandas as pd
+import datetime
 import numpy as np
+import pandas as pd
+from typing import Literal
 
-
+# Helper functions
+def  assert_columns(df: pd.DataFrame, required):
+    missing = set(required) - set(df.columns)
+    if missing:
+        raise AssertionError(f"Dataframe is missing required columns:{sorted(missing)}")
+  
 def rolling_slope(series, window):
     x = np.arange(window)
     return series.rolling(window).apply(
         lambda y: np.polyfit(x, y, 1)[0],
         raw=True
     )
-
 
 def rsi(series, window):
     delta = series.diff()
@@ -89,73 +95,6 @@ def cross_micro_features(df:pd.DataFrame):
     return df
 
 
-def target_feature(df:pd.DataFrame, horizon):
-    df = df.copy()
-    df["future_log_ret"] = np.log(df["close"].shift(-horizon) / df["close"])
-    df["target"] = (df["future_log_ret"] > 0).astype(int)
-
-    return df
-
-
-def assert_columns(df: pd.DataFrame, required):
-    missing = set(required) - set(df.columns)
-    if missing:
-        raise AssertionError(f"Dataframe is missing required columns:{sorted(missing)}")
-    
-
-def final_features(df:pd.DataFrame):
-    keep_micro = [
-    "log_ret_1","log_ret_3","log_ret_5","log_ret_10","log_ret_20","ret_mean_5",
-    "slope_10","slope_20","sma_ratio_5_20", "sma_ratio_10_50","ema_ratio_5_20",
-    "vol_5","vol_ratio_5_20",
-    "atr_pct","true_range_pct","dist_high_10","dist_low_10","dist_high_20","dist_low_20",
-    "rsi_14","stoch_k",
-    "volu_ratio_5","volu_ratio_20","volu_ret_1",
-    "body","upper_wick","lower_wick","gap"]
-    drop_micro = [
-    "atr_14","vol_10","vol_20","volu_mean_5","volu_mean_20",
-    "sma_5","sma_10","sma_20","sma_50",
-    "ema_5","ema_10","ema_20","ema_50"]
-    cross_micro = ["ibx_breadth", "ibx_breadth_10d"]
-
-    keep_macro = [
-        "ibx_vol_10","ibx_vol_ratio_10_60",
-        "sp_vol_20","sp_vol_ratio_20_100",
-        "vix_chg_z_5","vix_pctile_250",
-        "rel_ret_5","rel_ret_20","rel_vol_20"]
-    drop_macro = [
-    "ibx_log_ret_1","ibx_log_ret_5","ibx_log_ret_20",
-    "sp_log_ret_1", "vix_chg_1",
-    "ibx_vol_20","ibx_vol_60", "sp_vol_100"]
-
-    assert_columns(df, keep_micro + keep_macro + drop_micro + drop_macro + cross_micro)
-    df = df.copy()
-    df = df.drop(columns= drop_micro + drop_macro)
-    return df
-
-
-def build_features(df_micro:pd.DataFrame, df_macro:pd.DataFrame, horizon:int) -> pd.DataFrame:
-    df_final = []
-    
-    df_micro = df_micro.sort_values(["ticker", "date"]).reset_index(drop=True)
-    df_macro = df_macro.sort_values("date").reset_index(drop=True)
-    macro = macro_features(df_macro)
-    for ticker, df_t in df_micro.groupby("ticker"):
-        
-        df_t = micro_features(df_t)
-        df_t = df_t.merge(macro, on="date", how="left")  
-        df_t = target_feature(df_t,horizon)
-        df_t["ticker"] = ticker
-        
-        df_final.append(df_t)
-    df_final = pd.concat(df_final, ignore_index=True)
-    df_final = cross_micro_features(df_final)
-    df_final = final_features(df_final)
-    
-    return df_final
-
-
-# ALIGN Calendars, ffill after
 def macro_features(df_macro: pd.DataFrame):
 
     assert_columns(df_macro, ["date", "ticker", "close"])
@@ -172,12 +111,10 @@ def macro_features(df_macro: pd.DataFrame):
         .sort_index()
     )
 
-    # IBEX
     macro["ibx_log_ret_1"] = np.log(macro["ibx_close"] / macro["ibx_close"].shift(1))
     macro["ibx_vol_10"] = macro["ibx_log_ret_1"].rolling(10).std()
     macro["ibx_vol_60"] = macro["ibx_log_ret_1"].rolling(60).std()
     macro["ibx_vol_ratio_10_60"] = macro["ibx_vol_10"] / macro["ibx_vol_60"]
-
 
     macro["sp_log_ret_1"] = np.log(macro["sp_close"] / macro["sp_close"].shift(1))
     macro["sp_vol_20"] = macro["sp_log_ret_1"].rolling(20).std()
@@ -191,35 +128,30 @@ def macro_features(df_macro: pd.DataFrame):
         .rolling(250)
         .apply(lambda x: (x <= x[-1]).mean(), raw=True)
     )
-    return macro.reset_index()    
-"""
-df["rel_ret_5"] = df["log_ret_5"] - df["ibx_log_ret_5"]
+    return macro.reset_index()
+
+
+def rel_to_market_features(df: pd.DataFrame):
+    """Compute relative to market (ibex) features.
+     
+       Call after merging micro/macro."""
+    df = df.copy()
+    df["rel_ret_5"] = df["log_ret_5"] - df["ibx_log_ret_5"]
     df["rel_ret_20"] = df["log_ret_20"] - df["ibx_log_ret_20"]
     df["rel_vol_20"] = df["vol_20"] / df["ibx_vol_20"]
-"""
+
+    return df
 
 
+def target_feature(df:pd.DataFrame, horizon):
+    df = df.copy()
+    df["future_log_ret"] = np.log(df["close"].shift(-horizon) / df["close"])
+    df["target"] = (df["future_log_ret"] > 0).astype(int)
 
-def safe_build_features(df_micro:pd.DataFrame, horizon)-> pd.DataFrame:
-    df_final = []
-    
-    df_micro = df_micro.sort_values(["ticker", "date"]).reset_index(drop=True)
-
-    for ticker, df_t in df_micro.groupby("ticker"):
-        
-        df_t = micro_features(df_t)
-        df_t = target_feature(df_t,horizon)
-        df_t["ticker"] = ticker
-        
-        df_final.append(df_t)
-    df_final = pd.concat(df_final, ignore_index=True)
-    #df_final = cross_micro_features(df_final)
-    df_final = safe_final_features(df_final)
-    
-    return df_final
+    return df
 
 
-def safe_final_features(df:pd.DataFrame):
+def necessary_features(df:pd.DataFrame, ft_type:Literal["micro", "cross", "macro"] = "macro"):
     keep_micro = [
     "log_ret_1","log_ret_3","log_ret_5","log_ret_10","log_ret_20","ret_mean_5",
     "slope_10","slope_20","sma_ratio_5_20", "sma_ratio_10_50","ema_ratio_5_20",
@@ -232,18 +164,95 @@ def safe_final_features(df:pd.DataFrame):
     "atr_14","vol_10","vol_20","volu_mean_5","volu_mean_20",
     "sma_5","sma_10","sma_20","sma_50",
     "ema_5","ema_10","ema_20","ema_50"]
+    
+    if ft_type in {"cross", "macro"}:
+        cross_micro = ["ibx_breadth", "ibx_breadth_10d"]
+    else: cross_micro = []
 
-    assert_columns(df, keep_micro+drop_micro)
+    if ft_type == "macro":
+        keep_macro = [
+            "ibx_vol_10","ibx_vol_ratio_10_60",
+            "sp_vol_20","sp_vol_ratio_20_100",
+            "vix_chg_z_5","vix_pctile_250",
+            "rel_ret_5","rel_ret_20","rel_vol_20"]
+        drop_macro = [
+        "ibx_log_ret_1","ibx_log_ret_5","ibx_log_ret_20",
+        "sp_log_ret_1", "vix_chg_1",
+        "ibx_vol_20","ibx_vol_60", "sp_vol_100"]
+    else:
+        keep_macro = []
+        drop_macro = []
+
+    assert_columns(df, keep_micro + keep_macro + drop_micro + drop_macro + cross_micro)
     df = df.copy()
-    df = df.drop(columns=drop_micro)
+    df = df.drop(columns= drop_micro + drop_macro)
     return df
 
 
-def safe_readyy(df_micro: pd.DataFrame,
-               horizon: int,
-               feature_cols: list[str]):
+def build_features(horizon:int, df_micro:pd.DataFrame, df_macro:pd.DataFrame | None = None, 
+                   ft_type:Literal["micro", "cross", "macro"] = "macro") -> pd.DataFrame:
+    df_final = []
+    
+    df_micro = df_micro.sort_values(["ticker", "date"]).reset_index(drop=True)
 
-    df = safe_build_features(df_micro, horizon)
+    if ft_type == "macro":
+        df_macro = df_macro.sort_values("date").reset_index(drop=True)
+        macro = macro_features(df_macro)
+        macro = align_macro(macro) 
+
+    for ticker, df_t in df_micro.groupby("ticker"):
+        
+        df_t = micro_features(df_t)
+        df_t = target_feature(df_t,horizon)
+        df_t["ticker"] = ticker
+
+        if ft_type == "macro":
+            df_t = df_t.merge(macro, on="date", how="left")  
+            
+        df_final.append(df_t)
+    df_final = pd.concat(df_final, ignore_index=True)
+
+    if ft_type in {"cross", "macro"}:
+        df_final = cross_micro_features(df_final)
+
+    if ft_type == "macro":
+        df_final = rel_to_market_features(df_final)
+        
+    df_final = necessary_features(df_final,ft_type)
+    return df_final
+
+
+def align_macro(df_macro: pd.DataFrame):
+    """Align markets calendar (festivities)."""
+    df = df_macro.copy()
+
+    #start_date = "2006-01-01"
+    start_date = df["date"].min()
+    end_date = datetime.date.today()
+    idx_daily = pd.date_range(start=start_date, end=end_date)
+
+    full_index = pd.MultiIndex.from_product(
+        [df["ticker"].unique(), idx_daily],
+        names=["ticker", "date"]
+    )
+
+    df = (
+        df
+        .set_index(["ticker", "date"])
+        .reindex(full_index)
+        .groupby(level=0)
+        .ffill()
+        .reset_index()
+    )
+
+    return df
+
+# postprocess features???
+def ml_ready(horizon: int,df_micro: pd.DataFrame, df_macro: pd.DataFrame | None = None, 
+             ft_type: Literal["micro", "cross", "macro"] = "macro"):     
+    #feature_cols: list[str]
+
+    df = build_features(horizon, df_micro, df_macro, ft_type)
     df = df.sort_values("date").reset_index(drop=True)
 
     remove_cols = [
@@ -252,13 +261,12 @@ def safe_readyy(df_micro: pd.DataFrame,
     ]
 
     X = df.drop(columns=remove_cols)
-    X = X[feature_cols]              # enforce same columns as training
+    #X = X[feature_cols]              # enforce same columns as training
     X = X.replace([np.inf, -np.inf], np.nan)
 
     mask = X.notna().all(axis=1)
 
     X = X.loc[mask]
     y = df.loc[mask, "target"]
-
+    #use values for ml train or not
     return df, X, y, mask
-#use values for ml ttain or not

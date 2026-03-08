@@ -2,16 +2,15 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from utils import load_env
-from models.utils import get_artifacts_path
+from config import load_env, ARTIFACTS_PATH
 from db.supabase.queries_ohlcv import fetch_ohlcv
 from db.utils_ohlcv import get_ibex_tickers
-from models.trees.features import safe_readyy # safe_build_features,
+from models.trees.features import ml_ready # safe_build_features,
 
 
 def load_model(type:str, horizon:int):
     name = f"{type}_h{horizon}_full.pkl"
-    artifact = joblib.load(get_artifacts_path() / name)
+    artifact = joblib.load(ARTIFACTS_PATH / name)
     model = artifact["model"]
     feature_cols = artifact["features"]
     
@@ -24,7 +23,8 @@ def _get_predictions(model_type:str, horizon:int) -> pd.DataFrame:
 
     model, feature_cols = load_model(model_type, horizon)
 
-    df, X, _, mask = safe_readyy(df_micro, horizon, feature_cols)
+    # MISSING: enforce model needs -> df_macro, type{micro, cross, micro}
+    df, X, _, mask = ml_ready(horizon, df_micro, None, "micro")
     df_pred = df.loc[mask, ["ticker", "date"]]
 
     preds = model.predict(X)

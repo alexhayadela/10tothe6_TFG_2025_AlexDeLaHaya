@@ -12,10 +12,10 @@ from sklearn.metrics import (
     classification_report
 )
 
-from models.trees.features import safe_build_features
+from models.trees.features import build_features
 from db.sqlite.queries_ohlcv import fetch_ohlcv
 from db.utils_ohlcv import get_ibex_tickers
-from models.utils import get_artifacts_path
+from config import ARTIFACTS_PATH
 
 tickers = get_ibex_tickers()
 df_micro = fetch_ohlcv(tickers)
@@ -23,7 +23,7 @@ df_micro = fetch_ohlcv(tickers)
 df_micro = df_micro[df_micro["volume"] > 0]
 
 horizon = 7
-df = safe_build_features(df_micro, horizon)
+df = build_features(horizon, df_micro, None, "micro")
 df = df.sort_values("date").reset_index(drop=True)
 
 
@@ -137,7 +137,7 @@ joblib.dump(
         "params": model.get_params(),
         "validation_metadata": metadata,
     },
-    get_artifacts_path() / f"rf_h{horizon}_full.pkl"
+    ARTIFACTS_PATH/ f"rf_h{horizon}_full.pkl"
 )
 
 print("\nFull model retrained and saved.")

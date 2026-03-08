@@ -23,9 +23,18 @@ news(
 
 news_entities(
     news_id INTEGER,
-    ticker TEXT
+    ticker TEXT,
     PRIMARY KEY (news_id, ticker)
     FOREIGN KEY (news_id) REFERENCES news(id)
+);
+
+predictions(
+    id INTEGER PRIMARY KEY,
+    ticker TEXT,
+    date DATE,
+    pred BOOL, 
+    proba REAL,
+    model TEXT,
 );
 
 """

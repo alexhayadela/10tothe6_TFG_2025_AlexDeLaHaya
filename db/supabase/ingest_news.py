@@ -1,6 +1,6 @@
 from supabase import Client
 
-from utils import load_env
+from config import load_env
 from db.base import supabase_client
 from news.classification import classify_news
 from news.news_rss import last_news
