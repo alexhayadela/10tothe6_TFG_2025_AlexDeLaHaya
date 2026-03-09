@@ -3,7 +3,10 @@ name: Predictions
 on:
   schedule:
     - cron: '30 8 * * MON-FRI'  
-  workflow_dispatch:   
+  workflow_dispatch:
+  
+permissions:
+  contents: write
      
 jobs:
   calculate_and_upload:
