@@ -26,6 +26,8 @@ artifacts/*
 !artifacts/
 !artifacts/rf_h1_full.pkl
 
-### init setup
+### init setup ###
 tfg_init.bat
 
+### assets ###
+imgs/assets/
