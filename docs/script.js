@@ -89,7 +89,8 @@ function renderPredictions(direction = 0){
         container.innerHTML = "";
 
         const start = currentPage * perPage;
-        const pageData = predictionsData.slice(start, start + perPage);
+        const sortedData = [...predictionsData].sort((a, b) => b.proba - a.proba);
+        const pageData = sortedData.slice(start, start + perPage);
 
         pageData.forEach(pred => {
             const url = yahoo + pred.ticker + "/"

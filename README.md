@@ -2,6 +2,54 @@
 
 This repository contains the code for my final degree thesis. The goal is to build a tool that empowers investors to obtain powerful insights at a glance. By leveraging multimodal, data-driven analysis, the system aims to support smarter investment decisions and potentially achieve better returns compared to traditional techniques.
 
+----
+
+## Project description
+
+### First Deliverable: Newsletter Automation
+
+A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news articles of today.
+
+The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
+
+#### Newsletter example
+![image](imgs/p_newsletter.png)
+
+### Second Deliverable: Database Ingestion and Time Series Modeling
+
+From Monday to Friday after the Spanish market closes, Open, High, Low, Close, and Volume (OHLCV) data are automatically fetched for all IBEX35 companies and appended to the database.
+
+We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term forecasts unreliable. 
+
+#### Arima forecast 
+![image](imgs/arima.png)
+
+### Third Deliverable: Further Time Series Modeling and news Ingestion
+
+We then incorporate a GARCH model to better capture volatility dynamics. Variance is now not assumed constant and prediction residuals are heteroskedastic, reflecting the clustering of shocks over time. Confidence bands are provided around the forecasts, illustrating how uncertainty expands as the prediction horizon increases. 
+
+#### Garch forecast
+![image](imgs/garch.png)
+
+Stock-related news articles are processed on a daily basis. A Large Language Model (LLM) extracts mentioned companies, performs sentiment analysis and determines relevance. Then they are stored. 
+
+**How is information stored?**
+Initially, a GitHub automation bot fetched data, appended it to a local database, and committed updates directly to the repository. The system has now evolved to use a cloud database provider. 
+
+### Fourth Deliverable: Time Series Modeling III and Website
+
+We incorporate a machine learning approach to predict short-term (1day) stock movements for all IBEX35 companies. The model uses micro-level features, and a Random Forest classifier is trained to output both a prediction (buy or sell) and an associated probability. This simple model will serve as baseline ML approach.
+
+Predictions, along with a general explanation of the methodology, model selection, and backtesting results, are available on our
+[website](https://alexhayadela.github.io/10tothe6_TFG_2025_AlexDeLaHaya/docs/).
+
+#### Website predictions
+![image](imgs/preds.png)
+
+The website is hosted using Github Pages. While the site is static, predictions are updated dynamically through an automation which runs the model, generates new forecasts and updates published content.
+
+----
+
 ## Project Structure
 
 ```
@@ -19,7 +67,6 @@ This repository contains the code for my final degree thesis. The goal is to bui
 ├── .gitignore                  # Git ignore rules
 └── README.md                   # Project overview and usage
 ```
-
 ----
 ## Project Setup
 
@@ -97,40 +144,12 @@ You need to configure github secrets to run the automation.
 
 Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypted-secrets
 
-----
-## Project description
-
-### First Deliverable: Newsletter Automation
-
-A daily newsletter is sent (automatically at 9.00 a.m UTC) containing the top-10 most relevant stock-related news articles of today.
-
-The pipeline is the following. First fetch Expansión RSS (Mercados, Ahorro, Empresas). Then preprocess and filter relevant news. Convert to html, embed an image and finally send the newsletter. The workflow can be executed both locally and from GitHub Actions.
-
-#### Newsletter example
-![image](imgs/p_newsletter.png)
-
-### Second Deliverable: Database Ingestion and Time Series Modeling
-
-From Monday to Friday after the Spanish market closes, Open, High, Low, Close, and Volume (OHLCV) data are automatically fetched for all IBEX35 companies and appended to the database.
-
-We then apply ARIMA models to BBVA.MC prices and log returns over short-term and long-term horizons. Prices are non-stationary, while log returns behave as white noise, making ARIMA a suitable baseline model. Forecast variance increases over time, making long-term forecasts unreliable. 
-
-#### Arima forecast 
-![image](imgs/arima.png)
-
-### Third Deliverable: Further Time Series Modeling and news Ingestion
-
-We then incorporate a GARCH model to better capture volatility dynamics. Variance is now not assumed constant and prediction residuals are heteroskedastic, reflecting the clustering of shocks over time. Confidence bands are provided around the forecasts, illustrating how uncertainty expands as the prediction horizon increases. 
-
-#### Garch forecast
-![image](imgs/garch.png)
-
-Stock-related news articles are processed on a daily basis. A Large Language Model (LLM) extracts mentioned companies, performs sentiment analysis and determines relevance. Then they are stored. 
-
-**How is information stored?**
-Initially, a GitHub automation bot fetched data, appended it to a local database, and committed updates directly to the repository. The system has now evolved to use a cloud database provider. 
+(Missing Documentation)
+1. Add supabase keys to .env, guide to db creation in browser
+2. Can access web through internet or locally with (python -m http.server 8000, Ctrl+Shift+R to reload changes)
 
 ----
+
 ## Author
 
 Alex De La Haya Gutiérrez
