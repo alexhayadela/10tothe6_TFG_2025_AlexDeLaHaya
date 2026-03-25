@@ -147,7 +147,9 @@ Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypt
 (Missing Documentation)
 1. Add supabase keys to .env, guide to db creation in browser
 2. Can access web through internet or locally with (python -m http.server 8000, Ctrl+Shift+R to reload changes)
-
+3. Run bots 
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    .\Create-IB-BotTasks.ps1
 ----
 
 ## Author

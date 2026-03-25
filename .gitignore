@@ -26,8 +26,8 @@ artifacts/*
 !artifacts/
 !artifacts/rf_h1_full.pkl
 
-### init setup ###
-tfg_init.bat
-
 ### assets ###
 imgs/assets/
+
+### trading ###
+trading/full_time_bot.py
