@@ -18,9 +18,7 @@ class IBClient:
 
     async def connect(self):
         await self.ib.connectAsync(
-            params.IB_HOST,
-            params.IB_PORT,
-            clientId=params.CLIENT_ID
+            params.IB_HOST, params.IB_PORT, clientId=params.CLIENT_ID
         )
         print("Connected to IB")
 
@@ -127,6 +125,8 @@ def is_market_open():
     now = datetime.datetime.now()
     return params.MARKET_OPEN_HOUR <= now.hour < params.MARKET_CLOSE_HOUR
 """
+
+
 async def is_market_open(client: IBClient, symbol="SAN"):
     contract = Stock(symbol, params.MARKET, params.CURRENCY)
     await client.ib.qualifyContractsAsync(contract)

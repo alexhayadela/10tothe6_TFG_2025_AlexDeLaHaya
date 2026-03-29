@@ -1,6 +1,7 @@
 import asyncio
 from trading.execute import IBClient
 
+
 async def test_all():
     client = IBClient()
     await client.connect()
@@ -12,5 +13,6 @@ async def test_all():
     # Posiciones
     positions = client.get_positions()
     print(f"Positions: {positions}")
+
 
 asyncio.run(test_all())

@@ -1,7 +1,6 @@
 import pandas as pd
 from sqlite3 import Connection
 
-import supabase 
 
 from db.base import sqlite_connection
 from db.utils_ohlcv import get_all_tickers, download_ticker
@@ -32,12 +31,12 @@ def update_tickers(conn: Connection, tickers: list[str]) -> pd.DataFrame:
             df = update_ticker(conn, t)
             if not df.empty:
                 dfs.append(df)
-        except Exception: # A ticker may be decomissioned.
+        except Exception:  # A ticker may be decomissioned.
             continue
 
     if not dfs:
         return pd.DataFrame()
- 
+
     return pd.concat(dfs, ignore_index=True)
 
 
@@ -47,9 +46,7 @@ def ingest_predictions(conn: Connection, df: pd.DataFrame) -> None:
 
 
 if __name__ == "__main__":
-
     tickers = get_all_tickers()
     with sqlite_connection() as conn:
         df = update_tickers(conn, tickers)
         ingest_ohlcv(conn, df)
-   

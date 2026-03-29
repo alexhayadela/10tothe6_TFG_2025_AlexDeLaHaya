@@ -1,12 +1,13 @@
 import time
 from collections import deque
 
+
 class RateLimitState:
     def __init__(self, tpm_limit: int = 8000, rpm_limit: int = 30):
         self.tpm_limit = tpm_limit
         self.rpm_limit = rpm_limit
-        self.token_events = deque()   # (timestamp, tokens)
-        self.request_events = deque() # timestamps only
+        self.token_events = deque()  # (timestamp, tokens)
+        self.request_events = deque()  # timestamps only
 
     def _prune(self, now: float) -> None:
         """Remove events older than 60 seconds."""
@@ -49,4 +50,3 @@ class RateLimitState:
         now = time.time()
         self.token_events.append((now, tokens_used))
         self.request_events.append(now)
-

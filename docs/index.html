@@ -1,71 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-
+  <body>
     <div class="banner">
-        <img src="../imgs/banner.png" alt="Banner">
+      <img src="../imgs/banner.png" alt="Banner" />
     </div>
 
     <h1 id="header"></h1>
 
     <section class="container preds">
-        <div class="slider">
+      <div class="slider">
         <div class="predictions" id="predictions"></div>
-        </div>
+      </div>
 
-        <div class="arrow left" id="prev">
-            <img src="../imgs/arrow.png">
-        </div>
-        <div class="arrow right" id="next">
-            <img src="../imgs/arrow.png">
-        </div>
+      <div class="arrow left" id="prev">
+        <img src="../imgs/arrow.png" />
+      </div>
+      <div class="arrow right" id="next">
+        <img src="../imgs/arrow.png" />
+      </div>
     </section>
-    
+
     <section class="columns">
-        <div class="col">
+      <div class="col">
         <section class="container info">
-            <h2 class="top">Definición de la señal</h2>
-            <p class="bottom"> En el día de hoy, el precio del activo <span class="math">{(sube,baja) -> (comprar,vender)} </span> 
-                con probabilidad asociada <span class="math">p ∈ [0,1].</span>
-                <br><strong>Interpretación (p):</strong>
-                Se suele situar alrededor del 0.5; cuánto más diverge de ese valor, mayor confianza tiene el modelo
-                en la direccionalidad de la señal. Las probabilidades no están calibradas.</p>
+          <h2 class="top">Definición de la señal</h2>
+          <p class="bottom">
+            En el día de hoy, el precio del activo
+            <span class="math">{(sube,baja) -> (comprar,vender)} </span> con
+            probabilidad asociada <span class="math">p ∈ [0,1].</span>
+            <br /><strong>Interpretación (p):</strong> Se suele situar alrededor
+            del 0.5; cuánto más diverge de ese valor, mayor confianza tiene el
+            modelo en la direccionalidad de la señal. Las probabilidades no
+            están calibradas.
+          </p>
         </section>
 
         <section class="container info">
-            <h2 class="top">Prueba retrospectiva</h2>
-            <img src="../imgs/backtest.png" alt="Backtest">
+          <h2 class="top">Prueba retrospectiva</h2>
+          <img src="../imgs/backtest.png" alt="Backtest" />
         </section>
-        </div>
+      </div>
 
-        <div class="col">
+      <div class="col">
         <section class="container info">
-                <h2 class="top">Arquitectura del modelo</h2>
-                <ul class="bottom">
-                    <li> <strong>Algoritmo:</strong> Random Forest</li>
-                    <li> <strong>Horizonte:</strong> 1 día</li>
-                    <li> <strong>Datos:</strong> 2006+ OHLCV</li>
-                    <li> <strong>Características:</strong> Micro, cross, macro</li>
-                </ul>
-        </section>     
-        
-        <section class="container info">
-            <h2 class="top">Declaración de responsabilidad</h2>
-            <p class="bottom">El rendimiento pasado no es indicativo de resultados futuros. Las inversiones implican
-                riesgos, incluida la posible pérdida del capital invertido. Las predicciones son estimaciones y no
-                constituyen asesoramiento financiero.<span class="disclaimer"> Actúa bajo tu propia responsabilidad.</span></p>
+          <h2 class="top">Arquitectura del modelo</h2>
+          <ul class="bottom">
+            <li><strong>Algoritmo:</strong> Random Forest</li>
+            <li><strong>Horizonte:</strong> 1 día</li>
+            <li><strong>Datos:</strong> 2006+ OHLCV</li>
+            <li><strong>Características:</strong> Micro, cross, macro</li>
+          </ul>
         </section>
-        </div>
+
+        <section class="container info">
+          <h2 class="top">Declaración de responsabilidad</h2>
+          <p class="bottom">
+            El rendimiento pasado no es indicativo de resultados futuros. Las
+            inversiones implican riesgos, incluida la posible pérdida del
+            capital invertido. Las predicciones son estimaciones y no
+            constituyen asesoramiento financiero.<span class="disclaimer">
+              Actúa bajo tu propia responsabilidad.</span
+            >
+          </p>
+        </section>
+      </div>
     </section>
 
-    <img class="signature" src="../imgs/67.png" alt="67">
+    <img class="signature" src="../imgs/67.png" alt="67" />
     <footer id="footer"></footer>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

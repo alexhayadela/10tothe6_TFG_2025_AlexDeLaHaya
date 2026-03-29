@@ -9,7 +9,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
     roc_auc_score,
     log_loss,
-    classification_report
+    classification_report,
 )
 
 from models.trees.features import build_features
@@ -28,8 +28,15 @@ df = df.sort_values("date").reset_index(drop=True)
 
 
 remove_cols = [
-    "ticker", "date", "open", "high", "low",
-    "close", "volume", "target", "future_log_ret"
+    "ticker",
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "target",
+    "future_log_ret",
 ]
 
 X = df.drop(columns=remove_cols)
@@ -84,7 +91,9 @@ roc = roc_auc_score(y_test, proba)
 ll = log_loss(y_test, proba)
 cd = y.value_counts(normalize=True)
 mpc = proba.mean()
-importances = (pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False))
+importances = pd.Series(model.feature_importances_, index=X.columns).sort_values(
+    ascending=False
+)
 print("\n===== VALIDATION METRICS =====")
 print("Accuracy:", acc)
 print("Balanced Accuracy:", bal_acc)
@@ -110,8 +119,8 @@ metadata = {
     "balanced_accuracy": bal_acc,
     "roc_auc": roc,
     "log_loss": ll,
-    "mean_predicted_prob":mpc,
-    "class_distribution":cd,
+    "mean_predicted_prob": mpc,
+    "class_distribution": cd,
     "params": model.get_params(),
     "random_state": 42,
     "top_features": importances.head(10).to_dict(),
@@ -137,9 +146,7 @@ joblib.dump(
         "params": model.get_params(),
         "validation_metadata": metadata,
     },
-    ARTIFACTS_PATH/ f"rf_h{horizon}_full.pkl"
+    ARTIFACTS_PATH / f"rf_h{horizon}_full.pkl",
 )
 
 print("\nFull model retrained and saved.")
-
- 

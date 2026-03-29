@@ -1,7 +1,8 @@
 let predictionsData = [];
 let currentPage = 0;
 const perPage = 8;
-const yahoo = "https://es.finance.yahoo.com/quote/"
+const yahoo = "https://es.finance.yahoo.com/quote/";
+const newspaper = "https://e01-expansion.uecdn.es/rss/portada.xml";
 
 const tickerMap = {
         "ACS.MC": "ACS",
@@ -63,6 +64,15 @@ function getTitle() {
     document.getElementById("header").textContent = `Predicciones ${day}/${month}`;
 }
 
+async function getLatestNews() {
+    try {
+        const response = await fetch(newspaper);
+        //missing logic ...
+    }
+    catch (error) {
+        console.error("Error loading news:", error);
+    }
+}
 
 async function getPredictions() {
     try {
@@ -159,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     getTitle();
     getPredictions();
+    getLatestNews();
     getFooter();
 
 });

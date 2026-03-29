@@ -3,18 +3,19 @@ from sqlite3 import Connection
 
 from db.base import sqlite_connection
 
+
 def _get_last_date(conn: Connection) -> str | None:
     """Return the latest stored news date."""
     cur = conn.execute("SELECT MAX(date) FROM news")
     row = cur.fetchone()
 
     return row[0]
-    
+
 
 def load_news(start=None, end=None) -> pd.DataFrame:
     """Fetch ohlcv from a list of tickers."""
     query = "SELECT * FROM news "
-    
+
     params = None
 
     if start:
@@ -29,11 +30,10 @@ def load_news(start=None, end=None) -> pd.DataFrame:
     return df
 
 
-
 def load_entities(start=None, end=None) -> pd.DataFrame:
     """Fetch ohlcv from a list of tickers."""
     query = "SELECT * FROM news_entities "
-    
+
     params = None
 
     if start:

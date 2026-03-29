@@ -4,6 +4,7 @@ venv/
 
 ### commands ###
 commands.txt
+launch.bat
 
 ### pycache ###
 __pycache__
@@ -15,9 +16,6 @@ __pycache__
 ### test ###
 A_test.py
 A_test.ipynb
-
-### sporadic queries ###
-db/**/*.ipynb
 
 ### data / models ###
 data/universe.db
@@ -31,3 +29,6 @@ imgs/assets/
 
 ### trading ###
 trading/full_time_bot.py
+
+### linting ###
+node_modules

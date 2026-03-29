@@ -14,14 +14,7 @@ def ingest_ohlcv(supabase: Client, df: pd.DataFrame) -> None:
 
     records = df.to_dict(orient="records")
 
-    res = (
-        supabase
-        .table("ohlcv")
-        .upsert(
-            records,
-            on_conflict="ticker,date"
-        )
-        .execute())
+    supabase.table("ohlcv").upsert(records, on_conflict="ticker,date").execute()
 
 
 def update_ticker(supabase: Client, ticker: str) -> pd.DataFrame:
@@ -42,9 +35,9 @@ def update_tickers(supabase: Client, tickers: list[str]) -> pd.DataFrame:
             df = update_ticker(supabase, t)
             if not df.empty:
                 dfs.append(df)
-        except Exception: # A ticker may be decomissioned.
+        except Exception:  # A ticker may be decomissioned.
             continue
-    
+
     if not dfs:
         return pd.DataFrame()
 
@@ -53,7 +46,7 @@ def update_tickers(supabase: Client, tickers: list[str]) -> pd.DataFrame:
 
 if __name__ == "__main__":
     load_env()
-    
+
     supabase = supabase_client()
     tickers = get_all_tickers()
 

@@ -6,8 +6,7 @@ from db.base import sqlite_connection
 
 def _get_last_date(conn: Connection, ticker: str) -> str | None:
     """Returns last date for a ticker."""
-    cur = conn.execute(
-        "SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker,))
+    cur = conn.execute("SELECT MAX(date) FROM ohlcv WHERE ticker = ?", (ticker,))
     row = cur.fetchone()
     return row[0]
 
@@ -30,9 +29,9 @@ def fetch_ohlcv(tickers: list[str], start=None, end=None) -> pd.DataFrame:
         df = pd.read_sql(query, conn, params=params, parse_dates=["date"])
     return df
 
+
 def _get_last_date_predictions(conn: Connection, ticker: str) -> str | None:
     """Returns last date for a ticker prediction."""
-    cur = conn.execute(
-        "SELECT MAX(date) FROM predictions WHERE ticker = ?", (ticker,))
+    cur = conn.execute("SELECT MAX(date) FROM predictions WHERE ticker = ?", (ticker,))
     row = cur.fetchone()
     return row[0]

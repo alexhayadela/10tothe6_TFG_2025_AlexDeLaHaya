@@ -6,6 +6,7 @@ from db.supabase.queries_news import top_k_news
 from db.supabase.queries_ohlcv import top_k_predictions
 from db.utils_ohlcv import ticker_to_name
 
+
 def add_header(date: datetime.date):
     html = """<!DOCTYPE html>
     <html>
@@ -95,8 +96,8 @@ def add_header(date: datetime.date):
 """
 
     html += f"""<h1>Informe diario — {date.day}/{date.month}</h1>"""
-    
-    return html 
+
+    return html
 
 
 def add_footer(date: datetime.date) -> str:
@@ -130,7 +131,7 @@ def add_news(items: list[dict]) -> str:
 
 def format_predictions(df_pred: pd.DataFrame) -> pd.DataFrame:
     df_pred["name"] = df_pred["ticker"].map(ticker_to_name())
-    df_pred["action"] = df_pred["pred"].map({True:"Buy", False:"Sell"})
+    df_pred["action"] = df_pred["pred"].map({True: "Buy", False: "Sell"})
     df_pred["proba.2f"] = df_pred["proba"].round(2)
     return df_pred
 
@@ -168,6 +169,7 @@ def add_predictions(items: pd.DataFrame) -> str:
 
     return html
 
+
 def build_newsletter() -> str:
     today = datetime.date.today()
     weekday = today.weekday()
@@ -177,23 +179,24 @@ def build_newsletter() -> str:
     footer = add_footer(today)
     closing = add_closing()
 
-    news = top_k_news(k=10, date= str(rel_date))
+    news = top_k_news(k=10, date=str(rel_date))
     news_html = add_news(news)
 
     # market closed on weekends
-    if weekday not in {5,6}:
+    if weekday not in {5, 6}:
         # handle fri <- mon
         rel_date = rel_date - datetime.timedelta(days=2) if weekday == 0 else rel_date
 
-        preds = top_k_predictions(k=3, date= str(rel_date))
+        preds = top_k_predictions(k=3, date=str(rel_date))
         preds = format_predictions(preds)
         preds_html = add_predictions(preds)
         html = header + preds_html + news_html + footer + closing
 
-    else: 
-        html = header +  news_html + footer + closing
+    else:
+        html = header + news_html + footer + closing
 
     return html
+
 
 if __name__ == "__main__":
     load_env()
