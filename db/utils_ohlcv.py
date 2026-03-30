@@ -100,8 +100,13 @@ def get_all_tickers():
 
 
 def download_ticker(ticker: str, start=None, safe=True):
-    import yfinance as yf
-    """Downloads data for a single ticker from Yahoo Finance API."""
+    """Fetch OHLCV history for one ticker from Yahoo Finance.
+
+    Downloads from `start` date onwards (full history if None), normalises
+    column names to lowercase, adds a `ticker` column, and strips today's
+    incomplete bar when `safe=True` to avoid storing unfinished candles.
+    Returns a DataFrame with columns: ticker, date, open, high, low, close, volume.
+    """
     import yfinance as yf
     tk = yf.Ticker(ticker)
     df = tk.history(start=start, auto_adjust=False)
@@ -122,6 +127,6 @@ def download_ticker(ticker: str, start=None, safe=True):
     if safe and len(df) > 0:
         if df["date"].iloc[-1] >= pd.Timestamp.utcnow().strftime("%Y-%m-%d"):
             df = df.iloc[:-1]
-    
+
     return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
 

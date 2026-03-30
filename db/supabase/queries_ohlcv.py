@@ -6,7 +6,11 @@ from db.base import supabase_client
 from db.utils_ohlcv import get_ibex_tickers
 
 def _get_last_date(supabase: Client, ticker: str) -> str | None:
-    """Return the latest stored ohlcv date."""
+    """Return the most recent date stored in the ohlcv table for a ticker.
+
+    Used by update_ticker to determine the incremental start point before
+    downloading new bars from Yahoo Finance. Returns None if no data exists yet.
+    """
     res = (
         supabase
         .table("ohlcv")
@@ -21,19 +25,32 @@ def _get_last_date(supabase: Client, ticker: str) -> str | None:
     return None
 
 
-def fetch_ohlcv(tickers: list[str], count:int) -> pd.DataFrame:
-    """Fetch {count} ohlcv rows from a list of tickers."""  
+def fetch_ohlcv(tickers: list[str], count: int) -> pd.DataFrame:
+    """Fetch the last `count` OHLCV bars per ticker via a Supabase RPC call.
+
+    Calls the `get_last_n_per_ticker` SQL function which returns the most
+    recent `count` rows for each ticker in the list — not `count` total rows.
+    This is the primary data loader for inference: pass count=50 to get
+    enough history to compute all rolling indicators needed by the ML model.
+    Returns a flat DataFrame with all tickers concatenated.
+    """
     supabase = supabase_client()
-    res = supabase.rpc("get_last_n_per_ticker", {"n_rows":count, "tickers": tickers}).execute()
-    
+    res = supabase.rpc("get_last_n_per_ticker", {"n_rows": count, "tickers": tickers}).execute()
+
     if not res.data:
         return pd.DataFrame()
 
-    return pd.DataFrame(res.data)                 
+    return pd.DataFrame(res.data)
 
 
 def fetch_ohlcv_since(supabase: Client, ticker: str, start_date: str | None = None) -> pd.DataFrame:
-    """Fetch ohlcv from a ticker.""" # Can be done all at once.
+    """Fetch all OHLCV rows for one ticker, optionally filtered by start date.
+
+    Returns rows strictly after `start_date` (exclusive) when provided,
+    otherwise returns the full history. Results are ordered oldest-first,
+    which is required by feature engineering functions that rely on sequential
+    rolling calculations.
+    """
     query = (
         supabase
         .table("ohlcv")
@@ -49,14 +66,20 @@ def fetch_ohlcv_since(supabase: Client, ticker: str, start_date: str | None = No
 
     if not res.data:
         return pd.DataFrame()
-    
-    return  pd.DataFrame(res.data)
+
+    return pd.DataFrame(res.data)
 
 
-def top_k_predictions(k:int, date: str) -> pd.DataFrame:
+def top_k_predictions(k: int, date: str) -> pd.DataFrame:
+    """Return the k most confident predictions for a given date.
+
+    Filters to IBEX35 tickers only, orders by probability descending, and
+    returns the top k rows. Used by the newsletter to display the best
+    buy/sell signals of the day.
+    """
     supabase = supabase_client()
     tickers = get_ibex_tickers()
-    
+
     query = (
         supabase
         .table("predictions")
@@ -70,20 +93,24 @@ def top_k_predictions(k:int, date: str) -> pd.DataFrame:
 
     if not res.data:
         return pd.DataFrame()
-    
-    return  pd.DataFrame(res.data)
+
+    return pd.DataFrame(res.data)
 
 
 def fetch_predictions_since(supabase: Client, ticker: str, start_date: str | None = None) -> pd.DataFrame:
+    """Fetch prediction history for one ticker, optionally from a start date.
+
+    Returns rows strictly after `start_date` (exclusive) when provided.
+    Useful for backtesting or plotting prediction accuracy over time.
+    """
     query = (
         supabase
         .table("predictions")
         .select("ticker,date,pred,proba,model")
         .eq("ticker", ticker)
-       
         .order("date", desc=False)
     )
-    
+
     if start_date:
         query = query.gt("date", start_date)
 
@@ -91,7 +118,7 @@ def fetch_predictions_since(supabase: Client, ticker: str, start_date: str | Non
 
     if not res.data:
         return pd.DataFrame()
-    
-    return  pd.DataFrame(res.data)
+
+    return pd.DataFrame(res.data)
 
 

@@ -8,7 +8,12 @@ from db.supabase.queries_ohlcv import _get_last_date
 
 
 def ingest_ohlcv(supabase: Client, df: pd.DataFrame) -> None:
-    """Enters new ohlcv values in database."""
+    """Upsert OHLCV rows into Supabase, deduplicating on (ticker, date).
+
+    Converts the DataFrame to a list of dicts and issues an upsert so that
+    re-running the ingestion with overlapping dates is safe — existing rows
+    are updated instead of raising a unique constraint error.
+    """
     if df.empty:
         return None
 
@@ -25,7 +30,12 @@ def ingest_ohlcv(supabase: Client, df: pd.DataFrame) -> None:
 
 
 def update_ticker(supabase: Client, ticker: str) -> pd.DataFrame:
-    """Returns updated ticker info."""
+    """Incrementally download missing OHLCV bars for a single ticker.
+
+    Checks the latest stored date in Supabase; if found, fetches only bars
+    from the next day onwards to avoid re-downloading existing data.
+    If no data exists yet, fetches the full history.
+    """
     last_date = _get_last_date(supabase, ticker)
     start = None
     if last_date:
@@ -35,7 +45,12 @@ def update_ticker(supabase: Client, ticker: str) -> pd.DataFrame:
 
 
 def update_tickers(supabase: Client, tickers: list[str]) -> pd.DataFrame:
-    """Returns updated info for a group of tickers."""
+    """Incrementally update a list of tickers and return the combined new rows.
+
+    Calls update_ticker for each ticker, silently skipping failures
+    (e.g. delisted symbols). Returns the concatenated DataFrame of all
+    new bars, ready to pass to ingest_ohlcv.
+    """
     dfs = []
     for t in tickers:
         try:
@@ -44,7 +59,7 @@ def update_tickers(supabase: Client, tickers: list[str]) -> pd.DataFrame:
                 dfs.append(df)
         except Exception: # A ticker may be decomissioned.
             continue
-    
+
     if not dfs:
         return pd.DataFrame()
 

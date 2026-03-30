@@ -11,7 +11,12 @@ DB_PATH.parent.mkdir(exist_ok=True)
 
 @contextmanager
 def sqlite_connection(db_path: Path | None = None):
-    """Handles sqlite connection"""
+    """Context manager for SQLite connections.
+
+    Opens a connection, enables foreign key enforcement, yields it for use,
+    commits on success, and always closes on exit. Defaults to DB_PATH
+    (data/universe.db) if no path is given.
+    """
     if db_path is None:
         db_path = DB_PATH
 
