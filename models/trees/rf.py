@@ -20,7 +20,7 @@ from sklearn.ensemble import RandomForestClassifier
 from config import ARTIFACTS_PATH
 from db.base import sqlite_connection
 from db.sqlite.queries_ohlcv import fetch_ohlcv
-from db.utils_ohlcv import get_ibex_tickers
+from db.utils_ohlcv import get_ibex_tickers, get_macro_tickers
 from models.trees.features import ml_ready
 from models.evaluate import evaluate_model, print_metrics
 
@@ -92,7 +92,7 @@ def _train_and_eval(X: pd.DataFrame, y: pd.Series, dates: pd.Series,
 
 # -- main training pipeline ----------------------------------------------------
 
-def train_rf(horizon: int = 1, ft_type: str = "cross") -> dict:
+def train_rf(horizon: int = 1, ft_type: str = "macro") -> dict:
     """Full training pipeline for Random Forest.
 
     1. Load all IBEX35 OHLCV data from SQLite.
@@ -109,13 +109,23 @@ def train_rf(horizon: int = 1, ft_type: str = "cross") -> dict:
     print(f"{'='*55}\n")
 
     # 1. Load data
-    tickers = get_ibex_tickers()
+    # Micro: IBEX35 stocks — filter zero-volume days (market closed / bad data).
+    # Macro: indices (^IBEX, ^GSPC, ^VIX) — VIX and IBEX carry no real volume,
+    #        so we skip the volume filter and keep all rows for these.
+    ibex_tickers  = get_ibex_tickers()
+    macro_tickers = get_macro_tickers()
+
     with sqlite_connection() as conn:
-        df_raw = fetch_ohlcv(tickers)
-    df_raw = df_raw[df_raw["volume"] > 0].reset_index(drop=True)
+        df_micro_raw = fetch_ohlcv(ibex_tickers)
+        df_macro_raw = fetch_ohlcv(macro_tickers)
+
+    df_micro_raw = df_micro_raw[df_micro_raw["volume"] > 0].reset_index(drop=True)
+    # ^GSPC has meaningful volume; ^IBEX and ^VIX do not — keep all rows regardless
+    df_macro_raw = df_macro_raw.reset_index(drop=True)
 
     # 2. Build features
-    df, X, y, mask = ml_ready(horizon, df_raw, df_macro=None, ft_type=ft_type)
+    df_macro_arg = df_macro_raw if ft_type == "macro" else None
+    df, X, y, mask = ml_ready(horizon, df_micro_raw, df_macro=df_macro_arg, ft_type=ft_type)
 
     # dates aligned with X, y (same index)
     dates = df.loc[mask, "date"]
@@ -208,7 +218,7 @@ def train_rf(horizon: int = 1, ft_type: str = "cross") -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Random Forest direction classifier")
     parser.add_argument("--horizon",  type=int, default=1,       help="Prediction horizon (days)")
-    parser.add_argument("--ft-type",  type=str, default="cross", help="Feature type: micro | cross | macro")
+    parser.add_argument("--ft-type",  type=str, default="macro", help="Feature type: micro | cross | macro")
     args = parser.parse_args()
 
     from config import load_env
