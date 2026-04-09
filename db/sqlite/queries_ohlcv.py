@@ -12,7 +12,14 @@ def _get_last_date(conn: Connection, ticker: str) -> str | None:
 
 
 def fetch_ohlcv(tickers: list[str], start=None, end=None) -> pd.DataFrame:
-    """Fetch ohlcv from a list of tickers."""
+    """Load OHLCV rows from SQLite for the given tickers and optional date range.
+
+    Builds a parameterised query at runtime: always filters by ticker list,
+    appends AND date >= start and/or AND date <= end when provided.
+    Returns a DataFrame with columns: ticker, date (parsed), open, high, low,
+    close, volume. Returns all history when start/end are omitted — useful for
+    training; pass start/end to get a recent window for inference.
+    """
     query = "SELECT * FROM ohlcv WHERE ticker IN ({})".format(
         ",".join("?" * len(tickers))
     )
