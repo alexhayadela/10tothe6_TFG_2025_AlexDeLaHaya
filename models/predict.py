@@ -9,8 +9,6 @@ from models.trees.features import ml_ready  # safe_build_features,
 
 
 def load_model(type: str, horizon: int):
-<<<<<<< HEAD
-=======
     """Load a trained model artifact from disk.
 
     Reads a .pkl file named `{type}_h{horizon}_full.pkl` from the artifacts
@@ -18,7 +16,6 @@ def load_model(type: str, horizon: int):
     ordered list of feature column names used during training — the column
     order must be reproduced exactly at inference time.
     """
->>>>>>> development-cl
     name = f"{type}_h{horizon}_full.pkl"
     artifact = joblib.load(ARTIFACTS_PATH / name)
     model = artifact["model"]
@@ -28,8 +25,6 @@ def load_model(type: str, horizon: int):
 
 
 def _get_predictions(model_type: str, horizon: int) -> pd.DataFrame:
-<<<<<<< HEAD
-=======
     """Run the full inference pipeline and return one prediction per ticker.
 
     Steps:
@@ -42,7 +37,6 @@ def _get_predictions(model_type: str, horizon: int) -> pd.DataFrame:
 
     Returns a DataFrame with columns: ticker, date, pred (0=sell/1=buy), proba.
     """
->>>>>>> development-cl
     tickers = get_ibex_tickers()
     df_micro = fetch_ohlcv(tickers, 50)
 
@@ -55,11 +49,7 @@ def _get_predictions(model_type: str, horizon: int) -> pd.DataFrame:
     preds = model.predict(X)
     probas = model.predict_proba(X)
     pred_proba = probas[np.arange(len(preds)), preds]
-<<<<<<< HEAD
-    # confidence = np.abs(prob_buy - prob_sell)
-=======
     #confidence = np.abs(prob_buy - prob_sell)
->>>>>>> development-cl
 
     df_pred["pred"] = preds
     df_pred["proba"] = pred_proba

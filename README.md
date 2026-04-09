@@ -71,86 +71,124 @@ The website is hosted using Github Pages. While the site is static, predictions 
 ## Project Setup
 
 Open a terminal console and execute:
-```
+```bash
 cd <your preferred projects root directory>
 git clone https://github.com/alexhayadela/10tothe6_TFG_2025_AlexDeLaHaya.git
-
 ```
 ### Install python
 
 Python 3.10+ is needed
 
-### Install virtualenv
-Setting up a virtualenv is recommended to isolate the project dependencies from other Python projects on your machine.
-It allows you to manage packages on a per-project basis, avoiding potential conflicts between different projects.
+### Install packages
+Creating up a virtual environment is recommended to isolate the project dependencies.
 
-In the project root directory execute:
 ```bash
-pip3 install virtualenv
-virtualenv --version
+python -m venv venv
 ```
 
-### Prepare virtualenv for the project
-In the root of the project folder run to create a virtualenv named `venv`:
+Activate the environment:
 ```bash
-virtualenv venv
+venv\Scripts\activate
 ```
 
-If you list the contents of the project root directory, you will see that it has created a new folder named `venv` that contains the virtualenv:
-```bash
-ls -l
-```
-
-The next step is to activate your new virtualenv for the project:
-```bash
-source venv/bin/activate
-```
-
-or for Windows...
-```cmd
-venv\Scripts\activate.bat
-```
-
-This will load the python virtualenv for the project.
-
-### Installing packages in your virtualenv
-Make sure you are in the root of the project folder and that your virtualenv is activated (you should see `(venv)` in your terminal prompt).
-And then install all the packages listed in `requirements.txt` with:
+Install all the packages listed in `requirements.txt` with:
 ```bash
 pip install -r requirements/all.txt
-```
-
-If you need to add more packages in the future, you can install them with pip and then update `requirements.txt` with:
-```bash
-pip freeze > requirements/all.txt
 ```
 
 ### Create .env file 
 
 You need to create a .env file (project root) containing the following information:
 
-1. EMAIL_USER=example@gmail.com
-2. EMAIL_PASSWORD=asdf asdf adsf asdf
-3. EMAIL_TARGET_USER=example2@gmail.com
+1. EMAIL_USER=...@gmail.com
+2. EMAIL_PASSWORD=...
+3. GROQ_API_KEY=gsk_...
+4. SUPABASE_API_KEY=sb_secret_...
+5. SUPABASE_URL=https://<...>.supabase.co
 
-The password must be an App Password from Google. ¿How to obtain an App Password for Gmail?: https://support.google.com/accounts/answer/185833
+- Gmail password must be a Google App Password. [How do I get one?](https://support.google.com/accounts/answer/185833).  
+- Generate a Groq API key [here](https://console.groq.com/keys).
+- Configure Supabase URL/API key in their [page](https://supabase.com). 
 
-### Configure Github Secrets
+### Add Github Secrets
 
 You need to configure github secrets to run the automation.
 
 1. Go to Github → Settings → Secrets and variables → Actions → New repository secret
-2. Add these secrets with the same values as your .env file: EMAIL_USER, EMAIL_PASSWORD, EMAIL_TARGET_USER
+2. Add these secrets with the same values as your .env file: EMAIL_USER, EMAIL_PASSWORD, GROQ_API_KEY, SUPABASE_API_KEY, SUPABASE_URL
 
-Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypted-secrets
-
-(Missing Documentation)
-1. Add supabase keys to .env, guide to db creation in browser
+Launch web locally (development)
 2. Can access web through internet or locally with (python -m http.server 8000, Ctrl+Shift+R to reload changes)
+
+### Supabase db universe
+Create your project. Instructions for manually creating tables.
+
+TABLE news
+id int8
+date date
+title text
+section text
+body text
+url text
+category text
+relevance float8
+sentiment text
+id primary, url unique
+
+TABLE news_entities
+news_id int8
+ticker text
+news_id primary/fk REFERENCES id from news
+
+TABLE newsletter
+id int8
+created_at timestamp
+email text
+id primary
+
+TABLE ohlcv
+ticker text
+date date
+open float8
+hight float8
+low float8
+close float8
+volume float8
+primary composite ticker date
+TABLE predictions
+id int8
+ticker text
+date date
+pred bool
+proba float8
+model text
+primary id
+All values except pk can be nullable.
+
+
+
+>[!NOTE]
+> You can 
+
+
 3. Run bots 
     Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
     .\Create-IB-BotTasks.ps1
 ----
+### Activate trading bot
+IB settings
+Install the latest [IB Gateway](https://www.interactivebrokers.com/es/trading/ibgateway-latest.php) version.
+
+You need to leave the program open for the bot to work. Change port if you want to swap from paper to real account (by default paper)
+Enable API calls
+
+```bash
+    .\trading\bot.ps1
+```
+If you ever want to stop bot 
+##### How to erase tasks 
+Unregister-ScheduledTask -TaskName "Open Positions" -Confirm:$false
+Unregister-ScheduledTask -TaskName "Close Positions" -Confirm:$false
 
 ## Author
 

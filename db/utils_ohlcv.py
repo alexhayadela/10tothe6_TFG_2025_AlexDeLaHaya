@@ -156,10 +156,5 @@ def download_ticker(ticker: str, start=None, safe=True):
     if safe and len(df) > 0:
         if df["date"].iloc[-1] >= pd.Timestamp.utcnow().strftime("%Y-%m-%d"):
             df = df.iloc[:-1]
-<<<<<<< HEAD
-=======
-
-    return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
->>>>>>> development-cl
 
     return df[["ticker", "date", "open", "high", "low", "close", "volume"]]
