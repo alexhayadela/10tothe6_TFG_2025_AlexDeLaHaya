@@ -2,9 +2,10 @@
 
 This repository contains the code for my final degree thesis. The goal is to build a tool that empowers investors to obtain powerful insights at a glance. By leveraging multimodal, data-driven analysis, the system aims to support smarter investment decisions and potentially achieve better returns compared to traditional techniques.
 
+Read my final degree thesis [here]().
 ----
 
-## Project description
+## Project description 
 
 ### First Deliverable: Newsletter Automation
 
@@ -48,6 +49,10 @@ Predictions, along with a general explanation of the methodology, model selectio
 
 The website is hosted using Github Pages. While the site is static, predictions are updated dynamically through an automation which runs the model, generates new forecasts and updates published content.
 
+### Fifth Deliverable (Part A): Trading Bot
+A bot will perform trades based on our model predictions. Connects to a broker API. WHen markets open executes predctions, when market is about to close it sells positions in which we have made a profit. Bot runs everyday when the market is open. By default it runs on a paper account with 100.000€.   
+
+
 ----
 
 ## Project Structure
@@ -75,6 +80,9 @@ Open a terminal console and execute:
 cd <your preferred projects root directory>
 git clone https://github.com/alexhayadela/10tothe6_TFG_2025_AlexDeLaHaya.git
 ```
+> [!IMPORTANT]
+> Every command from now on, assumes you are in project root directory.
+
 ### Install python
 
 Python 3.10+ is needed
@@ -165,15 +173,17 @@ model text
 primary id
 All values except pk can be nullable.
 
+Once you have created the database you must run "1st_run.ipynb". The first block will initialize your sqlite db, and the output of the second needs to be uploaded to your supabase project. 
+
+There may arrive some time where you hit the free tier limit (500mb) migrate then erase but keep 250 last rows for ohlcv.
+
+### Ml learning models
+
+You can run ml learning models , inside models/train.py modify predictions.py accordingly to use the best model or the one that most suits you. (Default model:..)
+
+Keep in mind that to have the latest market/news data available locally do python -m db.migrations. Run your mlmmodel afterwards.
 
 
->[!NOTE]
-> You can 
-
-
-3. Run bots 
-    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-    .\Create-IB-BotTasks.ps1
 ----
 ### Activate trading bot
 IB settings
@@ -182,13 +192,39 @@ Install the latest [IB Gateway](https://www.interactivebrokers.com/es/trading/ib
 You need to leave the program open for the bot to work. Change port if you want to swap from paper to real account (by default paper)
 Enable API calls
 
-```bash
+```bash 
+    //run as admin or "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
     .\trading\bot.ps1
 ```
+
 If you ever want to stop bot 
 ##### How to erase tasks 
 Unregister-ScheduledTask -TaskName "Open Positions" -Confirm:$false
 Unregister-ScheduledTask -TaskName "Close Positions" -Confirm:$false
+
+### Web development
+In order to modify the website update docs/ with your own logic.
+To run locally 
+```bash
+python -m http.server 8000
+```
+Then in browser type http://localhost:8000/docs/. To refresh changes press ctrl+shift+r.
+
+
+## Project Usage
+You can continue developing this project by forking this repository. If you only want you see web for daily predicitons use link and contact me so i add you to my personal newsletter. 
+
+>[!CAUTION]
+> Use this information at your own risk. ... Past returns dont guarantee ... El rendimiento pasado no es indicativo de resultados futuros. Las inversiones implican riesgos, incluida la posible pérdida del capital invertido. Las predicciones son estimaciones y no constituyen asesoramiento financiero. Actúa bajo tu propia responsabilidad.
+
+## Conclusions
+-> Read my final thesis for a more detailled explanations. Stock market produces a very noisy signal. With our models we are able to gain a bit of an edge (+50% accuracy). Two downside accuracy doesnt translate to money, e.g. days with more or less returns. And the key thing, commisions and slippage (buy / sell difference), with high frequency trading most of the profit is eaten by those. 
+Also you are playing with money and it is hard to see losses, rather live stress free without having to worry much about things. I would suggest to invest in ETF's especially SP500 ones ETFs are a compound combination of assets. Are usually good because they diversify (reducing risk/variance), and provide fair returns without being involved. I express my concerns here about capitalism, wars and AI as the pilars of our economy are being held by weak .... Daily or weekly strategies are heavily influenced by the you can eat up to -30% if Trump decides to do nonsense. With the improvements of AI maybe human interaction isn't needed for companies to run. Agentic AI roles.. If peoples jobs are terminated how will economy run. Who will pay for products if noone has money. Is this why future is very uncertain.
+
+focus less on money, wealth, and remember to spend quality to time with family and friends. 
+
+Peace out, claude.opus.4.6~~Alex De La Haya Gutiérrez~~
+
 
 ## Author
 
