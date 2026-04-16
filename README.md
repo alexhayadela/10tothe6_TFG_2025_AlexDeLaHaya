@@ -51,8 +51,6 @@ The website is hosted using Github Pages. While the site is static, predictions 
 
 ### Fifth Deliverable (Part A): Trading Bot
 A bot will perform trades based on our model predictions. Connects to a broker API. WHen markets open executes predctions, when market is about to close it sells positions in which we have made a profit. Bot runs everyday when the market is open. By default it runs on a paper account with 100.000€.   
-
-
 ----
 
 ## Project Structure
@@ -73,6 +71,7 @@ A bot will perform trades based on our model predictions. Connects to a broker A
 └── README.md                   # Project overview and usage
 ```
 ----
+
 ## Project Setup
 
 Open a terminal console and execute:
@@ -125,106 +124,178 @@ You need to configure github secrets to run the automation.
 1. Go to Github → Settings → Secrets and variables → Actions → New repository secret
 2. Add these secrets with the same values as your .env file: EMAIL_USER, EMAIL_PASSWORD, GROQ_API_KEY, SUPABASE_API_KEY, SUPABASE_URL
 
-Launch web locally (development)
-2. Can access web through internet or locally with (python -m http.server 8000, Ctrl+Shift+R to reload changes)
-
 ### Supabase db universe
-Create your project. Instructions for manually creating tables.
 
-TABLE news
-id int8
-date date
-title text
-section text
-body text
-url text
-category text
-relevance float8
-sentiment text
-id primary, url unique
+Start a new project and manually define the following tables: 
 
-TABLE news_entities
-news_id int8
-ticker text
-news_id primary/fk REFERENCES id from news
+<div style="display: flex; gap: 20px; overflow-x: auto;">
 
-TABLE newsletter
-id int8
-created_at timestamp
-email text
-id primary
+<div style="min-width: 300px;">
 
-TABLE ohlcv
-ticker text
-date date
-open float8
-hight float8
-low float8
-close float8
-volume float8
-primary composite ticker date
-TABLE predictions
-id int8
-ticker text
-date date
-pred bool
-proba float8
-model text
-primary id
-All values except pk can be nullable.
+#### news
 
-Once you have created the database you must run "1st_run.ipynb". The first block will initialize your sqlite db, and the output of the second needs to be uploaded to your supabase project. 
+| Column    | Type   |
+|----------|--------|
+| id       | int8   |
+| date     | date   |
+| title    | text   |
+| section  | text   |
+| body     | text   |
+| url      | text   |
+| category | text   |
+| relevance| float8 |
+| sentiment| text   |
 
-There may arrive some time where you hit the free tier limit (500mb) migrate then erase but keep 250 last rows for ohlcv.
+Constraints
+- id: PK  
+- url: UNIQUE  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### news_entities
+
+| Column   | Type |
+|----------|------|
+| news_id  | int8 |
+| ticker   | text |
+
+Constraints
+- news_id: PK + FK → news.id  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### newsletter
+
+| Column     | Type      |
+|------------|-----------|
+| id         | int8      |
+| created_at | timestamp |
+| email      | text      |
+
+Constraints
+- id: PK  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### ohlcv
+
+| Column | Type   |
+|--------|--------|
+| ticker | text   |
+| date   | date   |
+| open   | float8 |
+| high   | float8 |
+| low    | float8 |
+| close  | float8 |
+| volume | float8 |
+
+Constraints
+- PK (ticker, date)  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### predictions
+
+| Column | Type   |
+|--------|--------|
+| id     | int8   |
+| ticker | text   |
+| date   | date   |
+| pred   | bool   |
+| proba  | float8 |
+| model  | text   |
+
+Constraints
+- id: PK  
+
+</div>
+
+</div>
+
+All fields are nullable except primary keys. 
+
+After creating the database, run '1st_run.ipynb'. The first block will initialize your sqlite db, and the output of the second needs to be uploaded to your supabase project. 
 
 ### Ml learning models
 
-You can run ml learning models , inside models/train.py modify predictions.py accordingly to use the best model or the one that most suits you. (Default model:..)
-
-Keep in mind that to have the latest market/news data available locally do python -m db.migrations. Run your mlmmodel afterwards.
-
-
-----
-### Activate trading bot
-IB settings
-Install the latest [IB Gateway](https://www.interactivebrokers.com/es/trading/ibgateway-latest.php) version.
-
-You need to leave the program open for the bot to work. Change port if you want to swap from paper to real account (by default paper)
-Enable API calls
-
+A default baseline model is provided, but experimentation is encouraged. Before training ensure your local database is up to date.
 ```bash 
-    //run as admin or "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+    python -m db.migrations
+```
+Then run your training pipeline. Instructions for executing the model can be found within the corresponding file.
+
+### Activate trading bot
+
+Install the latest [IB Gateway](https://www.interactivebrokers.com/es/trading/ibgateway-latest.php). Keep the application running at all times. Enable API connections. Configure the port if switching between paper and live trading (paper by default).
+
+To run the bot:
+```bash 
+    # Run as administrator or enable script execution
+    # Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
     .\trading\bot.ps1
 ```
 
-If you ever want to stop bot 
-##### How to erase tasks 
+To stop the bot:
+```bash
 Unregister-ScheduledTask -TaskName "Open Positions" -Confirm:$false
 Unregister-ScheduledTask -TaskName "Close Positions" -Confirm:$false
+```
 
 ### Web development
-In order to modify the website update docs/ with your own logic.
-To run locally 
+To modify the website, update 'docs/' directory.
+
+To run locally:
 ```bash
 python -m http.server 8000
 ```
-Then in browser type http://localhost:8000/docs/. To refresh changes press ctrl+shift+r.
 
+Then open: 
+```bash
+http://localhost:8000/docs/
+```
+
+To refresh changes press Ctrl+Shift+R.
+----
 
 ## Project Usage
-You can continue developing this project by forking this repository. If you only want you see web for daily predicitons use link and contact me so i add you to my personal newsletter. 
+You can fork this repository to extend or customize the project. If you are only interested in viewing daily predictions, visit the website and contact me to be added to the newsletter.
 
 >[!CAUTION]
-> Use this information at your own risk. ... Past returns dont guarantee ... El rendimiento pasado no es indicativo de resultados futuros. Las inversiones implican riesgos, incluida la posible pérdida del capital invertido. Las predicciones son estimaciones y no constituyen asesoramiento financiero. Actúa bajo tu propia responsabilidad.
+> This project is for educational purposes. Past performance does not guarantee future results. Investments involve risk, including potential loss of capital. Predictions are estimates and do not constitute financial advice. Act at your own risk.
+----
 
 ## Conclusions
--> Read my final thesis for a more detailled explanations. Stock market produces a very noisy signal. With our models we are able to gain a bit of an edge (+50% accuracy). Two downside accuracy doesnt translate to money, e.g. days with more or less returns. And the key thing, commisions and slippage (buy / sell difference), with high frequency trading most of the profit is eaten by those. 
-Also you are playing with money and it is hard to see losses, rather live stress free without having to worry much about things. I would suggest to invest in ETF's especially SP500 ones ETFs are a compound combination of assets. Are usually good because they diversify (reducing risk/variance), and provide fair returns without being involved. I express my concerns here about capitalism, wars and AI as the pilars of our economy are being held by weak .... Daily or weekly strategies are heavily influenced by the you can eat up to -30% if Trump decides to do nonsense. With the improvements of AI maybe human interaction isn't needed for companies to run. Agentic AI roles.. If peoples jobs are terminated how will economy run. Who will pay for products if noone has money. Is this why future is very uncertain.
+For a detailed discussion, refer to the full thesis. 
 
-focus less on money, wealth, and remember to spend quality to time with family and friends. 
+Financial markets are inherently noisy and difficult to predict. While our models achieve a slight edge, this does not directly translate into profitability.
+
+Key limitations:
+- Accuracy  vs. profitability mismatch: returns are not evenly distributed
+- Transaction costs and slippage, which can significantly erode gains (especially with high-frequency trading strategies)
+
+My personal take: 
+- It is not easy to handle losses psychologically when you are trading with real money. 
+- I value living without too much stress. 
+- If I were to invest my money I would choose ETF's (SP500 or World). They are a mix of assets, reducing risk and providing stable returns over time (hopefully).
+
+Concerns about todays society: 
+- AI agents could take over most jobs in companies, but if people lose their income, who will buy the products?
+- At the same time, wars are no longer distant or unlikely—conflicts like the 2026 Iran war show how quickly things can escalate and how fragile global stability really is.
+
+The future is very uncertain. 
+
+My message to the world would be to focus less money and remember to spend quality time with family and friends.
 
 Peace out, claude.opus.4.6~~Alex De La Haya Gutiérrez~~
-
+----
 
 ## Author
 
