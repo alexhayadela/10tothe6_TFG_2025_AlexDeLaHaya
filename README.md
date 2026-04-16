@@ -2,7 +2,7 @@
 
 This repository contains the code for my final degree thesis. The goal is to build a tool that empowers investors to obtain powerful insights at a glance. By leveraging multimodal, data-driven analysis, the system aims to support smarter investment decisions and potentially achieve better returns compared to traditional techniques.
 
-Read my final degree thesis [here]().
+Read my final degree thesis [here](https://via.placeholder.com/800x400.png?text=Work+in+Progress+%F0%9F%9A%A7).
 ----
 
 ## Project description 
@@ -50,7 +50,8 @@ Predictions, along with a general explanation of the methodology, model selectio
 The website is hosted using Github Pages. While the site is static, predictions are updated dynamically through an automation which runs the model, generates new forecasts and updates published content.
 
 ### Fifth Deliverable (Part A): Trading Bot
-A bot will perform trades based on our model predictions. Connects to a broker API. WHen markets open executes predctions, when market is about to close it sells positions in which we have made a profit. Bot runs everyday when the market is open. By default it runs on a paper account with 100.000€.   
+
+A bot performs trades based on our model predictions and connects to a broker API. When the market opens, it executes the predictions, and before the market closes, it liquidates positions that have generated profit. The bot runs every trading day while the market is open. By default, it operates on a paper trading account with a simulated balance of 100,000€. 
 ----
 
 ## Project Structure
@@ -294,7 +295,7 @@ The future is very uncertain.
 
 My message to the world would be to focus less money and remember to spend quality time with family and friends.
 
-Peace out, claude.opus.4.6~~Alex De La Haya Gutiérrez~~
+Peace out, claude.opus.4.6~~Alex De La Haya Gutiérrez~~.
 ----
 
 ## Author
