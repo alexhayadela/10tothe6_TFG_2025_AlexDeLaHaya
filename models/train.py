@@ -30,6 +30,7 @@ from models.trees.rf        import RFTrainer
 from models.trees.xgb       import XGBTrainer
 from models.neural.rnn_trainer import RNNTrainer, CNNRNNTrainer
 from models.markov.markov   import MarkovTrainer
+from models.meta.meta       import MetaTrainer
 
 
 # -- model registry -----------------------------------------------------------
@@ -45,6 +46,7 @@ REGISTRY: dict = {
     "cnn_gru":  lambda **kw: CNNRNNTrainer(cell="gru",  **kw),
     "cnn_lstm": lambda **kw: CNNRNNTrainer(cell="lstm", **kw),
     "markov":   lambda **kw: MarkovTrainer(**kw),
+    "meta":     lambda **kw: MetaTrainer(**kw),
 }
 
 
@@ -87,6 +89,7 @@ if __name__ == "__main__":
             "  cnn_gru   CNN + GRU hybrid\n"
             "  cnn_lstm  CNN + LSTM hybrid\n"
             "  markov    Markov Chain (transition probabilities on return states)\n"
+            "  meta      Stacking ensemble (LogisticRegression over base model P(up))\n"
             "  all       Run every model sequentially"
         ),
     )
