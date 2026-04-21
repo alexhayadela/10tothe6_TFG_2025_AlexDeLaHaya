@@ -9,6 +9,8 @@ Transition matrix: P(up | current_state) estimated as the empirical fraction
        of up-moves following each observed state, with additive Laplace
        smoothing (alpha=1) to handle unseen states in small windows.
 
+Hyperparameter rationale: decisions/markov_decisions.md
+
 Usage (standalone):
     python -m models.markov.markov                           # h=1, macro, sliding
     python -m models.markov.markov --horizon 1 --mode expanding --ft-type macro
