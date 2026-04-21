@@ -438,4 +438,5 @@ def ml_ready(horizon: int,
 
     X = X.loc[mask]
     y = df.loc[mask, "target"]
-    return df, X, y, mask
+    y_cont = df.loc[mask, "future_log_ret"]
+    return df, X, y, mask, y_cont

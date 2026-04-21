@@ -99,10 +99,12 @@ class BaseTrainer(abc.ABC):
     WINDOW_DAYS = WINDOW_DAYS
     STEP_DAYS   = STEP_DAYS
 
-    def __init__(self, horizon: int = 1, ft_type: str = "macro", mode: str = "sliding"):
+    def __init__(self, horizon: int = 1, ft_type: str = "macro", mode: str = "sliding",
+                 target_type: str = "discrete"):
         self.horizon      = horizon
         self.ft_type      = ft_type
         self.mode         = mode
+        self.target_type  = target_type   # "discrete" | "continuous"
         # populated by run() before any abstract method is called
         self.X            = None
         self.y            = None
@@ -125,9 +127,13 @@ class BaseTrainer(abc.ABC):
         return df_micro_raw, df_macro_raw
 
     def _build_features(self, df_micro_raw, df_macro_raw):
-        """Run ml_ready pipeline; returns (df, X, y, mask)."""
+        """Run ml_ready pipeline; returns (df, X, y, mask) selecting y by target_type."""
         df_macro_arg = df_macro_raw if self.ft_type == "macro" else None
-        return ml_ready(self.horizon, df_micro_raw, df_macro=df_macro_arg, ft_type=self.ft_type)
+        df, X, y_discrete, mask, y_cont = ml_ready(
+            self.horizon, df_micro_raw, df_macro=df_macro_arg, ft_type=self.ft_type
+        )
+        y = y_cont if self.target_type == "continuous" else y_discrete
+        return df, X, y, mask
 
     # -- windows --------------------------------------------------------------
 
@@ -167,7 +173,7 @@ class BaseTrainer(abc.ABC):
     def run(self) -> dict:
         """Orchestrate: load -> features -> [hook] -> CV -> final model -> save."""
         print(f"\n{'='*55}")
-        print(f"  {self.model_key.upper()} | h={self.horizon} | ft={self.ft_type} | mode={self.mode}")
+        print(f"  {self.model_key.upper()} | h={self.horizon} | ft={self.ft_type} | mode={self.mode} | target={self.target_type}")
         self._print_header()
         print(f"{'='*55}\n")
 
@@ -184,8 +190,11 @@ class BaseTrainer(abc.ABC):
 
         print(f"Usable rows   : {len(X)}")
         print(f"Unique dates  : {len(self.unique_dates)}")
-        dist = y.value_counts(normalize=True)
-        print(f"Class balance : down={dist.get(0, 0):.3f}  up={dist.get(1, 0):.3f}\n")
+        if self.target_type == "discrete":
+            dist = y.value_counts(normalize=True)
+            print(f"Class balance : down={dist.get(0, 0):.3f}  up={dist.get(1, 0):.3f}\n")
+        else:
+            print(f"Target (cont) : mean={float(y.mean()):.5f}  std={float(y.std()):.5f}\n")
 
         # 3. Model-specific post-processing (sequence building for neural models)
         self._after_features()
@@ -206,24 +215,39 @@ class BaseTrainer(abc.ABC):
                 continue
             all_metrics.append(metrics)
             all_meta.append(meta)
+            if self.target_type == "discrete":
+                metric_str = (
+                    f"bal_acc={metrics['balanced_accuracy']:.4f}  "
+                    f"auc={metrics['roc_auc']:.4f}  "
+                    f"mcc={metrics['mcc']:.4f}"
+                )
+            else:
+                metric_str = (
+                    f"ic={metrics['ic']:.4f}  "
+                    f"dir_acc={metrics['directional_accuracy']:.4f}  "
+                    f"mae={metrics['mae']:.5f}"
+                )
             print(
                 f"  [{i+1:2d}/{len(windows)}] "
                 f"test {str(test_dates[0])[:10]} -> {str(test_dates[-1])[:10]} | "
-                f"bal_acc={metrics['balanced_accuracy']:.4f}  "
-                f"auc={metrics['roc_auc']:.4f}  "
-                f"mcc={metrics['mcc']:.4f}  "
-                + self._meta_str(meta)
+                + metric_str + "  " + self._meta_str(meta)
             )
 
         # 5. Aggregate CV
         cv_summary = {}
         print(f"\n{'-'*55}")
         print("CV aggregate (mean +/- std):")
-        for key in ["accuracy", "balanced_accuracy", "roc_auc", "log_loss", "mcc"]:
+        if self.target_type == "discrete":
+            cv_keys   = ["accuracy", "balanced_accuracy", "roc_auc", "log_loss", "mcc"]
+            primary   = "balanced_accuracy"
+        else:
+            cv_keys   = ["mae", "rmse", "r2", "directional_accuracy", "ic"]
+            primary   = "ic"
+        for key in cv_keys:
             vals = [m[key] for m in all_metrics]
             mean, std = np.mean(vals), np.std(vals)
             cv_summary[key] = {"mean": float(mean), "std": float(std)}
-            marker = " <- primary" if key == "balanced_accuracy" else ""
+            marker = " <- primary" if key == primary else ""
             print(f"  {key:22s}: {mean:.4f} +/- {std:.4f}{marker}")
         self._aggregate_meta(all_meta, cv_summary)
 
@@ -246,6 +270,7 @@ class BaseTrainer(abc.ABC):
             "horizon":     self.horizon,
             "ft_type":     self.ft_type,
             "mode":        self.mode,
+            "target_type": self.target_type,
             "window_days": len(final_dates),
             "train_start": str(final_dates[0])[:10],
             "train_end":   str(final_dates[-1])[:10],
@@ -254,7 +279,8 @@ class BaseTrainer(abc.ABC):
             **model_fields,
         }
 
-        out_path = ARTIFACTS_PATH / f"{self.model_key}_h{self.horizon}.pkl"
+        suffix   = "_cont" if self.target_type == "continuous" else ""
+        out_path = ARTIFACTS_PATH / f"{self.model_key}_h{self.horizon}{suffix}.pkl"
         joblib.dump(artifact, out_path)
         print(f"\nArtifact saved -> {out_path}")
         return artifact

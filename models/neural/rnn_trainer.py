@@ -20,7 +20,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from models.base import BaseTrainer
-from models.evaluate import evaluate_model
+from models.evaluate import evaluate_model, evaluate_regression
 
 # Sequence utilities + model class from lstm.py (no circular import: lstm.py
 # only lazy-imports from this module inside train_lstm(), not at module level)
@@ -57,8 +57,8 @@ class RNNTrainer(BaseTrainer):
     """
 
     def __init__(self, horizon: int = 1, ft_type: str = "macro",
-                 mode: str = "sliding", cell: str = "gru"):
-        super().__init__(horizon, ft_type, mode)
+                 mode: str = "sliding", cell: str = "gru", target_type: str = "discrete"):
+        super().__init__(horizon, ft_type, mode, target_type)
         self.cell   = cell
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # populated by _after_features:
@@ -98,6 +98,18 @@ class RNNTrainer(BaseTrainer):
 
     # -- training helpers -----------------------------------------------------
 
+    def _criterion(self) -> nn.Module:
+        """Return loss function appropriate for the target type.
+
+        Discrete:   BCEWithLogitsLoss (numerically stable sigmoid + BCE)
+        Continuous: HuberLoss(delta=0.01) — transitions to MAE for returns
+                    beyond ~1% to prevent heavy-tail outliers dominating gradients.
+                    See decisions/continuous_target_decisions.md, Section 2.
+        """
+        if self.target_type == "continuous":
+            return nn.HuberLoss(delta=0.01)
+        return nn.BCEWithLogitsLoss()
+
     def _fit(self, X_tr: np.ndarray, y_tr: np.ndarray,
              X_val: np.ndarray, y_val: np.ndarray) -> tuple:
         """Train with early stopping; return (model, best_epoch)."""
@@ -105,7 +117,7 @@ class RNNTrainer(BaseTrainer):
         val_dl = DataLoader(SequenceDataset(X_val, y_val), batch_size=BATCH_SIZE)
 
         model     = self._build_model()
-        criterion = nn.BCEWithLogitsLoss()
+        criterion = self._criterion()
         optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.5, patience=LR_PATIENCE, verbose=False
@@ -151,14 +163,22 @@ class RNNTrainer(BaseTrainer):
         return model, best_epoch + 1
 
     def _predict(self, model: nn.Module, loader: DataLoader) -> tuple:
-        """Return (preds, probas) from a DataLoader."""
+        """Return model outputs from a DataLoader.
+
+        Discrete:   (hard_preds int array, probas float array)
+        Continuous: (raw_preds float array, raw_preds float array)  — second
+                    element reuses the probas slot for interface uniformity.
+        """
         model.eval()
-        logits = []
+        outputs = []
         with torch.no_grad():
             for X_b, _ in loader:
-                logits.append(model(X_b.to(self.device)).cpu())
-        logits = torch.cat(logits)
-        probas = torch.sigmoid(logits).numpy()
+                outputs.append(model(X_b.to(self.device)).cpu())
+        outputs = torch.cat(outputs)
+        if self.target_type == "continuous":
+            raw = outputs.numpy()
+            return raw, raw
+        probas = torch.sigmoid(outputs).numpy()
         return (probas >= 0.5).astype(int), probas
 
     # -- CV fold --------------------------------------------------------------
@@ -182,6 +202,8 @@ class RNNTrainer(BaseTrainer):
 
         test_dl = DataLoader(SequenceDataset(X_test_s, labs_test), batch_size=BATCH_SIZE)
         preds, probas = self._predict(model, test_dl)
+        if self.target_type == "continuous":
+            return evaluate_regression(labs_test, preds), best_ep
         return evaluate_model(labs_test.astype(int), preds, probas), best_ep
 
     def _meta_str(self, meta) -> str:

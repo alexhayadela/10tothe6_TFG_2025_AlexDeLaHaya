@@ -7,6 +7,7 @@ Primary metric for model selection: balanced_accuracy (see decisions/rf_decision
 """
 
 import numpy as np
+from scipy.stats import spearmanr
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -14,6 +15,9 @@ from sklearn.metrics import (
     log_loss,
     classification_report,
     matthews_corrcoef,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
 )
 
 
@@ -44,6 +48,48 @@ def evaluate_model(y_true, y_pred, y_proba, model_name: str = "") -> dict:
         "mean_predicted_prob": float(np.mean(y_proba)),
         "pred_positive_rate":  float(np.mean(y_pred)),
     }
+
+
+def evaluate_regression(y_true, y_pred, model_name: str = "") -> dict:
+    """Compute regression evaluation metrics for continuous return prediction.
+
+    Parameters
+    ----------
+    y_true     : array-like of float, actual future log returns
+    y_pred     : array-like of float, predicted future log returns
+    model_name : str label, stored in the returned dict
+
+    Returns
+    -------
+    dict with keys: model, mae, rmse, r2, directional_accuracy, ic (PRIMARY)
+    See decisions/continuous_target_decisions.md for metric rationale.
+    """
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+
+    ic, _ = spearmanr(y_true, y_pred)
+
+    return {
+        "model":               model_name,
+        "mae":                 float(mean_absolute_error(y_true, y_pred)),
+        "rmse":                float(np.sqrt(mean_squared_error(y_true, y_pred))),
+        "r2":                  float(r2_score(y_true, y_pred)),
+        "directional_accuracy": float(np.mean(np.sign(y_true) == np.sign(y_pred))),
+        "ic":                  float(ic) if np.isfinite(ic) else 0.0,  # PRIMARY
+    }
+
+
+def print_regression_metrics(metrics: dict):
+    """Print a regression metrics dict in a readable format."""
+    print(f"\n{'-' * 45}")
+    if metrics.get("model"):
+        print(f"  Model             : {metrics['model']}")
+    print(f"  MAE               : {metrics['mae']:.6f}")
+    print(f"  RMSE              : {metrics['rmse']:.6f}")
+    print(f"  R²                : {metrics['r2']:.6f}")
+    print(f"  Directional acc   : {metrics['directional_accuracy']:.4f}")
+    print(f"  IC (Spearman)     : {metrics['ic']:.4f}  <- primary")
+    print(f"{'-' * 45}\n")
 
 
 def print_metrics(metrics: dict, report: bool = False, y_true=None, y_pred=None):

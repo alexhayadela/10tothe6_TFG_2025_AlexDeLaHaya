@@ -27,7 +27,7 @@ import pandas as pd
 import xgboost as xgb
 
 from models.base import BaseTrainer
-from models.evaluate import evaluate_model
+from models.evaluate import evaluate_model, evaluate_regression
 
 
 # -- hyperparameters (see decisions/xgboost_decisions.md) ---------------------
@@ -47,6 +47,14 @@ XGB_PARAMS = {
     "tree_method":      "hist",
     "random_state":     42,
     "n_jobs":           -1,
+}
+
+# Continuous (regression) overrides — only objective/eval_metric differ
+XGB_PARAMS_CONT = {
+    **XGB_PARAMS,
+    "objective":        "reg:squarederror",
+    "eval_metric":      "rmse",
+    "scale_pos_weight": 1.0,    # not used for regression; kept for dict uniformity
 }
 
 EARLY_STOPPING_ROUNDS = 30   # patience: rounds without val improvement
@@ -81,6 +89,9 @@ def _temporal_inner_split(X: pd.DataFrame, y: pd.Series, dates: pd.Series,
 class XGBTrainer(BaseTrainer):
     """XGBoost implementation of BaseTrainer.
 
+    Supports both discrete (binary:logistic) and continuous (reg:squarederror)
+    targets via the target_type constructor argument.
+
     Two-step final model:
       1. Probe: find optimal n_rounds via early stopping on 80/20 inner split.
       2. Retrain: fit on 100% of the final window with n_estimators=n_rounds,
@@ -90,6 +101,23 @@ class XGBTrainer(BaseTrainer):
     @property
     def model_key(self) -> str:
         return "xgb"
+
+    def _params(self) -> dict:
+        return XGB_PARAMS_CONT if self.target_type == "continuous" else XGB_PARAMS
+
+    def _make_model(self, **overrides):
+        params = {**self._params(), **overrides}
+        if self.target_type == "continuous":
+            return xgb.XGBRegressor(**params)
+        return xgb.XGBClassifier(**params)
+
+    def _evaluate(self, model, X_test, y_test):
+        if self.target_type == "continuous":
+            preds = model.predict(X_test)
+            return evaluate_regression(y_test.values, preds), None
+        preds  = model.predict(X_test)
+        probas = model.predict_proba(X_test)[:, 1]
+        return evaluate_model(y_test.values, preds, probas), None
 
     def _train_window(self, train_dates, test_dates) -> tuple:
         tr_mask = self.dates.isin(train_dates)
@@ -106,13 +134,12 @@ class XGBTrainer(BaseTrainer):
 
         X_it, y_it, X_iv, y_iv = _temporal_inner_split(X_window, y_window, dates_window)
 
-        model = xgb.XGBClassifier(**XGB_PARAMS, early_stopping_rounds=EARLY_STOPPING_ROUNDS)
+        model = self._make_model(early_stopping_rounds=EARLY_STOPPING_ROUNDS)
         model.fit(X_it, y_it, eval_set=[(X_iv, y_iv)], verbose=False)
         best_iter = model.best_iteration
 
-        preds  = model.predict(X_test)
-        probas = model.predict_proba(X_test)[:, 1]
-        return evaluate_model(y_test.values, preds, probas), best_iter
+        metrics, _ = self._evaluate(model, X_test, y_test)
+        return metrics, best_iter
 
     def _meta_str(self, meta) -> str:
         return f"best_iter={meta + 1}" if meta is not None and meta >= 0 else ""
@@ -126,7 +153,7 @@ class XGBTrainer(BaseTrainer):
             f"\n  Early stopping: best_iter "
             f"mean={mean_iter + 1}  min={min(iters) + 1}  max={max(iters) + 1}"
         )
-        if mean_iter >= XGB_PARAMS["n_estimators"] - 10:
+        if mean_iter >= self._params()["n_estimators"] - 10:
             print("  WARNING: best_iter near n_estimators ceiling -- consider raising n_estimators")
         cv_summary["cv_best_iters"] = [b + 1 for b in iters]
 
@@ -138,15 +165,21 @@ class XGBTrainer(BaseTrainer):
 
         # Step 1: probe 80/20 split to find optimal n_rounds
         X_ft, y_ft, X_fv, y_fv = _temporal_inner_split(X_f, y_f, dates_f)
-        probe = xgb.XGBClassifier(**XGB_PARAMS, early_stopping_rounds=EARLY_STOPPING_ROUNDS)
+        probe = self._make_model(early_stopping_rounds=EARLY_STOPPING_ROUNDS)
         probe.fit(X_ft, y_ft, eval_set=[(X_fv, y_fv)], verbose=False)
         n_rounds = probe.best_iteration + 1
         print(f"  Optimal rounds (via inner val): {n_rounds}")
 
         # Step 2: retrain on 100% of window with fixed n_rounds
-        final_params = {**XGB_PARAMS, "n_estimators": n_rounds}
+        final_params = {**self._params(), "n_estimators": n_rounds}
         final_params.pop("eval_metric", None)
-        model = xgb.XGBClassifier(**final_params)
+        model = self._make_model(n_estimators=n_rounds, early_stopping_rounds=None)
+        # rebuild without early_stopping_rounds for full-window retrain
+        final_params.pop("early_stopping_rounds", None)
+        if self.target_type == "continuous":
+            model = xgb.XGBRegressor(**{k: v for k, v in final_params.items()})
+        else:
+            model = xgb.XGBClassifier(**{k: v for k, v in final_params.items()})
         model.fit(X_f, y_f, verbose=False)
 
         print(f"  Train rows  : {len(X_f)}")
@@ -162,7 +195,7 @@ class XGBTrainer(BaseTrainer):
         return {
             "model":               model,
             "features":            list(X_f.columns),
-            "params":              XGB_PARAMS,
+            "params":              self._params(),
             "n_rounds_final":      n_rounds,
             "cv_best_iters":       cv_summary.get("cv_best_iters", []),
             "feature_importances": importances.to_dict(),

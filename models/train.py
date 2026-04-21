@@ -34,6 +34,9 @@ from models.markov.markov   import MarkovTrainer
 
 # -- model registry -----------------------------------------------------------
 
+# Models that support continuous (regression) target_type
+CONTINUOUS_SUPPORTED = {"xgb", "gru", "lstm", "cnn_gru", "cnn_lstm"}
+
 REGISTRY: dict = {
     "rf":       lambda **kw: RFTrainer(**kw),
     "xgb":      lambda **kw: XGBTrainer(**kw),
@@ -46,16 +49,21 @@ REGISTRY: dict = {
 
 
 def train(model: str, horizon: int = 1, ft_type: str = "macro",
-          mode: str = "sliding") -> dict | list:
+          mode: str = "sliding", target_type: str = "discrete") -> dict | list:
     """Programmatic entry point.  Pass model='all' to run every model.
 
     Returns the artifact dict for a single model, or a list of dicts for 'all'.
     """
-    kw = {"horizon": horizon, "ft_type": ft_type, "mode": mode}
+    kw = {"horizon": horizon, "ft_type": ft_type, "mode": mode, "target_type": target_type}
     if model == "all":
         return [REGISTRY[m](**kw).run() for m in REGISTRY]
     if model not in REGISTRY:
         raise ValueError(f"Unknown model '{model}'. Choose from: {list(REGISTRY)} or 'all'")
+    if target_type == "continuous" and model not in CONTINUOUS_SUPPORTED and model != "all":
+        raise ValueError(
+            f"Model '{model}' does not support target_type='continuous'. "
+            f"Supported: {sorted(CONTINUOUS_SUPPORTED)}"
+        )
     return REGISTRY[model](**kw).run()
 
 
@@ -110,9 +118,21 @@ if __name__ == "__main__":
             "  macro  cross + VIX / S&P500 / relative-to-market"
         ),
     )
+    parser.add_argument(
+        "--target-type",
+        dest="target_type",
+        choices=["discrete", "continuous"],
+        default="discrete",
+        help=(
+            "Target variable type (default: discrete):\n"
+            f"  discrete    Binary direction label (0=down, 1=up) — all models\n"
+            f"  continuous  Raw future_log_ret regression — supported: {sorted(CONTINUOUS_SUPPORTED)}"
+        ),
+    )
     args = parser.parse_args()
 
     from config import load_env
     load_env()
 
-    train(model=args.model, horizon=args.horizon, ft_type=args.ft_type, mode=args.mode)
+    train(model=args.model, horizon=args.horizon, ft_type=args.ft_type,
+          mode=args.mode, target_type=args.target_type)
