@@ -29,6 +29,7 @@ import argparse
 from models.trees.rf        import RFTrainer
 from models.trees.xgb       import XGBTrainer
 from models.neural.rnn_trainer import RNNTrainer, CNNRNNTrainer
+from models.markov.markov   import MarkovTrainer
 
 
 # -- model registry -----------------------------------------------------------
@@ -40,6 +41,7 @@ REGISTRY: dict = {
     "lstm":     lambda **kw: RNNTrainer(cell="lstm", **kw),
     "cnn_gru":  lambda **kw: CNNRNNTrainer(cell="gru",  **kw),
     "cnn_lstm": lambda **kw: CNNRNNTrainer(cell="lstm", **kw),
+    "markov":   lambda **kw: MarkovTrainer(**kw),
 }
 
 
@@ -76,6 +78,7 @@ if __name__ == "__main__":
             "  lstm      LSTM (recurrent)\n"
             "  cnn_gru   CNN + GRU hybrid\n"
             "  cnn_lstm  CNN + LSTM hybrid\n"
+            "  markov    Markov Chain (transition probabilities on return states)\n"
             "  all       Run every model sequentially"
         ),
     )
