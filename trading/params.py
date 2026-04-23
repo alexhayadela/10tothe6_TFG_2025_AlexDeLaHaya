@@ -4,8 +4,7 @@
 IB_HOST = "127.0.0.1"
 IB_PORT = 4002  # IB  | Paper trading
 # IB_PORT = 4001 # IB  | Live trading
-# IB_PORT = 7497 # TWS | Paper trading
-# IB_PORT = 7496 # TWS | Live trading
+
 CLIENT_ID = 1
 
 # =========================

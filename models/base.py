@@ -116,9 +116,9 @@ class BaseTrainer(abc.ABC):
         """Fetch OHLCV for IBEX35 stocks (micro) and index tickers (macro)."""
         ibex_tickers  = get_ibex_tickers()
         macro_tickers = get_macro_tickers()
-        with sqlite_connection() as conn:
-            df_micro_raw = fetch_ohlcv(ibex_tickers)
-            df_macro_raw = fetch_ohlcv(macro_tickers)
+    
+        df_micro_raw = fetch_ohlcv(ibex_tickers)
+        df_macro_raw = fetch_ohlcv(macro_tickers)
         # volume filter applies only to individual stocks (indices have no real volume)
         df_micro_raw = df_micro_raw[df_micro_raw["volume"] > 0].reset_index(drop=True)
         df_macro_raw = df_macro_raw.reset_index(drop=True)
