@@ -13,36 +13,37 @@ def _get_last_date(conn: Connection) -> str | None:
 
 
 def load_news(start=None, end=None) -> pd.DataFrame:
-    """Fetch ohlcv from a list of tickers."""
-    query = "SELECT * FROM news "
-
-    params = None
+    """Fetch news rows with optional date range filter."""
+    query = "SELECT * FROM news"
+    params = []
 
     if start:
-        query += " AND date >= ?"
+        query += " WHERE date >= ?"
         params.append(start)
     if end:
-        query += " AND date <= ?"
+        query += (" AND" if start else " WHERE") + " date <= ?"
         params.append(end)
 
     with sqlite_connection() as conn:
-        df = pd.read_sql(query, conn, params=params, parse_dates=["date"])
+        df = pd.read_sql(query, conn, params=params or None, parse_dates=["date"])
     return df
 
 
 def load_entities(start=None, end=None) -> pd.DataFrame:
-    """Fetch ohlcv from a list of tickers."""
-    query = "SELECT * FROM news_entities "
-
-    params = None
+    """Fetch news_entities rows joined with news date, with optional date range filter."""
+    query = (
+        "SELECT ne.* FROM news_entities ne "
+        "JOIN news n ON ne.news_id = n.id"
+    )
+    params = []
 
     if start:
-        query += " AND date >= ?"
+        query += " WHERE n.date >= ?"
         params.append(start)
     if end:
-        query += " AND date <= ?"
+        query += (" AND" if start else " WHERE") + " n.date <= ?"
         params.append(end)
 
     with sqlite_connection() as conn:
-        df = pd.read_sql(query, conn, params=params, parse_dates=["date"])
+        df = pd.read_sql(query, conn, params=params or None)
     return df
