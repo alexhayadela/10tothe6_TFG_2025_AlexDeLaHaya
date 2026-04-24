@@ -27,9 +27,7 @@ from models.neural.lstm import (
     add_cyclic_dow,
     build_sequences,
     SequenceDataset,
-    _scale,
     StockRNN,
-    SEQ_LEN,
     BATCH_SIZE,
 )
 from models.neural.cnn_rnn import StockCNNRNN
