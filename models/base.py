@@ -279,8 +279,7 @@ class BaseTrainer(abc.ABC):
             **model_fields,
         }
 
-        suffix   = "_cont" if self.target_type == "continuous" else ""
-        out_path = ARTIFACTS_PATH / f"{self.model_key}_h{self.horizon}{suffix}.pkl"
+        out_path = ARTIFACTS_PATH / f"{self.model_key}_h{self.horizon}_{self.mode}_{self.target_type}.pkl"
         joblib.dump(artifact, out_path)
         print(f"\nArtifact saved -> {out_path}")
         return artifact
