@@ -8,7 +8,7 @@ statsmodels
 scikit-learn
 arch
 openai
-supabase
+supabase>=2.0.0,<2.15.0
 ib_async
 xgboost
 torch

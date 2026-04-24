@@ -120,7 +120,7 @@ class RNNTrainer(BaseTrainer):
         criterion = self._criterion()
         optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode="min", factor=0.5, patience=LR_PATIENCE, verbose=False
+            optimizer, mode="min", factor=0.5, patience=LR_PATIENCE
         )
 
         best_val_loss = float("inf")
