@@ -18,7 +18,7 @@ Usage (standalone):
 Usage (via framework):
     python -m models.train --model xgb --horizon 1 --mode sliding
 
-Output: artifacts/xgb_h{horizon}.pkl
+Output: artifacts/xgb_h{horizon}_{mode}_discrete.pkl
 """
 
 import argparse

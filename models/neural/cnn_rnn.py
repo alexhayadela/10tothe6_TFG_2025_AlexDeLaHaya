@@ -19,7 +19,7 @@ Usage:
     python -m models.neural.cnn_rnn                         # h=1, cell=gru
     python -m models.neural.cnn_rnn --horizon 1 --cell lstm
 
-Output: artifacts/cnn_gru_h{horizon}.pkl  (or cnn_lstm_h{horizon}.pkl)
+Output: artifacts/cnn_{cell}_h{horizon}_{mode}_discrete.pkl
 """
 
 import torch

@@ -18,7 +18,7 @@ Usage (standalone):
 Usage (via framework):
     python -m models.train --model markov --horizon 1 --mode sliding
 
-Output: artifacts/markov_h{horizon}.pkl
+Output: artifacts/markov_h{horizon}_{mode}_discrete.pkl
 """
 
 import argparse

@@ -12,7 +12,7 @@ Usage (standalone):
 Usage (via framework):
     python -m models.train --model rf --horizon 1 --mode sliding
 
-Output: artifacts/rf_h{horizon}.pkl
+Output: artifacts/rf_h{horizon}_{mode}_discrete.pkl
 """
 
 import argparse

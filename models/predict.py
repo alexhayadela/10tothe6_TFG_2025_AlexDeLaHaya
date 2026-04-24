@@ -1,72 +1,266 @@
+"""
+Inference entry point for all trained models.
+
+Loads a saved artifact by (model, horizon, mode, target_type), fetches the
+right number of OHLCV rows for the artifact's ft_type, and returns one
+prediction per ticker for the most recent available date.
+
+Usage:
+    python -m models.predict --model rf
+    python -m models.predict --model xgb --horizon 1 --mode expanding --target-type discrete
+    python -m models.predict --model lstm --horizon 1 --mode sliding --target-type discrete
+
+ft_type is read from the artifact — no need to pass it manually.
+"""
+
+import argparse
 import joblib
 import numpy as np
 import pandas as pd
+import torch
 
 from config import load_env, ARTIFACTS_PATH
 from db.supabase.queries_ohlcv import fetch_ohlcv
-from db.utils_ohlcv import get_ibex_tickers
-from models.trees.features import ml_ready  # safe_build_features,
+from db.utils_ohlcv import get_ibex_tickers, get_macro_tickers
+from models.trees.features import ml_ready
+from models.neural.lstm import (
+    add_cyclic_dow,
+    build_sequences,
+    SequenceDataset,
+    _scale,
+    StockRNN,
+    SEQ_LEN,
+    BATCH_SIZE,
+)
+from models.neural.cnn_rnn import StockCNNRNN
+from torch.utils.data import DataLoader
 
 
-def load_model(type: str, horizon: int):
-    """Load a trained model artifact from disk.
+# -- row-fetch constants (one per ft_type, tunable independently) -------------
 
-    Reads a .pkl file named `{type}_h{horizon}_full.pkl` from the artifacts
-    directory (e.g. rf_h1_full.pkl). Returns the fitted model object and the
-    ordered list of feature column names used during training — the column
-    order must be reproduced exactly at inference time.
-    """
-    name = f"{type}_h{horizon}_full.pkl"
-    artifact = joblib.load(ARTIFACTS_PATH / name)
+ROWS_MICRO = 260   # 252-day momentum is the longest rolling window
+ROWS_CROSS = 260   # breadth adds only a 10-day rolling, same bottleneck
+ROWS_MACRO = 260   # VIX 250-day percentile, but micro bottleneck dominates
+
+_ROWS = {"micro": ROWS_MICRO, "cross": ROWS_CROSS, "macro": ROWS_MACRO}
+
+# -- model sets ---------------------------------------------------------------
+
+NEURAL_MODELS = {"gru", "lstm", "cnn_gru", "cnn_lstm"}
+
+
+# -- artifact loading ---------------------------------------------------------
+
+def load_artifact(model: str, horizon: int, mode: str, target_type: str) -> dict:
+    name = f"{model}_h{horizon}_{mode}_{target_type}.pkl"
+    path = ARTIFACTS_PATH / name
+    if not path.exists():
+        raise FileNotFoundError(f"Artifact not found: {path}")
+    return joblib.load(path)
+
+
+# -- tree inference -----------------------------------------------------------
+
+def _predict_tree(artifact: dict, X: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    """Return (preds, probas) for tree/markov/meta models."""
     model = artifact["model"]
     feature_cols = artifact["features"]
+    X_aligned = X[feature_cols]
+    preds = model.predict(X_aligned)
+    probas_2d = model.predict_proba(X_aligned)
+    pred_proba = probas_2d[np.arange(len(preds)), preds]
+    return preds, pred_proba
 
-    return model, feature_cols
+
+# -- RNN inference ------------------------------------------------------------
+
+def _reconstruct_rnn(artifact: dict) -> torch.nn.Module:
+    """Reconstruct StockRNN or StockCNNRNN from saved config + state dict."""
+    cfg = artifact["model_config"]
+    model_key = artifact["model_key"]
+    if model_key.startswith("cnn_"):
+        model = StockCNNRNN(
+            input_size=cfg["input_size"],
+            num_filters=cfg["num_filters"],
+            kernel_size=cfg["kernel_size"],
+            hidden_size=cfg["hidden_size"],
+            num_layers=cfg["num_layers"],
+            dropout=cfg["dropout"],
+            cell=cfg["cell"],
+        )
+    else:
+        model = StockRNN(
+            input_size=cfg["input_size"],
+            hidden_size=cfg["hidden_size"],
+            num_layers=cfg["num_layers"],
+            dropout=cfg["dropout"],
+            cell=cfg["cell"],
+        )
+    model.load_state_dict(artifact["model_state"])
+    model.eval()
+    return model
 
 
-def _get_predictions(model_type: str, horizon: int) -> pd.DataFrame:
-    """Run the full inference pipeline and return one prediction per ticker.
+def _predict_rnn(artifact: dict, X: pd.DataFrame,
+                 tickers: pd.Series, dates: pd.Series,
+                 target_type: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return (preds, probas, last_dates) for RNN models.
 
-    Steps:
-    1. Fetch the last 50 OHLCV bars per IBEX35 ticker from Supabase
-       (enough history for all rolling indicators).
-    2. Build micro features and drop rows with NaN (mask).
-    3. Run model.predict and model.predict_proba; `pred_proba` is the
-       probability of the predicted class (not always the buy probability).
-    4. Keep only the most recent prediction per ticker (last date after sort).
-
-    Returns a DataFrame with columns: ticker, date, pred (0=sell/1=buy), proba.
+    Builds sequences per ticker, applies the stored scaler, runs the model.
+    last_dates is returned so the caller can align predictions back to tickers.
     """
-    tickers = get_ibex_tickers()
-    df_micro = fetch_ohlcv(tickers, 50)
+    feature_cols = artifact["features"]
+    seq_len      = artifact["seq_len"]
+    scaler       = artifact["scaler"]
 
-    model, feature_cols = load_model(model_type, horizon)
+    X_enc = add_cyclic_dow(X[feature_cols])
 
-    # MISSING: enforce model needs -> df_macro, type{micro, cross, micro}
-    df, X, _, mask = ml_ready(horizon, df_micro, None, "micro")
-    df_pred = df.loc[mask, ["ticker", "date"]]
+    # build_sequences returns (seqs, labels, last_dates) — labels are dummy zeros
+    dummy_y = pd.Series(np.zeros(len(X_enc)), index=X_enc.index)
+    seqs, _, last_dates = build_sequences(X_enc, dummy_y, tickers, dates, seq_len)
 
-    preds = model.predict(X)
-    probas = model.predict_proba(X)
-    pred_proba = probas[np.arange(len(preds)), preds]
-    #confidence = np.abs(prob_buy - prob_sell)
+    if len(seqs) == 0:
+        return np.array([]), np.array([]), np.array([])
 
-    df_pred["pred"] = preds
-    df_pred["proba"] = pred_proba
-    # df_pred["confidence"] = confidence
+    # Apply stored scaler (fit on training data)
+    n, T, f = seqs.shape
+    seqs_scaled = scaler.transform(seqs.reshape(-1, f)).reshape(n, T, f).astype(np.float32)
 
-    df_pred = df_pred.sort_values("date").groupby("ticker").tail(1)
-    return df_pred
+    loader = DataLoader(
+        SequenceDataset(seqs_scaled, np.zeros(n, dtype=np.float32)),
+        batch_size=BATCH_SIZE,
+    )
+
+    model = _reconstruct_rnn(artifact)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+
+    outputs = []
+    with torch.no_grad():
+        for X_b, _ in loader:
+            outputs.append(model(X_b.to(device)).cpu())
+    outputs = torch.cat(outputs)
+
+    if target_type == "continuous":
+        raw = outputs.numpy()
+        return raw, raw, last_dates
+
+    probas = torch.sigmoid(outputs).numpy()
+    preds  = (probas >= 0.5).astype(int)
+    return preds, probas, last_dates
 
 
-def get_predictions():
-    df = _get_predictions(model_type="rf", horizon=1)
-    df["model"] = "rf_1"
-    return df
+# -- main inference pipeline --------------------------------------------------
 
+def get_predictions(model: str, horizon: int = 1,
+                    mode: str = "sliding",
+                    target_type: str = "discrete") -> pd.DataFrame:
+    """Run full inference pipeline; return one prediction per ticker.
+
+    Loads artifact, fetches the right number of OHLCV rows for the stored
+    ft_type, builds features, runs inference, and keeps only the most recent
+    prediction per ticker.
+
+    Returns DataFrame with columns: ticker, date, pred, proba, model.
+    """
+    artifact = load_artifact(model, horizon, mode, target_type)
+    ft_type  = artifact["ft_type"]
+    rows     = _ROWS[ft_type]
+
+    tickers      = get_ibex_tickers()
+    macro_tickers = get_macro_tickers()
+
+    df_micro = fetch_ohlcv(tickers, rows)
+    df_macro = fetch_ohlcv(macro_tickers, rows) if ft_type == "macro" else None
+
+    df, X, _, mask, _ = ml_ready(horizon, df_micro, df_macro=df_macro, ft_type=ft_type)
+
+    df_meta  = df.loc[mask, ["ticker", "date"]].copy()
+    tkr_col  = df.loc[mask, "ticker"]
+    date_col = df.loc[mask, "date"]
+
+    model_stem = f"{model}_h{horizon}_{mode}_{target_type}"
+
+    if model in NEURAL_MODELS:
+        preds, probas, last_dates = _predict_rnn(
+            artifact, X, tkr_col, date_col, target_type
+        )
+        if len(preds) == 0:
+            return pd.DataFrame(columns=["ticker", "date", "pred", "proba", "model"])
+
+        df_pred = pd.DataFrame({
+            "date":  last_dates,
+            "pred":  preds,
+            "proba": probas,
+        })
+        # join ticker back via last_date alignment
+        date_to_tickers = (
+            df_meta.groupby("date")["ticker"].apply(list).to_dict()
+        )
+        rows_list = []
+        seen = {}
+        for _, row in df_pred.iterrows():
+            d = row["date"]
+            if d not in date_to_tickers:
+                continue
+            for t in date_to_tickers[d]:
+                if t not in seen or seen[t] < d:
+                    seen[t] = d
+                    rows_list.append({"ticker": t, "date": d,
+                                      "pred": row["pred"], "proba": row["proba"]})
+        df_out = pd.DataFrame(rows_list)
+    else:
+        preds, probas = _predict_tree(artifact, X)
+        df_meta = df_meta.copy()
+        df_meta["pred"]  = preds
+        df_meta["proba"] = probas
+        df_out = df_meta
+
+    df_out = df_out.sort_values("date").groupby("ticker").tail(1).reset_index(drop=True)
+    df_out["model"] = model_stem
+    return df_out
+
+
+# -- CLI ----------------------------------------------------------------------
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Run inference with a trained model.",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        "--model",
+        required=True,
+        choices=["rf", "xgb", "gru", "lstm", "cnn_gru", "cnn_lstm", "markov", "meta"],
+        help="Model to run inference with",
+    )
+    parser.add_argument(
+        "--horizon",
+        type=int,
+        default=1,
+        help="Prediction horizon in trading days (default: 1)",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["sliding", "expanding"],
+        default="sliding",
+        help="Training mode used when the model was trained (default: sliding)",
+    )
+    parser.add_argument(
+        "--target-type",
+        dest="target_type",
+        choices=["discrete", "continuous"],
+        default="discrete",
+        help="Target type used when the model was trained (default: discrete)",
+    )
+    args = parser.parse_args()
+
     load_env()
 
-    df = get_predictions()
-    print(df)
+    df = get_predictions(
+        model=args.model,
+        horizon=args.horizon,
+        mode=args.mode,
+        target_type=args.target_type,
+    )
+    print(df.to_string(index=False))

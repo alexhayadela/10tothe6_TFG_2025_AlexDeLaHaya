@@ -14,7 +14,7 @@ Usage (standalone):
 Usage (via framework):
     python -m models.train --model meta --horizon 1
 
-Output: artifacts/meta_h{horizon}.pkl
+Output: artifacts/meta_h{horizon}_{mode}_discrete.pkl
 """
 
 import argparse

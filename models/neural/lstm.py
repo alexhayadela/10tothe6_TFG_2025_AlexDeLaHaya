@@ -17,7 +17,7 @@ Usage:
     python -m models.neural.lstm                         # h=1, ft_type=macro
     python -m models.neural.lstm --horizon 1 --cell lstm --ft-type macro
 
-Output: artifacts/lstm_h{horizon}.pkl  (or gru_h{horizon}.pkl with --cell gru)
+Output: artifacts/{cell}_h{horizon}_{mode}_discrete.pkl
 """
 
 import argparse
@@ -30,7 +30,6 @@ import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import Dataset, DataLoader
 
-from config import ARTIFACTS_PATH
 from db.base import sqlite_connection
 from db.sqlite.queries_ohlcv import fetch_ohlcv
 from db.utils_ohlcv import get_ibex_tickers, get_macro_tickers
@@ -218,7 +217,7 @@ def _fit(X_tr: np.ndarray, y_tr: np.ndarray,
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=0.5, patience=LR_PATIENCE, verbose=False
+        optimizer, mode="min", factor=0.5, patience=LR_PATIENCE
     )
 
     best_val_loss = float("inf")
