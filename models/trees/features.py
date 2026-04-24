@@ -215,33 +215,57 @@ def macro_features(df_macro: pd.DataFrame) -> pd.DataFrame:
     """
     assert_columns(df_macro, ["date", "ticker", "close"])
 
+    df = df_macro.copy().sort_values(["ticker", "date"])
+
+    # --- compute per ticker ---
+    df["log_ret_1"] = df.groupby("ticker")["close"].transform(
+        lambda x: np.log(x / x.shift(1))
+    )
+
+    # IBEX features
+    ibx = df[df["ticker"] == "^IBEX"].copy()
+    ibx["ibx_log_ret_5"]  = np.log(ibx["close"] / ibx["close"].shift(5))
+    ibx["ibx_log_ret_20"] = np.log(ibx["close"] / ibx["close"].shift(20))
+    ibx["ibx_vol_10"]     = ibx["log_ret_1"].rolling(10).std()
+    ibx["ibx_vol_20"]     = ibx["log_ret_1"].rolling(20).std()
+    ibx["ibx_vol_60"]     = ibx["log_ret_1"].rolling(60).std()
+    ibx["ibx_vol_ratio_10_60"] = ibx["ibx_vol_10"] / ibx["ibx_vol_60"]
+
+    # SP500 features
+    sp = df[df["ticker"] == "^GSPC"].copy()
+    sp["sp_vol_20"]  = sp["log_ret_1"].rolling(20).std()#.shift(1)
+    sp["sp_vol_100"] = sp["log_ret_1"].rolling(100).std()#.shift(1)
+    sp["sp_vol_ratio_20_100"] = (sp["sp_vol_20"] / sp["sp_vol_100"])#.shift(1)
+
+    # VIX features
+    vix = df[df["ticker"] == "^VIX"].copy()
+    vix["vix_chg_1"]   = vix["close"].pct_change()#.shift(1)
+    vix["vix_chg_z_5"] = vix["vix_chg_1"] / vix["vix_chg_1"].rolling(5).std()#.shift(1)
+    vix["vix_pctile_250"] = (
+        vix["close"].rolling(250).apply(lambda x: (x <= x[-1]).mean(), raw=True)
+    )#.shift(1)
+
+    # --- rename columns ---
+    ibx = ibx.rename(columns={"close": "ibx_close", "log_ret_1": "ibx_log_ret_1"})
+    sp  = sp.rename(columns={"close": "sp_close",  "log_ret_1": "sp_log_ret_1"})
+    vix = vix.rename(columns={"close": "vix_close"})
+
+    # --- merge on date ---
     macro = (
-        df_macro.set_index(["date", "ticker"])["close"]
-        .unstack("ticker")
-        .rename(columns={"^IBEX": "ibx_close", "^GSPC": "sp_close", "^VIX": "vix_close"})
-        .sort_index()
+        ibx[["date", "ibx_close", "ibx_log_ret_1", "ibx_log_ret_5", "ibx_log_ret_20",
+             "ibx_vol_10", "ibx_vol_20", "ibx_vol_60", "ibx_vol_ratio_10_60"]]
+        .merge(
+            sp[["date", "sp_close", "sp_log_ret_1", "sp_vol_20", "sp_vol_100", "sp_vol_ratio_20_100"]],
+            on="date", how="outer"
+        )
+        .merge(
+            vix[["date", "vix_close", "vix_chg_1", "vix_chg_z_5", "vix_pctile_250"]],
+            on="date", how="outer"
+        )
+        .sort_values("date")
     )
 
-    macro["ibx_log_ret_1"]  = np.log(macro["ibx_close"] / macro["ibx_close"].shift(1))
-    macro["ibx_log_ret_5"]  = np.log(macro["ibx_close"] / macro["ibx_close"].shift(5))
-    macro["ibx_log_ret_20"] = np.log(macro["ibx_close"] / macro["ibx_close"].shift(20))
-    macro["ibx_vol_10"]     = macro["ibx_log_ret_1"].rolling(10).std()
-    macro["ibx_vol_20"]     = macro["ibx_log_ret_1"].rolling(20).std()
-    macro["ibx_vol_60"]     = macro["ibx_log_ret_1"].rolling(60).std()
-    macro["ibx_vol_ratio_10_60"] = macro["ibx_vol_10"] / macro["ibx_vol_60"]
-
-    macro["sp_log_ret_1"]  = np.log(macro["sp_close"] / macro["sp_close"].shift(1))
-    macro["sp_vol_20"]     = macro["sp_log_ret_1"].rolling(20).std()
-    macro["sp_vol_100"]    = macro["sp_log_ret_1"].rolling(100).std()
-    macro["sp_vol_ratio_20_100"] = macro["sp_vol_20"] / macro["sp_vol_100"]
-
-    macro["vix_chg_1"]     = macro["vix_close"].pct_change()
-    macro["vix_chg_z_5"]   = macro["vix_chg_1"] / macro["vix_chg_1"].rolling(5).std()
-    macro["vix_pctile_250"] = (
-        macro["vix_close"].rolling(250).apply(lambda x: (x <= x[-1]).mean(), raw=True)
-    )
-
-    return macro.reset_index()
+    return macro.reset_index(drop=True)
 
 
 def rel_to_market_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -350,6 +374,35 @@ def necessary_features(df: pd.DataFrame,
     return df
 
 
+
+# ── market alignment ─────────────────────────────────────────────────────────
+
+def align_macro(macro: pd.DataFrame, micro_dates: pd.Series):
+    """Align macro variables calendar (festivities). Also aligned with micro dates."""
+    df = macro.copy().set_index("date").sort_index()
+
+    # full macro index (keeps 2004–2006 warmup)
+    macro_index = df.index
+
+    # target calendar
+    target_index = pd.Index(micro_dates.sort_values().unique(), name="date")
+
+    # reindex to UNION (important)
+    full_index = macro_index.union(target_index)
+
+    # reindex (introduces NaNs)
+    df = df.reindex(full_index)
+
+    # identify flow variables (returns / changes)
+    ret_cols = [c for c in df.columns if "log_ret_1" in c or "chg" in c]
+
+    # 1. flows → 0 (no event)
+    df[ret_cols] = df[ret_cols].fillna(0)
+
+    # 2. states → ffill
+    df = df.ffill()
+
+    return df.reset_index()
 # ── pipeline ──────────────────────────────────────────────────────────────────
 
 def build_features(horizon: int,
@@ -378,6 +431,7 @@ def build_features(horizon: int,
         assert df_macro is not None, "df_macro required for ft_type='macro'"
         df_macro = df_macro.sort_values("date").reset_index(drop=True)
         macro = macro_features(df_macro)
+        macro = align_macro(macro, df_micro["date"])
 
     df_final = []
     for ticker, df_t in df_micro.groupby("ticker"):
