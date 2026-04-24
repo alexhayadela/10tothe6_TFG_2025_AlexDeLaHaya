@@ -25,7 +25,6 @@ from db.utils_ohlcv import get_ibex_tickers, get_macro_tickers
 from models.trees.features import ml_ready
 from models.neural.lstm import (
     add_cyclic_dow,
-    build_sequences,
     SequenceDataset,
     StockRNN,
     BATCH_SIZE,
@@ -61,12 +60,18 @@ def load_artifact(model: str, horizon: int, mode: str, target_type: str) -> dict
 
 def _predict_tree(artifact: dict, X: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
     """Return (preds, probas) for tree/markov/meta models."""
-    model = artifact["model"]
+    model        = artifact["model"]
     feature_cols = artifact["features"]
-    X_aligned = X[feature_cols]
-    preds = model.predict(X_aligned)
-    probas_2d = model.predict_proba(X_aligned)
-    pred_proba = probas_2d[np.arange(len(preds)), preds]
+    X_aligned    = X[feature_cols]
+    preds        = model.predict(X_aligned)
+    if artifact.get("target_type") == "continuous":
+        raw = preds.astype(float)
+        return raw, raw
+    probas_raw = model.predict_proba(X_aligned)
+    if probas_raw.ndim == 2:
+        pred_proba = probas_raw[np.arange(len(preds)), preds]
+    else:
+        pred_proba = probas_raw
     return preds, pred_proba
 
 
@@ -101,26 +106,39 @@ def _reconstruct_rnn(artifact: dict) -> torch.nn.Module:
 
 def _predict_rnn(artifact: dict, X: pd.DataFrame,
                  tickers: pd.Series, dates: pd.Series,
-                 target_type: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (preds, probas, last_dates) for RNN models.
+                 target_type: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Return (preds, probas, last_dates, last_tickers) for RNN models.
 
-    Builds sequences per ticker, applies the stored scaler, runs the model.
-    last_dates is returned so the caller can align predictions back to tickers.
+    Builds sequences per ticker while tracking ticker identity, applies the
+    stored scaler, runs the model forward pass.
     """
     feature_cols = artifact["features"]
     seq_len      = artifact["seq_len"]
     scaler       = artifact["scaler"]
 
-    X_enc = add_cyclic_dow(X[feature_cols])
+    X_enc = add_cyclic_dow(X)[feature_cols]
 
-    # build_sequences returns (seqs, labels, last_dates) — labels are dummy zeros
-    dummy_y = pd.Series(np.zeros(len(X_enc)), index=X_enc.index)
-    seqs, _, last_dates = build_sequences(X_enc, dummy_y, tickers, dates, seq_len)
+    all_seqs, all_last_dates, all_tickers_list = [], [], []
+    for ticker in tickers.unique():
+        tmask  = tickers == ticker
+        X_t    = X_enc.loc[tmask]
+        d_t    = dates.loc[tmask]
+        order  = d_t.argsort()
+        X_vals = X_t.iloc[order.values].values
+        d_vals = d_t.iloc[order.values].values
+        n = len(X_vals)
+        for i in range(seq_len - 1, n):
+            all_seqs.append(X_vals[i - seq_len + 1: i + 1])
+            all_last_dates.append(d_vals[i])
+            all_tickers_list.append(ticker)
 
-    if len(seqs) == 0:
-        return np.array([]), np.array([]), np.array([])
+    if not all_seqs:
+        return np.array([]), np.array([]), np.array([]), np.array([])
 
-    # Apply stored scaler (fit on training data)
+    seqs         = np.array(all_seqs, dtype=np.float32)
+    last_dates   = np.array(all_last_dates)
+    last_tickers = np.array(all_tickers_list)
+
     n, T, f = seqs.shape
     seqs_scaled = scaler.transform(seqs.reshape(-1, f)).reshape(n, T, f).astype(np.float32)
 
@@ -141,11 +159,11 @@ def _predict_rnn(artifact: dict, X: pd.DataFrame,
 
     if target_type == "continuous":
         raw = outputs.numpy()
-        return raw, raw, last_dates
+        return raw, raw, last_dates, last_tickers
 
     probas = torch.sigmoid(outputs).numpy()
     preds  = (probas >= 0.5).astype(int)
-    return preds, probas, last_dates
+    return preds, probas, last_dates, last_tickers
 
 
 # -- main inference pipeline --------------------------------------------------
@@ -180,33 +198,17 @@ def get_predictions(model: str, horizon: int = 1,
     model_stem = f"{model}_h{horizon}_{mode}_{target_type}"
 
     if model in NEURAL_MODELS:
-        preds, probas, last_dates = _predict_rnn(
+        preds, probas, last_dates, last_tickers = _predict_rnn(
             artifact, X, tkr_col, date_col, target_type
         )
         if len(preds) == 0:
             return pd.DataFrame(columns=["ticker", "date", "pred", "proba", "model"])
-
-        df_pred = pd.DataFrame({
-            "date":  last_dates,
-            "pred":  preds,
-            "proba": probas,
+        df_out = pd.DataFrame({
+            "ticker": last_tickers,
+            "date":   last_dates,
+            "pred":   preds,
+            "proba":  probas,
         })
-        # join ticker back via last_date alignment
-        date_to_tickers = (
-            df_meta.groupby("date")["ticker"].apply(list).to_dict()
-        )
-        rows_list = []
-        seen = {}
-        for _, row in df_pred.iterrows():
-            d = row["date"]
-            if d not in date_to_tickers:
-                continue
-            for t in date_to_tickers[d]:
-                if t not in seen or seen[t] < d:
-                    seen[t] = d
-                    rows_list.append({"ticker": t, "date": d,
-                                      "pred": row["pred"], "proba": row["proba"]})
-        df_out = pd.DataFrame(rows_list)
     else:
         preds, probas = _predict_tree(artifact, X)
         df_meta = df_meta.copy()
