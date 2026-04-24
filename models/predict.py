@@ -231,7 +231,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         required=True,
-        choices=["rf", "xgb", "gru", "lstm", "cnn_gru", "cnn_lstm", "markov", "meta"],
+        choices=["rf", "xgb", "gru", "lstm", "cnn_gru", "cnn_lstm", "markov"],
         help="Model to run inference with",
     )
     parser.add_argument(
