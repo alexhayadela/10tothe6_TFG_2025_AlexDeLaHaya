@@ -33,3 +33,6 @@ trading/full_time_bot.py
 ### linting ###
 node_modules
 .ruff_cache
+
+### superpowers ###
+*/superpowers/
