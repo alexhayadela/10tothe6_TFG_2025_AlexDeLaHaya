@@ -40,7 +40,7 @@ def test_evaluate_regression_keys():
     y = np.array([0.01, -0.02, 0.005, 0.03, -0.01])
     preds = np.array([0.008, -0.015, 0.006, 0.025, -0.008])
     result = evaluate_regression(y, preds)
-    expected_keys = {"model", "mae", "rmse", "r2", "directional_accuracy", "ic"}
+    expected_keys = {"model", "mae", "rmse", "r2", "directional_accuracy", "ic", "mean_abs_pred"}
     assert set(result.keys()) == expected_keys
 
 

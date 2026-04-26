@@ -76,6 +76,7 @@ def evaluate_regression(y_true, y_pred, model_name: str = "") -> dict:
         "r2":                  float(r2_score(y_true, y_pred)),
         "directional_accuracy": float(np.mean(np.sign(y_true) == np.sign(y_pred))),
         "ic":                  float(ic) if np.isfinite(ic) else 0.0,  # PRIMARY
+        "mean_abs_pred":       float(np.mean(np.abs(y_pred))),
     }
 
 
