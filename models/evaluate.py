@@ -61,7 +61,7 @@ def evaluate_regression(y_true, y_pred, model_name: str = "") -> dict:
 
     Returns
     -------
-    dict with keys: model, mae, rmse, r2, directional_accuracy, ic (PRIMARY)
+    dict with keys: model, mae, rmse, r2, directional_accuracy, ic (PRIMARY), mean_abs_pred
     See decisions/continuous_target_decisions.md for metric rationale.
     """
     y_true = np.asarray(y_true, dtype=float)
