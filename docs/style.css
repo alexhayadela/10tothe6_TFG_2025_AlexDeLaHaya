@@ -103,13 +103,15 @@ footer {
 /* container types */
 
 .preds {
-  background-color: #f0f0f0;
-  margin: 30px;
+  background-color: #f7f7f7;
+  margin: 24px 24px 0 24px;
   position: relative;
 }
 
 .info {
   background-color: #d4f8ff;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -253,12 +255,13 @@ footer {
 
 .news-section {
   background-color: #0a0a2e;
-  margin: 0 30px 30px 30px;
+  margin: 0 24px 24px 24px;
   padding: 14px 20px;
   display: flex;
   align-items: center;
   gap: 16px;
   overflow: hidden;
+  border-radius: 0 0 12px 12px;
 }
 
 .live-indicator {
@@ -347,16 +350,17 @@ footer {
 ========================= */
 
 .columns {
-  margin: 30px;
+  margin: 0 24px 24px 24px;
   display: flex;
-  gap: 30px;
+  gap: 24px;
+  align-items: stretch;
 }
 
 .col {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 24px;
 }
 
 .info img {
