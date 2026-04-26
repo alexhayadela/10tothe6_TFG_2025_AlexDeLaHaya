@@ -23,13 +23,16 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train GRU direction classifier")
-    parser.add_argument("--horizon", type=int, default=1,         help="Prediction horizon (days)")
-    parser.add_argument("--ft-type", type=str, default="macro",   help="Feature type: micro | cross | macro")
-    parser.add_argument("--mode",    type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--horizon",     type=int, default=1,          help="Prediction horizon (days)")
+    parser.add_argument("--ft-type",     type=str, default="macro",    help="Feature type: micro | cross | macro")
+    parser.add_argument("--mode",        type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--target-type", dest="target_type", type=str, default="discrete",
+                        help="Target type: discrete | continuous")
     args = parser.parse_args()
 
     from config import load_env
     load_env()
 
     from models.neural.rnn_trainer import RNNTrainer
-    RNNTrainer(horizon=args.horizon, ft_type=args.ft_type, mode=args.mode, cell="gru").run()
+    RNNTrainer(horizon=args.horizon, ft_type=args.ft_type, mode=args.mode,
+               cell="gru", target_type=args.target_type).run()

@@ -330,22 +330,26 @@ def _train_and_eval(all_seqs, all_labels, all_last_dates,
 # -- main training pipeline ---------------------------------------------------
 
 def train_lstm(horizon: int = 1, ft_type: str = "macro", cell: str = "lstm",
-               mode: str = "sliding") -> dict:
+               mode: str = "sliding", target_type: str = "discrete") -> dict:
     """Delegate to RNNTrainer (lazy import avoids circular dependency)."""
     from models.neural.rnn_trainer import RNNTrainer  # noqa: PLC0415
-    return RNNTrainer(horizon=horizon, ft_type=ft_type, mode=mode, cell=cell).run()
+    return RNNTrainer(horizon=horizon, ft_type=ft_type, mode=mode, cell=cell, target_type=target_type).run()
 
 
 # -- entry point --------------------------------------------------------------
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train LSTM/GRU direction classifier")
-    parser.add_argument("--horizon", type=int, default=1,       help="Prediction horizon (days)")
-    parser.add_argument("--cell",    type=str, default="lstm",  help="RNN cell type: lstm | gru")
-    parser.add_argument("--ft-type", type=str, default="macro", help="Feature type: micro | cross | macro")
+    parser.add_argument("--horizon",     type=int, default=1,          help="Prediction horizon (days)")
+    parser.add_argument("--cell",        type=str, default="lstm",     help="RNN cell type: lstm | gru")
+    parser.add_argument("--ft-type",     type=str, default="macro",    help="Feature type: micro | cross | macro")
+    parser.add_argument("--mode",        type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--target-type", dest="target_type", type=str, default="discrete",
+                        help="Target type: discrete | continuous")
     args = parser.parse_args()
 
     from config import load_env
     load_env()
 
-    train_lstm(horizon=args.horizon, ft_type=args.ft_type, cell=args.cell)
+    train_lstm(horizon=args.horizon, ft_type=args.ft_type, cell=args.cell,
+               mode=args.mode, target_type=args.target_type)

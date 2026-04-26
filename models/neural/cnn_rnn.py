@@ -104,10 +104,10 @@ class StockCNNRNN(nn.Module):
 # -- main training pipeline ---------------------------------------------------
 
 def train_cnn_rnn(horizon: int = 1, ft_type: str = "macro", cell: str = "gru",
-                  mode: str = "sliding") -> dict:
+                  mode: str = "sliding", target_type: str = "discrete") -> dict:
     """Delegate to CNNRNNTrainer (lazy import avoids circular dependency)."""
     from models.neural.rnn_trainer import CNNRNNTrainer  # noqa: PLC0415
-    return CNNRNNTrainer(horizon=horizon, ft_type=ft_type, mode=mode, cell=cell).run()
+    return CNNRNNTrainer(horizon=horizon, ft_type=ft_type, mode=mode, cell=cell, target_type=target_type).run()
 
 
 # -- entry point --------------------------------------------------------------
@@ -115,13 +115,16 @@ def train_cnn_rnn(horizon: int = 1, ft_type: str = "macro", cell: str = "gru",
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Train CNN+GRU/LSTM direction classifier")
-    parser.add_argument("--horizon", type=int, default=1,         help="Prediction horizon (days)")
-    parser.add_argument("--cell",    type=str, default="gru",     help="RNN cell type: gru | lstm")
-    parser.add_argument("--ft-type", type=str, default="macro",   help="Feature type: micro | cross | macro")
-    parser.add_argument("--mode",    type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--horizon",     type=int, default=1,          help="Prediction horizon (days)")
+    parser.add_argument("--cell",        type=str, default="gru",      help="RNN cell type: gru | lstm")
+    parser.add_argument("--ft-type",     type=str, default="macro",    help="Feature type: micro | cross | macro")
+    parser.add_argument("--mode",        type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--target-type", dest="target_type", type=str, default="discrete",
+                        help="Target type: discrete | continuous")
     args = parser.parse_args()
 
     from config import load_env
     load_env()
 
-    train_cnn_rnn(horizon=args.horizon, ft_type=args.ft_type, cell=args.cell, mode=args.mode)
+    train_cnn_rnn(horizon=args.horizon, ft_type=args.ft_type, cell=args.cell,
+                  mode=args.mode, target_type=args.target_type)

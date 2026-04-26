@@ -204,18 +204,21 @@ class XGBTrainer(BaseTrainer):
 
 # -- convenience wrapper + entry point ----------------------------------------
 
-def train_xgb(horizon: int = 1, ft_type: str = "macro", mode: str = "sliding") -> dict:
-    return XGBTrainer(horizon=horizon, ft_type=ft_type, mode=mode).run()
+def train_xgb(horizon: int = 1, ft_type: str = "macro", mode: str = "sliding",
+              target_type: str = "discrete") -> dict:
+    return XGBTrainer(horizon=horizon, ft_type=ft_type, mode=mode, target_type=target_type).run()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train XGBoost direction classifier")
-    parser.add_argument("--horizon", type=int, default=1,         help="Prediction horizon (days)")
-    parser.add_argument("--ft-type", type=str, default="macro",   help="Feature type: micro | cross | macro")
-    parser.add_argument("--mode",    type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--horizon",     type=int, default=1,          help="Prediction horizon (days)")
+    parser.add_argument("--ft-type",     type=str, default="macro",    help="Feature type: micro | cross | macro")
+    parser.add_argument("--mode",        type=str, default="sliding",  help="CV mode: sliding | expanding")
+    parser.add_argument("--target-type", dest="target_type", type=str, default="discrete",
+                        help="Target type: discrete | continuous")
     args = parser.parse_args()
 
     from config import load_env
     load_env()
 
-    train_xgb(horizon=args.horizon, ft_type=args.ft_type, mode=args.mode)
+    train_xgb(horizon=args.horizon, ft_type=args.ft_type, mode=args.mode, target_type=args.target_type)
