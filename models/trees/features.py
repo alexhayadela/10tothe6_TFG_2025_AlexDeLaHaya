@@ -488,7 +488,7 @@ def ml_ready(horizon: int,
     X = df.drop(columns=remove_cols)
     X = X.replace([np.inf, -np.inf], np.nan)
 
-    mask = X.notna().all(axis=1)
+    mask = X.notna().all(axis=1) & df["future_log_ret"].notna()
 
     X = X.loc[mask]
     y = df.loc[mask, "target"]
