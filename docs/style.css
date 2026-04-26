@@ -154,7 +154,7 @@ footer {
 
 .pred:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* prediction sections */
@@ -166,23 +166,37 @@ footer {
   justify-content: center;
 }
 
+.pred-top h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: darkblue;
+  margin: 0;
+}
+
 .pred-bottom {
   flex: 3;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-family: "Courier New", monospace;
-  font-weight: bold;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #555;
 }
 
-/* prediction states */
+/* prediction states — top accent border + light tint */
 
 .buy {
-  background-color: #5fcf92;
+  border-top: 3px solid #3dba78;
+  background-color: #f0fdf4;
 }
+
 .sell {
-  background-color: #e07b7b;
+  border-top: 3px solid #d96b6b;
+  background-color: #fff5f5;
 }
 
 /* =========================
