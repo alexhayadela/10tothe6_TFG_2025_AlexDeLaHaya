@@ -6,7 +6,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
 
   background-color: rgb(200, 235, 255);
   background-image: url("../imgs/bg.png");
@@ -22,19 +22,33 @@ body {
 }
 
 /* =========================
+   PAGE WRAPPER
+========================= */
+
+.page-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =========================
    TYPOGRAPHY
 ========================= */
 
 h1 {
+  font-family: 'DM Serif Display', serif;
   color: darkblue;
-  font-size: 28px;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   text-align: center;
-  margin: 20px 0 30px 0;
+  margin: 20px 0 24px 0;
 }
 
 h2 {
+  font-family: 'DM Serif Display', serif;
   color: darkblue;
   font-size: 18px;
+  font-weight: 400;
 }
 
 p,
@@ -53,9 +67,10 @@ li {
 }
 
 footer {
-  font-size: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 13px;
   text-align: center;
-  margin: 0 0 30px 0;
+  margin: 0 0 28px 0;
 }
 
 /* =========================
