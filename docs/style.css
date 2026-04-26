@@ -194,11 +194,11 @@ footer {
 /* prediction states — original palette, soft full-strip wash */
 
 .buy {
-  background-color: #5fcf92;
+  background-color: rgba(95, 207, 146, 0.80);
 }
 
 .sell {
-  background-color: #e07b7b;
+  background-color: rgba(224, 123, 123, 0.80);
 }
 
 /* =========================
