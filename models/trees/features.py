@@ -383,11 +383,9 @@ def align_macro(macro: pd.DataFrame, micro_dates: pd.Series):
 
     # full macro index (keeps 2004–2006 warmup)
     macro_index = df.index
-
     # target calendar
     target_index = pd.Index(micro_dates.sort_values().unique(), name="date")
-
-    # reindex to UNION (important)
+    # union calendar
     full_index = macro_index.union(target_index)
 
     # reindex (introduces NaNs)
@@ -395,10 +393,8 @@ def align_macro(macro: pd.DataFrame, micro_dates: pd.Series):
 
     # identify flow variables (returns / changes)
     ret_cols = [c for c in df.columns if "log_ret_1" in c or "chg" in c]
-
     # 1. flows → 0 (no event)
     df[ret_cols] = df[ret_cols].fillna(0)
-
     # 2. states → ffill
     df = df.ffill()
 

@@ -95,7 +95,7 @@ def add_header(date: datetime.date):
 
     <div class="header">
         <img src="cid:freakbob" alt=freakbob
-            width="479" height="242"
+            width="450" height="200"
             style="display:block; margin:0 auto; border-radius:6px;">
     </div>
 """
