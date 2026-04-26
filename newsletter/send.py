@@ -1,4 +1,5 @@
 import os
+import argparse
 import datetime
 import smtplib
 from pathlib import Path
@@ -48,15 +49,13 @@ def send_newsletter(text, html, recipients):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-mock", action="store_true", help="Send to EMAIL_USER only instead of all recipients")
+    args = parser.parse_args()
+
     load_env()
-    """ Don't process news twice, read from db
-    news = last_news()
-    classified_news = classify_news(news)
-    top_10 = top_news(classified_news,10)
-    ready = newsletter_ready(top_10)
-    """
     html = build_newsletter()
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
-    recipients = get_recipients()
+    recipients = [os.environ.get("EMAIL_USER")] if args.mock else get_recipients()
 
     send_newsletter(text, html, recipients)
