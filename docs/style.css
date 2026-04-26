@@ -138,9 +138,11 @@ footer {
 
 .pred {
   height: 100px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 10px;
-  border: 1px solid #e2e2e2;
+  border: 1px solid rgba(255, 255, 255, 0.75);
   overflow: hidden;
 
   display: flex;
@@ -148,7 +150,7 @@ footer {
 
   cursor: pointer;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -156,7 +158,7 @@ footer {
 
 .pred:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
 }
 
 /* prediction sections */
@@ -186,19 +188,17 @@ footer {
   font-size: 12px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  color: #555;
+  color: #333;
 }
 
-/* prediction states — top accent border + light tint */
+/* prediction states — original palette, soft full-strip wash */
 
 .buy {
-  border-top: 3px solid #3dba78;
-  background-color: #f0fdf4;
+  background-color: rgba(95, 207, 146, 0.55);
 }
 
 .sell {
-  border-top: 3px solid #d96b6b;
-  background-color: #fff5f5;
+  background-color: rgba(224, 123, 123, 0.55);
 }
 
 /* =========================
