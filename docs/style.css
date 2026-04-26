@@ -255,13 +255,13 @@ footer {
 
 .news-section {
   background-color: #0a0a2e;
-  margin: 0 24px 24px 24px;
+  margin: 24px 24px 24px 24px;
   padding: 14px 20px;
   display: flex;
   align-items: center;
   gap: 16px;
   overflow: hidden;
-  border-radius: 0 0 12px 12px;
+  border-radius: 12px;
 }
 
 .live-indicator {
