@@ -35,9 +35,9 @@ from torch.utils.data import DataLoader
 
 # -- row-fetch constants (one per ft_type, tunable independently) -------------
 
-ROWS_MICRO = 260   # 252-day momentum is the longest rolling window
-ROWS_CROSS = 260   # breadth adds only a 10-day rolling, same bottleneck
-ROWS_MACRO = 260   # VIX 250-day percentile, but micro bottleneck dominates
+ROWS_MICRO = 300   # 252-day momentum is the longest rolling window
+ROWS_CROSS = 300   # breadth adds only a 10-day rolling, same bottleneck
+ROWS_MACRO = 300   # VIX 250-day percentile, but micro bottleneck dominates
 
 _ROWS = {"micro": ROWS_MICRO, "cross": ROWS_CROSS, "macro": ROWS_MACRO}
 
