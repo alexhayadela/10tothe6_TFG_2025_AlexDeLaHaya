@@ -50,7 +50,7 @@ def send_newsletter(text, html, recipients):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-mock", action="store_true", help="Send to EMAIL_USER only instead of all recipients")
+    parser.add_argument("--mock", action="store_true", help="Send to EMAIL_USER only instead of all recipients")
     args = parser.parse_args()
 
     load_env()

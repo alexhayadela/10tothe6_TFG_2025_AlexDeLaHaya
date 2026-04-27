@@ -299,20 +299,8 @@ def macro_features(df_macro: pd.DataFrame) -> pd.DataFrame:
             on="date", how="outer"
         )
         .sort_values("date")
-        ibx[["date", "ibx_close", "ibx_log_ret_1", "ibx_log_ret_5", "ibx_log_ret_20",
-             "ibx_vol_10", "ibx_vol_20", "ibx_vol_60", "ibx_vol_ratio_10_60"]]
-        .merge(
-            sp[["date", "sp_close", "sp_log_ret_1", "sp_vol_20", "sp_vol_100", "sp_vol_ratio_20_100"]],
-            on="date", how="outer"
-        )
-        .merge(
-            vix[["date", "vix_close", "vix_chg_1", "vix_chg_z_5", "vix_pctile_250"]],
-            on="date", how="outer"
-        )
-        .sort_values("date")
     )
 
-    return macro.reset_index(drop=True)
     return macro.reset_index(drop=True)
 
 
