@@ -15,6 +15,7 @@ Architecture rationale:
 
 import copy
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -78,6 +79,9 @@ class RNNTrainer(BaseTrainer):
 
     def _after_features(self):
         """Encode cyclic dow and build all sequences from the full dataset."""
+        if "dow" not in self.X.columns:
+            self.X = self.X.copy()
+            self.X["dow"] = pd.to_datetime(self.dates).dt.dayofweek.values
         self.X = add_cyclic_dow(self.X)
         self.input_size = self.X.shape[1]
         print(f"Input size    : {self.input_size} features (after cyclic dow)\n")
