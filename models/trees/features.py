@@ -251,7 +251,54 @@ def macro_features(df_macro: pd.DataFrame) -> pd.DataFrame:
     vix = vix.rename(columns={"close": "vix_close"})
 
     # --- merge on date ---
+    df = df_macro.copy().sort_values(["ticker", "date"])
+
+    # --- compute per ticker ---
+    df["log_ret_1"] = df.groupby("ticker")["close"].transform(
+        lambda x: np.log(x / x.shift(1))
+    )
+
+    # IBEX features
+    ibx = df[df["ticker"] == "^IBEX"].copy()
+    ibx["ibx_log_ret_5"]  = np.log(ibx["close"] / ibx["close"].shift(5))
+    ibx["ibx_log_ret_20"] = np.log(ibx["close"] / ibx["close"].shift(20))
+    ibx["ibx_vol_10"]     = ibx["log_ret_1"].rolling(10).std()
+    ibx["ibx_vol_20"]     = ibx["log_ret_1"].rolling(20).std()
+    ibx["ibx_vol_60"]     = ibx["log_ret_1"].rolling(60).std()
+    ibx["ibx_vol_ratio_10_60"] = ibx["ibx_vol_10"] / ibx["ibx_vol_60"]
+
+    # SP500 features
+    sp = df[df["ticker"] == "^GSPC"].copy()
+    sp["sp_vol_20"]  = sp["log_ret_1"].rolling(20).std()#.shift(1)
+    sp["sp_vol_100"] = sp["log_ret_1"].rolling(100).std()#.shift(1)
+    sp["sp_vol_ratio_20_100"] = (sp["sp_vol_20"] / sp["sp_vol_100"])#.shift(1)
+
+    # VIX features
+    vix = df[df["ticker"] == "^VIX"].copy()
+    vix["vix_chg_1"]   = vix["close"].pct_change()#.shift(1)
+    vix["vix_chg_z_5"] = vix["vix_chg_1"] / vix["vix_chg_1"].rolling(5).std()#.shift(1)
+    vix["vix_pctile_250"] = (
+        vix["close"].rolling(250).apply(lambda x: (x <= x[-1]).mean(), raw=True)
+    )#.shift(1)
+
+    # --- rename columns ---
+    ibx = ibx.rename(columns={"close": "ibx_close", "log_ret_1": "ibx_log_ret_1"})
+    sp  = sp.rename(columns={"close": "sp_close",  "log_ret_1": "sp_log_ret_1"})
+    vix = vix.rename(columns={"close": "vix_close"})
+
+    # --- merge on date ---
     macro = (
+        ibx[["date", "ibx_close", "ibx_log_ret_1", "ibx_log_ret_5", "ibx_log_ret_20",
+             "ibx_vol_10", "ibx_vol_20", "ibx_vol_60", "ibx_vol_ratio_10_60"]]
+        .merge(
+            sp[["date", "sp_close", "sp_log_ret_1", "sp_vol_20", "sp_vol_100", "sp_vol_ratio_20_100"]],
+            on="date", how="outer"
+        )
+        .merge(
+            vix[["date", "vix_close", "vix_chg_1", "vix_chg_z_5", "vix_pctile_250"]],
+            on="date", how="outer"
+        )
+        .sort_values("date")
         ibx[["date", "ibx_close", "ibx_log_ret_1", "ibx_log_ret_5", "ibx_log_ret_20",
              "ibx_vol_10", "ibx_vol_20", "ibx_vol_60", "ibx_vol_ratio_10_60"]]
         .merge(
@@ -265,6 +312,7 @@ def macro_features(df_macro: pd.DataFrame) -> pd.DataFrame:
         .sort_values("date")
     )
 
+    return macro.reset_index(drop=True)
     return macro.reset_index(drop=True)
 
 
@@ -427,6 +475,7 @@ def build_features(horizon: int,
         assert df_macro is not None, "df_macro required for ft_type='macro'"
         df_macro = df_macro.sort_values("date").reset_index(drop=True)
         macro = macro_features(df_macro)
+        macro = align_macro(macro, df_micro["date"])
         macro = align_macro(macro, df_micro["date"])
 
     df_final = []
