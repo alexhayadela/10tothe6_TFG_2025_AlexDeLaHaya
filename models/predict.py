@@ -116,7 +116,7 @@ def _predict_rnn(artifact: dict, X: pd.DataFrame,
     seq_len      = artifact["seq_len"]
     scaler       = artifact["scaler"]
 
-    X_enc = add_cyclic_dow(X)[feature_cols]
+    X_enc = (add_cyclic_dow(X) if "dow" in X.columns else X)[feature_cols]
 
     all_seqs, all_last_dates, all_tickers_list = [], [], []
     for ticker in tickers.unique():
@@ -179,6 +179,10 @@ def get_predictions(model: str, horizon: int = 1,
 
     Returns DataFrame with columns: ticker, date, pred, proba, model.
     """
+    if target_type == "continuous":
+        print("Feature will be added in the future.")
+        return pd.DataFrame(columns=["ticker", "date", "pred", "proba", "model"])
+
     artifact = load_artifact(model, horizon, mode, target_type)
     ft_type  = artifact["ft_type"]
     rows     = _ROWS[ft_type]

@@ -134,6 +134,10 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    if args.target_type == "continuous":
+        print("Feature will be added in the future.")
+        raise SystemExit(0)
+
     from config import load_env
     load_env()
 

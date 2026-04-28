@@ -408,6 +408,7 @@ def necessary_features(df: pd.DataFrame,
             "rel_ret_5", "rel_ret_20", "rel_vol_20",
         ]
         drop_macro = [
+            "ibx_close", "sp_close", "vix_close",
             "ibx_log_ret_1", "ibx_log_ret_5", "ibx_log_ret_20",
             "sp_log_ret_1", "vix_chg_1",
             "ibx_vol_20", "ibx_vol_60", "sp_vol_100",
@@ -535,7 +536,11 @@ def ml_ready(horizon: int,
 
     mask = X.notna().all(axis=1) & df["future_log_ret"].notna()
 
-    X = X.loc[mask]
+    # NOTE: dropping NaN rows is correct for training but breaks inference
+    # (last `horizon` rows have NaN targets but are the rows we want to predict).
+    # Commented out so predict pipeline receives all feature-complete rows.
+    # X = X.loc[mask]
+    X = X.loc[X.notna().all(axis=1)]
     y = df.loc[mask, "target"]
     y_cont = df.loc[mask, "future_log_ret"]
     return df, X, y, mask, y_cont
