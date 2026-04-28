@@ -536,11 +536,7 @@ def ml_ready(horizon: int,
 
     mask = X.notna().all(axis=1) & df["future_log_ret"].notna()
 
-    # NOTE: dropping NaN rows is correct for training but breaks inference
-    # (last `horizon` rows have NaN targets but are the rows we want to predict).
-    # Commented out so predict pipeline receives all feature-complete rows.
-    # X = X.loc[mask]
-    X = X.loc[X.notna().all(axis=1)]
+    X = X.loc[mask]
     y = df.loc[mask, "target"]
     y_cont = df.loc[mask, "future_log_ret"]
     return df, X, y, mask, y_cont

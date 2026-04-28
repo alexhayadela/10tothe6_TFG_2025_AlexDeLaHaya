@@ -193,11 +193,19 @@ def get_predictions(model: str, horizon: int = 1,
     df_micro = fetch_ohlcv(tickers, rows)
     df_macro = fetch_ohlcv(macro_tickers, rows) if ft_type == "macro" else None
 
-    df, X, _, mask, _ = ml_ready(horizon, df_micro, df_macro=df_macro, ft_type=ft_type)
+    df, X_train, _, mask, _ = ml_ready(horizon, df_micro, df_macro=df_macro, ft_type=ft_type)
 
-    df_meta  = df.loc[mask, ["ticker", "date"]].copy()
-    tkr_col  = df.loc[mask, "ticker"]
-    date_col = df.loc[mask, "date"]
+    # For inference we want all feature-complete rows, including the last `horizon`
+    # rows whose targets are NaN (those are the rows we actually want to predict).
+    _remove = ["ticker", "date", "open", "high", "low", "close",
+               "volume", "target", "future_log_ret"]
+    X_full = df.drop(columns=_remove).replace([np.inf, -np.inf], np.nan)
+    feat_mask = X_full.notna().all(axis=1)
+    X = X_full.loc[feat_mask]
+
+    df_meta  = df.loc[feat_mask, ["ticker", "date"]].copy()
+    tkr_col  = df.loc[feat_mask, "ticker"]
+    date_col = df.loc[feat_mask, "date"]
 
     model_stem = f"{model}_h{horizon}_{mode}_{target_type}"
 
