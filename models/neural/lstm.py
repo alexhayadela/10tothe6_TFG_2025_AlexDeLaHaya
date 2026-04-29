@@ -47,7 +47,7 @@ BATCH_SIZE    = 128
 MAX_EPOCHS    = 100
 LR_PATIENCE   = 5      # ReduceLROnPlateau patience (epochs)
 ES_PATIENCE   = 10     # early stopping patience (epochs)
-LR            = 1e-3
+LR            = 3e-4   # before 1e-3 reduced because best_ep=1 perma
 WEIGHT_DECAY  = 1e-4
 GRAD_CLIP     = 1.0
 VAL_FRACTION  = 0.2    # temporal inner split for early stopping

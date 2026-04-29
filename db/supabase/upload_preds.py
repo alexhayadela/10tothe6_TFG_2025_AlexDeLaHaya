@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     supabase = supabase_client()
 
-    predictions = get_predictions(model="rf", horizon=1, mode="sliding", target_type="discrete")
+    predictions = get_predictions(model="rf", horizon=1, mode="expanding", target_type="discrete")
 
     # Update daily predictions repo
     path = DATA_PATH / "predictions.json"

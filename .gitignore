@@ -22,7 +22,7 @@ data/universe.db
 
 artifacts/*
 !artifacts/
-!artifacts/rf_h1_sliding_discrete.pkl
+!artifacts/rf_h1_expanding_discrete.pkl
 
 ### assets ###
 imgs/assets/
