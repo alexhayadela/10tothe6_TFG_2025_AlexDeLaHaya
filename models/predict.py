@@ -116,6 +116,10 @@ def _predict_rnn(artifact: dict, X: pd.DataFrame,
     seq_len      = artifact["seq_len"]
     scaler       = artifact["scaler"]
 
+    X = X.copy()
+    needs_dow_cyclic = any(c in feature_cols for c in ("dow_sin", "dow_cos"))
+    if needs_dow_cyclic and "dow" not in X.columns:
+        X["dow"] = pd.to_datetime(dates).dt.dayofweek.values
     X_enc = (add_cyclic_dow(X) if "dow" in X.columns else X)[feature_cols]
 
     all_seqs, all_last_dates, all_tickers_list = [], [], []
