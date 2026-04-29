@@ -1,7 +1,12 @@
 let predictionsData = [];
 let currentPage = 0;
 const perPage = 8;
-const yahoo = "https://es.finance.yahoo.com/quote/"
+const yahoo = "https://es.finance.yahoo.com/quote/";
+const RSS_FEEDS = {
+    economia: "https://e01-expansion.uecdn.es/rss/economia.xml",
+    mercados: "https://e01-expansion.uecdn.es/rss/mercados.xml",
+    empresas: "https://e01-expansion.uecdn.es/rss/empresas.xml",
+};
 
 const tickerMap = {
         "ACS.MC": "ACS",
@@ -63,6 +68,82 @@ function getTitle() {
     document.getElementById("header").textContent = `Predicciones ${day}/${month}`;
 }
 
+async function fetchFeed(section, url) {
+    const proxy = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxy);
+    const data = await res.json();
+    return (data.items || []).map(item => ({
+        section,
+        title: item.title,
+        link: item.link,
+    }));
+}
+
+async function getLatestNews() {
+    try {
+        const results = await Promise.all(
+            Object.entries(RSS_FEEDS).map(([section, url]) => fetchFeed(section, url))
+        );
+
+        // Merge in priority order (economia, mercados, empresas), dedupe by title
+        const seen = new Set();
+        const items = [];
+        for (const sectionItems of results) {
+            for (const item of sectionItems) {
+                if (!seen.has(item.title)) {
+                    seen.add(item.title);
+                    items.push(item);
+                }
+            }
+        }
+
+        renderNews(items);
+    } catch (error) {
+        console.error("Error loading news:", error);
+        document.getElementById("news-ticker").textContent = "No se pudieron cargar las noticias.";
+    }
+}
+
+function renderNews(items) {
+    const ticker = document.getElementById("news-ticker");
+    ticker.innerHTML = "";
+
+    if (!items.length) {
+        ticker.textContent = "Sin noticias disponibles.";
+        return;
+    }
+
+    // Build items + a duplicate set so the scroll loops seamlessly
+    const buildItems = () => items.map(item => {
+        const a = document.createElement("a");
+        a.href = item.link;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.className = "news-item";
+        a.textContent = item.title;
+        return a;
+    });
+
+    buildItems().forEach(el => ticker.appendChild(el));
+    // Duplicate for seamless loop
+    buildItems().forEach(el => ticker.appendChild(el));
+
+    startTickerScroll(ticker);
+
+    // Pause on hover
+    ticker.addEventListener("mouseenter", () => ticker.style.animationPlayState = "paused");
+    ticker.addEventListener("mouseleave", () => ticker.style.animationPlayState = "running");
+}
+
+function startTickerScroll(ticker) {
+    // Measure the width of one set of items (half of total since we duplicated)
+    const totalWidth = ticker.scrollWidth / 2;
+    const duration = totalWidth / 60; // 60px/s
+
+    ticker.style.setProperty("--ticker-width", `${totalWidth}px`);
+    ticker.style.animationDuration = `${duration}s`;
+    ticker.classList.add("scrolling");
+}
 
 async function getPredictions() {
     try {
@@ -159,6 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     getTitle();
     getPredictions();
+    getLatestNews();
     getFooter();
 
 });

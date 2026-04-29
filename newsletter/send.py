@@ -1,6 +1,7 @@
 import os
+import argparse
 import datetime
-import smtplib 
+import smtplib
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
@@ -10,6 +11,7 @@ from config import load_env
 from db.supabase.queries_news import get_recipients
 from newsletter.build import build_newsletter
 
+
 def send_newsletter(text, html, recipients):
     """Sends newsletter with most relevant news from today."""
     sender = os.environ.get("EMAIL_USER")
@@ -17,19 +19,19 @@ def send_newsletter(text, html, recipients):
 
     # Construct email
     message = MIMEMultipart()
-    message['From'] = sender
-    message['To'] = sender
-    message['Bcc'] = ', '.join(recipients)
+    message["From"] = sender
+    message["To"] = sender
+    message["Bcc"] = ", ".join(recipients)
 
     today = datetime.date.today()
     subject = f"10**6 Boletín {today.strftime('%d/%m/%Y')}"
-    message['Subject'] = subject
+    message["Subject"] = subject
 
     # Add images
     img_names = ["freakbob", "67"]
     for name in img_names:
         full_name = name + ".png"
-        img_path = Path(__file__).resolve().parents[1] / "imgs" / full_name 
+        img_path = Path(__file__).resolve().parents[1] / "imgs" / full_name
         with open(img_path, "rb") as f:
             img_data = f.read()
         image = MIMEImage(img_data)
@@ -45,17 +47,15 @@ def send_newsletter(text, html, recipients):
         server.login(sender, password)
         server.sendmail(sender, recipients, message.as_string())
 
-  
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mock", action="store_true", help="Send to EMAIL_USER only instead of all recipients")
+    args = parser.parse_args()
+
     load_env()
-    """ Don't process news twice, read from db
-    news = last_news()
-    classified_news = classify_news(news)
-    top_10 = top_news(classified_news,10)
-    ready = newsletter_ready(top_10)
-    """
     html = build_newsletter()
     text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
-    recipients = get_recipients()
-    
+    recipients = [os.environ.get("EMAIL_USER")] if args.mock else get_recipients()
+
     send_newsletter(text, html, recipients)

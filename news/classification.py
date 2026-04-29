@@ -8,14 +8,14 @@ IMPORTANT_KEYWORDS = {
     "dividendo",
     "beneficio",
     "guidance",
-    "adquisición"
+    "adquisición",
 }
 
 CATEGORY_WEIGHTS = {
     "company_specific": 0.4,
     "macro_economic": 0.3,
     "market_sentiment": 0.2,
-    "generic_noise": 0.0
+    "generic_noise": 0.0,
 }
 
 
@@ -25,7 +25,9 @@ def extract_keywords_hit(text: str, keywords: set[str]) -> list[str]:
     return [k for k in keywords if k in text]
 
 
-def compute_relevance(category: str,companies: list[str],sentiment: str,keywords_hit: list[str]) -> float:
+def compute_relevance(
+    category: str, companies: list[str], sentiment: str, keywords_hit: list[str]
+) -> float:
     """Computes relevance of news."""
     score = 0.0
     score += CATEGORY_WEIGHTS.get(category, 0.0)
@@ -46,7 +48,7 @@ def compute_relevance(category: str,companies: list[str],sentiment: str,keywords
 
 def news_classifier_prompt():
     "Returns prompt for news classification."
-    prompt ="""
+    prompt = """
     You are a financial news classifier.
 
     For EACH news item, classify it into ONE category:
@@ -77,19 +79,14 @@ def news_classifier_prompt():
 def build_news_batch_prompt(news_batch: list[dict]) -> str:
     """Builds structured LLM input for a batch of news items."""
     return "\n".join(
-        f"id: {i}\n"
-        f"title: {item['title']}\n"
-        f"body: {item['body']}\n"
+        f"id: {i}\n" f"title: {item['title']}\n" f"body: {item['body']}\n"
         for i, item in enumerate(news_batch, start=1)
     )
 
 
-def split_into_batches(items: list[dict],batch_size: int = 10) -> list[list[dict]]:
+def split_into_batches(items: list[dict], batch_size: int = 10) -> list[list[dict]]:
     """Splits news items into batches."""
-    return [
-        items[i:i + batch_size]
-        for i in range(0, len(items), batch_size)
-    ]
+    return [items[i : i + batch_size] for i in range(0, len(items), batch_size)]
 
 
 def classify_news(news: list[dict]) -> list[dict]:
@@ -102,7 +99,7 @@ def classify_news(news: list[dict]) -> list[dict]:
     system_prompt = news_classifier_prompt()
     for batch in batches:
         user_prompt = build_news_batch_prompt(batch)
-        output = llm.query(system_prompt,user_prompt)
+        output = llm.query(system_prompt, user_prompt)
         all_outputs.extend(output["data"])
 
     if len(all_outputs) != len(news):
@@ -112,28 +109,22 @@ def classify_news(news: list[dict]) -> list[dict]:
 
     for feed, llm_out in zip(news, all_outputs):
         keywords_hit = extract_keywords_hit(
-            feed["title"] + " " + feed["body"],
-            IMPORTANT_KEYWORDS
+            feed["title"] + " " + feed["body"], IMPORTANT_KEYWORDS
         )
 
         relevance = compute_relevance(
             category=llm_out["category"],
             companies=llm_out["companies"],
             sentiment=llm_out["sentiment"],
-            keywords_hit=keywords_hit
+            keywords_hit=keywords_hit,
         )
 
-        scored_news.append({
-            **feed,
-            **llm_out,
-            "relevance": relevance
-        })
+        scored_news.append({**feed, **llm_out, "relevance": relevance})
 
     return scored_news
 
 
 if __name__ == "__main__":
-
     news = last_news()
     classified_news = classify_news(news)
     """

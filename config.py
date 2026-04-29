@@ -19,4 +19,3 @@ def load_env() -> None:
     """Load environment variables."""
     if ENV_PATH.exists():
         load_dotenv(ENV_PATH)
-

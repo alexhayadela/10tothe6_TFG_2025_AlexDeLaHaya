@@ -2,9 +2,11 @@
 
 This repository contains the code for my final degree thesis. The goal is to build a tool that empowers investors to obtain powerful insights at a glance. By leveraging multimodal, data-driven analysis, the system aims to support smarter investment decisions and potentially achieve better returns compared to traditional techniques.
 
+Read my final degree thesis [here](https://dummyimage.com/800x400/2d2d2d/ffffff&text=WIP+%7C+Coming+Soon).
+
 ----
 
-## Project description
+## Project description 
 
 ### First Deliverable: Newsletter Automation
 
@@ -48,6 +50,10 @@ Predictions, along with a general explanation of the methodology, model selectio
 
 The website is hosted using Github Pages. While the site is static, predictions are updated dynamically through an automation which runs the model, generates new forecasts and updates published content.
 
+### Fifth Deliverable (Part A): Trading Bot
+
+A bot performs trades based on our model predictions and connects to a broker API. When the market opens, it executes the predictions, and before the market closes, it liquidates positions that have generated profit. The bot runs every trading day while the market is open. By default, it operates on a paper trading account with a simulated balance of 100,000€. 
+
 ----
 
 ## Project Structure
@@ -68,85 +74,231 @@ The website is hosted using Github Pages. While the site is static, predictions 
 └── README.md                   # Project overview and usage
 ```
 ----
+
 ## Project Setup
 
 Open a terminal console and execute:
-```
+```bash
 cd <your preferred projects root directory>
 git clone https://github.com/alexhayadela/10tothe6_TFG_2025_AlexDeLaHaya.git
-
 ```
+> [!IMPORTANT]
+> Every command from now on, assumes you are in project root directory.
+
 ### Install python
 
 Python 3.10+ is needed
 
-### Install virtualenv
-Setting up a virtualenv is recommended to isolate the project dependencies from other Python projects on your machine.
-It allows you to manage packages on a per-project basis, avoiding potential conflicts between different projects.
+### Install packages
+Creating up a virtual environment is recommended to isolate the project dependencies.
 
-In the project root directory execute:
 ```bash
-pip3 install virtualenv
-virtualenv --version
+python -m venv venv
 ```
 
-### Prepare virtualenv for the project
-In the root of the project folder run to create a virtualenv named `venv`:
+Activate the environment:
 ```bash
-virtualenv venv
+venv\Scripts\activate
 ```
 
-If you list the contents of the project root directory, you will see that it has created a new folder named `venv` that contains the virtualenv:
-```bash
-ls -l
-```
-
-The next step is to activate your new virtualenv for the project:
-```bash
-source venv/bin/activate
-```
-
-or for Windows...
-```cmd
-venv\Scripts\activate.bat
-```
-
-This will load the python virtualenv for the project.
-
-### Installing packages in your virtualenv
-Make sure you are in the root of the project folder and that your virtualenv is activated (you should see `(venv)` in your terminal prompt).
-And then install all the packages listed in `requirements.txt` with:
+Install all the packages listed in `requirements.txt` with:
 ```bash
 pip install -r requirements/all.txt
-```
-
-If you need to add more packages in the future, you can install them with pip and then update `requirements.txt` with:
-```bash
-pip freeze > requirements/all.txt
 ```
 
 ### Create .env file 
 
 You need to create a .env file (project root) containing the following information:
 
-1. EMAIL_USER=example@gmail.com
-2. EMAIL_PASSWORD=asdf asdf adsf asdf
-3. EMAIL_TARGET_USER=example2@gmail.com
+1. EMAIL_USER=...@gmail.com
+2. EMAIL_PASSWORD=...
+3. GROQ_API_KEY=gsk_...
+4. SUPABASE_API_KEY=sb_secret_...
+5. SUPABASE_URL=https://<...>.supabase.co
 
-The password must be an App Password from Google. ¿How to obtain an App Password for Gmail?: https://support.google.com/accounts/answer/185833
+- Gmail password must be a Google App Password. [How do I get one?](https://support.google.com/accounts/answer/185833).  
+- Generate a Groq API key [here](https://console.groq.com/keys).
+- Configure Supabase URL/API key in their [page](https://supabase.com). 
 
-### Configure Github Secrets
+### Add Github Secrets
 
 You need to configure github secrets to run the automation.
 
 1. Go to Github → Settings → Secrets and variables → Actions → New repository secret
-2. Add these secrets with the same values as your .env file: EMAIL_USER, EMAIL_PASSWORD, EMAIL_TARGET_USER
+2. Add these secrets with the same values as your .env file: EMAIL_USER, EMAIL_PASSWORD, GROQ_API_KEY, SUPABASE_API_KEY, SUPABASE_URL
 
-Github Secrets guide: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+### Supabase db universe
 
-(Missing Documentation)
-1. Add supabase keys to .env, guide to db creation in browser
-2. Can access web through internet or locally with (python -m http.server 8000, Ctrl+Shift+R to reload changes)
+Start a new project and manually define the following tables: 
+
+<div style="display: flex; gap: 20px; overflow-x: auto;">
+
+<div style="min-width: 300px;">
+
+#### news
+
+| Column    | Type   |
+|----------|--------|
+| id       | int8   |
+| date     | date   |
+| title    | text   |
+| section  | text   |
+| body     | text   |
+| url      | text   |
+| category | text   |
+| relevance| float8 |
+| sentiment| text   |
+
+Constraints
+- id: PK  
+- url: UNIQUE  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### news_entities
+
+| Column   | Type |
+|----------|------|
+| news_id  | int8 |
+| ticker   | text |
+
+Constraints
+- news_id: PK + FK → news.id  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### newsletter
+
+| Column     | Type      |
+|------------|-----------|
+| id         | int8      |
+| created_at | timestamp |
+| email      | text      |
+
+Constraints
+- id: PK  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### ohlcv
+
+| Column | Type   |
+|--------|--------|
+| ticker | text   |
+| date   | date   |
+| open   | float8 |
+| high   | float8 |
+| low    | float8 |
+| close  | float8 |
+| volume | float8 |
+
+Constraints
+- PK (ticker, date)  
+
+</div>
+
+<div style="min-width: 300px;">
+
+#### predictions
+
+| Column | Type   |
+|--------|--------|
+| id     | int8   |
+| ticker | text   |
+| date   | date   |
+| pred   | bool   |
+| proba  | float8 |
+| model  | text   |
+
+Constraints
+- id: PK  
+
+</div>
+
+</div>
+
+All fields are nullable except primary keys. 
+
+After creating the database, run '1st_run.ipynb'. The first block will initialize your sqlite db, and the output of the second needs to be uploaded to your supabase project. 
+
+### Ml learning models
+
+A default baseline model is provided, but experimentation is encouraged. Before training ensure your local database is up to date.
+```bash 
+    python -m db.migrations
+```
+Then run your training pipeline. Instructions for executing the model can be found within the corresponding file.
+
+### Activate trading bot
+
+Install the latest [IB Gateway](https://www.interactivebrokers.com/es/trading/ibgateway-latest.php). Keep the application running at all times. Enable API connections. Configure the port if switching between paper and live trading (paper by default).
+
+To run the bot:
+```bash 
+    # Run as administrator or enable script execution
+    # Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    .\trading\bot.ps1
+```
+
+To stop the bot:
+```bash
+Unregister-ScheduledTask -TaskName "Open Positions" -Confirm:$false
+Unregister-ScheduledTask -TaskName "Close Positions" -Confirm:$false
+```
+
+### Web development
+To modify the website, update 'docs/' directory.
+
+To run locally:
+```bash
+python -m http.server 8000
+```
+
+Then open: 
+```bash
+http://localhost:8000/docs/
+```
+
+To refresh changes press Ctrl+Shift+R.
+----
+
+## Project Usage
+You can fork this repository to extend or customize the project. If you are only interested in viewing daily predictions, visit the website and contact me to be added to the newsletter.
+
+>[!CAUTION]
+> This project is for educational purposes. Past performance does not guarantee future results. Investments involve risk, including potential loss of capital. Predictions are estimates and do not constitute financial advice. Act at your own risk.
+
+----
+
+## Conclusions
+For a detailed discussion, refer to the full thesis. 
+
+Financial markets are inherently noisy and difficult to predict. While our models achieve a slight edge, this does not directly translate into profitability.
+
+Key limitations:
+- Accuracy  vs. profitability mismatch: returns are not evenly distributed
+- Transaction costs and slippage, which can significantly erode gains (especially with high-frequency trading strategies)
+
+My personal take: 
+- It is not easy to handle losses psychologically when you are trading with real money. 
+- I value living without too much stress. 
+- If I were to invest my money I would choose ETF's (SP500 or World). They are a mix of assets, reducing risk and providing stable returns over time (hopefully).
+
+Concerns about todays society: 
+- AI agents could take over most jobs in companies, but if people lose their income, who will buy the products?
+- At the same time, wars are no longer distant or unlikely—conflicts like the 2026 Iran war show how quickly things can escalate and how fragile global stability really is.
+
+The future is very uncertain. 
+
+My message to the world would be to focus less money and remember to spend quality time with family and friends.
+
+Peace out, claude.opus.4.6 ~~Alex De La Haya Gutiérrez~~.
 
 ----
 

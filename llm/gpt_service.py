@@ -1,6 +1,5 @@
 import os
 import json
-from pathlib import Path
 from openai import OpenAI
 
 from llm.rate_limit import RateLimitState
@@ -10,8 +9,9 @@ def create_llm_client() -> OpenAI:
     """Returns an llm client."""
     return OpenAI(
         api_key=os.environ.get("GROQ_API_KEY"),
-        base_url="https://api.groq.com/openai/v1")
-   
+        base_url="https://api.groq.com/openai/v1",
+    )
+
 
 def get_default_model() -> str:
     """Returns default llm model."""
@@ -28,7 +28,7 @@ class LLMService:
         """Estimates the number of tokens the llm call will consume."""
         return max(1, len(text) // 4)
 
-    def query(self,system_prompt: str,user_prompt: str) -> dict:
+    def query(self, system_prompt: str, user_prompt: str) -> dict:
         """Handles automatic rate-limiting and returns parsed JSON output."""
         estimated_tokens = 2 * self.estimate_tokens(system_prompt + user_prompt)
 

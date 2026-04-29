@@ -25,9 +25,9 @@ def create_news_table(conn: Connection) -> None:
             sentiment TEXT,
             relevance REAL
         );""")
-    
+
     conn.execute("CREATE INDEX IF NOT EXISTS idx_news_date ON news(date);")
-    
+
 
 def create_entities_table(conn: Connection) -> None:
     """Initialize entities table."""
@@ -38,8 +38,10 @@ def create_entities_table(conn: Connection) -> None:
             PRIMARY KEY (news_id, ticker),
             FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE
         );""")
-    
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_news_entities_ticker ON news_entities(ticker);")
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_news_entities_ticker ON news_entities(ticker);"
+    )
 
 
 def create_ohlcv_table(conn: Connection) -> None:
@@ -55,9 +57,11 @@ def create_ohlcv_table(conn: Connection) -> None:
             close REAL,
             volume REAL,
             PRIMARY KEY (ticker, date)
-        );""")
-    
+        );"""
+    )
+
     conn.execute("CREATE INDEX IF NOT EXISTS idx_ohlcv_date ON ohlcv(date);")
+
 
 def create_predictions_table(conn: Connection) -> None:
     """Initialize predictions table."""
@@ -71,11 +75,14 @@ def create_predictions_table(conn: Connection) -> None:
             proba REAL,
             model TEXT NOT NULL,
             UNIQUE(ticker, date, model)
-        );""")
-    
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_predictions_date ON predictions(date);")
+        );"""
+    )
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_predictions_date ON predictions(date);"
+    )
+
 
 if __name__ == "__main__":
     with sqlite_connection() as conn:
         init_db(conn)
-

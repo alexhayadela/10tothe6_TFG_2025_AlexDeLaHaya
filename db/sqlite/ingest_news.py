@@ -11,8 +11,8 @@ def ingest_news(conn: Connection, news_items: list[dict]) -> None:
     Store classified news items and related entities in the database.
     """
     for n in news_items:
-
-        cur = conn.execute("""
+        conn.execute(
+            """
             INSERT INTO news (
                 section,
                 date,
@@ -33,20 +33,21 @@ def ingest_news(conn: Connection, news_items: list[dict]) -> None:
                 sentiment=excluded.sentiment,
                 relevance=excluded.relevance
         """,
-        (
-            n.get("section"),
-            n.get("date"),
-            n.get("title"),
-            n.get("body"),
-            n.get("url"),
-            n.get("category"),
-            n.get("sentiment"),
-            n.get("relevance")))
+            (
+                n.get("section"),
+                n.get("date"),
+                n.get("title"),
+                n.get("body"),
+                n.get("url"),
+                n.get("category"),
+                n.get("sentiment"),
+                n.get("relevance"),
+            ),
+        )
 
         news_id = conn.execute(
-                "SELECT id FROM news WHERE url = ?",
-                (n["url"],)
-            ).fetchone()[0]
+            "SELECT id FROM news WHERE url = ?", (n["url"],)
+        ).fetchone()[0]
 
         # Support both formats safely (ingest from supabase or local)
         entities = n.get("news_entities") or n.get("companies") or []
@@ -54,19 +55,22 @@ def ingest_news(conn: Connection, news_items: list[dict]) -> None:
         for e in entities:
             ticker = e["ticker"] if isinstance(e, dict) else e
 
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT OR IGNORE INTO news_entities (news_id, ticker)
                 VALUES (?, ?)
-            """, (news_id, ticker))
+            """,
+                (news_id, ticker),
+            )
 
     conn.commit()
 
-    
+
 if __name__ == "__main__":
     load_env()
-    
+
     news = last_news()
     classified_news = classify_news(news)
-    
+
     with sqlite_connection() as conn:
         ingest_news(conn, classified_news)

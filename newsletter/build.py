@@ -6,6 +6,7 @@ from db.supabase.queries_news import top_k_news
 from db.supabase.queries_ohlcv import top_k_predictions
 from db.utils_ohlcv import ticker_to_name
 
+
 def add_header(date: datetime.date):
     html = """<!DOCTYPE html>
     <html>
@@ -24,7 +25,7 @@ def add_header(date: datetime.date):
     .container {
         max-width:650px;
         margin:30px auto;
-        background-color:#f0f0f0;
+        background-color:#f7f7f7;
         border-radius:12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         padding:30px;
@@ -36,14 +37,19 @@ def add_header(date: datetime.date):
 
     h1 {
         text-align:center;
+        font-family: Georgia, 'Times New Roman', serif;
         color:darkblue;
-        font-size:28px;
-        margin:30px 0;
+        font-size:32px;
+        font-weight:400;
+        letter-spacing:-0.01em;
+        margin:24px 0;
     }
 
     h2 {
+        font-family: Georgia, 'Times New Roman', serif;
         color: darkblue;
         font-size:18px;
+        font-weight:400;
         margin:0;
     }
 
@@ -55,7 +61,7 @@ def add_header(date: datetime.date):
 
     footer {
         text-align:center;
-        font-size:12px;
+        font-size:13px;
         margin-top:10px;
     }
 
@@ -76,9 +82,9 @@ def add_header(date: datetime.date):
 
     .signature{
         display:block;
-        width:120px;       
+        width:120px;
         height:auto;
-        margin:30px auto 10px auto;  
+        margin:30px auto 10px auto;
     }
     </style>
     </head>
@@ -89,14 +95,14 @@ def add_header(date: datetime.date):
 
     <div class="header">
         <img src="cid:freakbob" alt=freakbob
-            width="479" height="242"
+            width="450" height="200"
             style="display:block; margin:0 auto; border-radius:6px;">
     </div>
 """
 
     html += f"""<h1>Informe diario — {date.day}/{date.month}</h1>"""
-    
-    return html 
+
+    return html
 
 
 def add_footer(date: datetime.date) -> str:
@@ -130,7 +136,7 @@ def add_news(items: list[dict]) -> str:
 
 def format_predictions(df_pred: pd.DataFrame) -> pd.DataFrame:
     df_pred["name"] = df_pred["ticker"].map(ticker_to_name())
-    df_pred["action"] = df_pred["pred"].map({True:"Buy", False:"Sell"})
+    df_pred["action"] = df_pred["pred"].map({True: "Buy", False: "Sell"})
     df_pred["proba.2f"] = df_pred["proba"].round(2)
     return df_pred
 
@@ -149,15 +155,17 @@ def add_predictions(items: pd.DataFrame) -> str:
 
         <tr>
             <td align="center" style="padding:20px 10px;">
-            <h2 style="line-height:1;">{item["name"]}</h2>
+            <h2 style="line-height:1; font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:400; color:darkblue; margin:0;">{item["name"]}</h2>
         </td>
         </tr>
         <tr>
             <td align="center"
-                bgcolor="#5fcf92"
+                bgcolor="{('#5fcf92' if item['action'] == 'Buy' else '#e07b7b')}"
                 style="padding:12px 10px;
-                       font-family:'Courier New', monospace;
-                       font-weight:bold;">
+                       font-family:Arial, Helvetica, sans-serif;
+                       font-size:12px;
+                       font-weight:500;
+                       color:#333333;">
             P({item["action"]}|Xₜ)= {item["proba.2f"]}
         </td>
         </tr>
@@ -168,6 +176,7 @@ def add_predictions(items: pd.DataFrame) -> str:
 
     return html
 
+
 def build_newsletter() -> str:
     today = datetime.date.today()
     weekday = today.weekday()
@@ -177,23 +186,24 @@ def build_newsletter() -> str:
     footer = add_footer(today)
     closing = add_closing()
 
-    news = top_k_news(k=10, date= str(rel_date))
+    news = top_k_news(k=10, date=str(rel_date))
     news_html = add_news(news)
 
     # market closed on weekends
-    if weekday not in {5,6}:
+    if weekday not in {5, 6}:
         # handle fri <- mon
         rel_date = rel_date - datetime.timedelta(days=2) if weekday == 0 else rel_date
 
-        preds = top_k_predictions(k=3, date= str(rel_date))
+        preds = top_k_predictions(k=3, date=str(rel_date))
         preds = format_predictions(preds)
         preds_html = add_predictions(preds)
         html = header + preds_html + news_html + footer + closing
 
-    else: 
-        html = header +  news_html + footer + closing
+    else:
+        html = header + news_html + footer + closing
 
     return html
+
 
 if __name__ == "__main__":
     load_env()

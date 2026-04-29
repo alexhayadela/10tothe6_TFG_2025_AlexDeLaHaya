@@ -4,6 +4,7 @@ venv/
 
 ### commands ###
 commands.txt
+launch.bat
 
 ### pycache ###
 __pycache__
@@ -16,18 +17,22 @@ __pycache__
 A_test.py
 A_test.ipynb
 
-### sporadic queries ###
-db/**/*.ipynb
-
 ### data / models ###
 data/universe.db
 
 artifacts/*
 !artifacts/
-!artifacts/rf_h1_full.pkl
-
-### init setup ###
-tfg_init.bat
+!artifacts/rf_h1_expanding_discrete.pkl
 
 ### assets ###
 imgs/assets/
+
+### trading ###
+trading/full_time_bot.py
+
+### linting ###
+node_modules
+.ruff_cache
+
+### superpowers ###
+*/superpowers/
