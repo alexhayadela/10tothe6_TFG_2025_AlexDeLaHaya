@@ -54,6 +54,13 @@ The website is hosted using Github Pages. While the site is static, predictions 
 
 A bot performs trades based on our model predictions and connects to a broker API. When the market opens, it executes the predictions, and before the market closes, it liquidates positions that have generated profit. The bot runs every trading day while the market is open. By default, it operates on a paper trading account with a simulated balance of 100,000€. 
 
+### Fifh Deliverable (Part B): Time Series Modeling IV
+
+New models have been incorporated, including both classical and deep learning approaches: Markov Chains, XGBoost, GRU, and LSTM. These models leverage a combination of micro and macro features, and allow the user to configure the prediction horizon as well as the training mode (sliding or expanding window).
+
+The figure below summarizes model performance across different evaluation windows:
+![image](imgs/performance.png)
+
 ----
 
 ## Project Structure
@@ -266,6 +273,7 @@ http://localhost:8000/docs/
 ```
 
 To refresh changes press Ctrl+Shift+R.
+
 ----
 
 ## Project Usage
