@@ -1,16 +1,95 @@
-# 10⁶ — Herramienta de análisis de inversión multifuente con ML para el IBEX 35
+ANÁLISIS, PREDICCIÓN Y EJECUCIÓN AUTOMATIZADA DE INVERSIONES EN EMPRESAS DEL IBEX 35
+
+Trabajo de Fin de Grado de
+
+Alex De La Haya Gutiérrez
+
+Director: Vicenç Gómez Cerdà
+
+Grado en Ingeniería Matemática en Ciencia de Datos
+
+Curs 2025-2026
+
+**Agradecimientos**
+
+A mi familia y amigos por su apoyo constante y su confianza a lo largo de todo este proceso.
+
+A mi tutor, Vicenç Gómez, por su orientación y ayuda en cada etapa del desarrollo de este trabajo.
+
+A todos los programadores que han contribuido al desarrollo de librerías de código abierto, cuya labor ha hecho posible construir este proyecto sobre una base sólida.
+
+Este trabajo no habría sido posible sin vuestra ayuda. Muchas gracias a todos.
+
+**Resumen**
+
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+
+**Resum** 
+
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. 
+
+**Abstract**
+
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
 
 ---
 
-## Capítulo 1. Introducción
+**Índice**
 
-### 1.1 Contexto del proyecto
+[**Introducción	1**](#introducción)
+[1.1  Contexto	1](#contexto)
+[1.2  Motivación	1](#motivación)
+[1.3  Objetivos	2](#objetivos)
+[1.4  Enfoque del proyecto	2](#enfoque)
+
+[**Marco Conceptual y Contexto	3**](#marco)
+[2.1  Herramientas y plataformas para la inversión en activos financieros	3](#herramientas)
+[2.2  Series temporales financieras y retos de predicción	4](#series)
+[2.3  Modelos predictivos para datos financieros	5](#modelos-marco)
+[2.3.1  Modelos estadísticos clásicos	5](#arima)
+[2.3.2  Árboles de decisión	6](#arboles)
+[2.3.3  Redes neuronales recurrentes	6](#rnn)
+[2.4  De la predicción al rendimiento financiero	7](#prediccion-rendimiento)
+
+[**Metodología y desarrollo del sistema	9**](#metodologia)
+[3.1  Arquitectura general del sistema	9](#arquitectura)
+[3.2  Datos y fuentes de información	9](#datos)
+[3.3  Preparación de datos y definición de la señal	11](#preparacion)
+[3.3.1  Definición de la señal	11](#senal)
+[3.3.2  Exploración de datos	12](#exploracion)
+[3.3.3  Feature engineering	12](#features)
+[3.4  Modelos predictivos	14](#modelos-impl)
+[3.5  Servicios automatizados del sistema	17](#servicios)
+[3.5.1  Procesamiento de noticias	17](#noticias)
+[3.5.2  Página web	18](#web)
+[3.5.3  Boletín informativo	19](#boletin)
+[3.5.4  Almacenamiento de predicciones y bot de trading	19](#trading)
+[3.6  Protocolo experimental	20](#protocolo)
+
+[**Resultados experimentales	23**](#resultados)
+[4.1  Resultados predictivos de los modelos	23](#resultados-pred)
+[4.2  Importancia de variables	25](#importancia)
+[4.3  Resultados de la simulación financiera	26](#simulacion)
+[4.4  Discusión de los resultados	27](#discusion)
+
+[**Conclusiones	29**](#conclusiones)
+[**Trabajo futuro	31**](#trabajo-futuro)
+[**Bibliografía	32**](#bibliografia)
+[**Apéndice	35**](#apendice)
+
+---
+
+**Capítulo 1**
+
+# **Introducción**
+
+## **1.1  Contexto**
 
 El proyecto se centra en el análisis de activos financieros pertenecientes al IBEX 35, principal índice bursátil español, compuesto por las empresas con mayor capitalización y liquidez del mercado nacional. A partir de datos históricos de cotización, se estudia la evolución temporal de los distintos activos con el objetivo de identificar patrones y tendencias relevantes.
 
 El análisis se orienta principalmente a la predicción de movimientos de mercado, evaluando si el precio de un activo tenderá a subir o bajar en horizontes temporales determinados. Para ello se emplean técnicas de análisis de series temporales y modelos de aprendizaje automático capaces de extraer información a partir de datos financieros históricos.
 
-### 1.2 Motivación
+## **1.2  Motivación**
 
 Este trabajo surge del interés por comprender el funcionamiento de los mercados financieros y analizar hasta qué punto es posible modelar su comportamiento mediante técnicas computacionales. Los mercados constituyen sistemas complejos, dinámicos y altamente influenciados por múltiples factores económicos, sociales y psicológicos, lo que los convierte en un ámbito especialmente atractivo desde el punto de vista analítico y tecnológico.
 
@@ -18,30 +97,37 @@ Además del interés académico, existe una motivación práctica relacionada co
 
 Otro de los motivos para desarrollar este proyecto es su potencial de continuidad más allá del propio Trabajo de Fin de Grado. Se trata de un área en constante evolución, con múltiples posibilidades de ampliación y mejora, tanto desde el punto de vista técnico como de investigación. Por ello, el proyecto se plantea no solo como un ejercicio académico, sino como una base sobre la que continuar desarrollando nuevas líneas de trabajo en el futuro.
 
-### 1.3 Objetivos
+## **1.3  Objetivos**
 
 El objetivo principal de este trabajo es estudiar si los modelos de aprendizaje automático pueden mejorar las capacidades predictivas de los enfoques tradicionales utilizados en los mercados financieros, o al menos competir con ellos en términos de rendimiento y robustez.
 
+Para ello, se analizan y comparan diferentes aproximaciones, incluyendo modelos estadísticos clásicos, estrategias basadas en reglas simples y técnicas de aprendizaje automático aplicadas a series temporales financieras. A través de esta comparación se pretende evaluar las ventajas, limitaciones y viabilidad real de cada enfoque en escenarios de mercado.
+
 De manera más concreta, los objetivos del proyecto son los siguientes:
 
-- Investigar el comportamiento de los mercados financieros mediante técnicas de análisis de datos y aprendizaje automático.
-- Diseñar e implementar modelos capaces de realizar predicciones sobre activos financieros y comparar su rendimiento frente a métodos tradicionales y estrategias de referencia.
-- Construir un sistema reproducible y automatizado que integre el flujo completo de datos, entrenamiento e inferencia con una intervención manual mínima.
-- Desarrollar el proyecto utilizando exclusivamente herramientas, librerías y servicios gratuitos.
+* Desarrollar un sistema automatizado y reproducible de análisis financiero que integre la obtención de datos, la generación de predicciones y su explotación mediante una página web, un boletín informativo y un bot de trading.  
+* Diseñar, implementar y comparar distintos modelos predictivos para activos del IBEX 35, incluyendo métodos clásicos, modelos basados en reglas y modelos de aprendizaje automático.  
+* Evaluar la viabilidad predictiva y financiera del sistema, analizando si las predicciones sobre la dirección de los activos en horizontes de uno y cinco días permiten obtener una mejora respecto a estrategias de referencia, tanto en métricas de clasificación como en simulaciones de trading con costes de transacción.
 
-### 1.4 Enfoque del proyecto
+## **1.4  Enfoque del proyecto**
 
 Uno de los aspectos relevantes de este trabajo es que no se limita al desarrollo de pruebas aisladas en cuadernos interactivos o experimentos puntuales. El objetivo es construir una estructura completa y organizada, similar a un sistema real de análisis financiero automatizado.
 
 Para ello, se plantea una arquitectura compuesta por diferentes etapas: obtención de datos, procesamiento, entrenamiento de modelos, generación de predicciones y evaluación de resultados. Todo el flujo se diseña de forma que pueda ejecutarse de manera automática y reproducible, facilitando tanto la experimentación como la posible ampliación futura del proyecto.
 
-El proyecto se ha desarrollado con un enfoque de presupuesto cero, utilizando únicamente herramientas gratuitas y de código abierto. Esta decisión no solo reduce las barreras de acceso, sino que también favorece la reproducibilidad y la accesibilidad del trabajo para otros estudiantes o investigadores interesados en el área.
+El proyecto se ha desarrollado con un enfoque de presupuesto cero, utilizando únicamente herramientas gratuitas y de código abierto tanto para el procesamiento de datos como para el entrenamiento y el despliegue de modelos. Esta decisión no solo reduce las barreras de acceso, sino que también favorece la reproducibilidad y la accesibilidad del trabajo para otros estudiantes o investigadores interesados en el área.
+
+Asimismo, el proyecto sigue una filosofía de ciencia abierta, priorizando la claridad en la documentación y la reproducibilidad de los experimentos. De este modo, cualquier persona interesada podría comprender la metodología empleada, replicar los resultados obtenidos o utilizar el sistema como base para futuras investigaciones o desarrollos.
 
 ---
 
-## Capítulo 2. Estado del arte
+**Capítulo 2**
 
-### 2.1 Herramientas y plataformas para la inversión en activos financieros
+# **Marco Conceptual y Contexto**
+
+Este capítulo sitúa el trabajo en su contexto teórico y tecnológico. En primer lugar se describen las herramientas y plataformas existentes para el análisis de activos financieros, identificando sus limitaciones desde el punto de vista de la investigación. A continuación se exponen las características propias de las series temporales financieras que hacen de la predicción un problema especialmente difícil. El capítulo continúa con una revisión de los principales enfoques modelizadores —estadísticos clásicos, métodos de conjunto y redes neuronales recurrentes— para cerrar con una discusión conceptual sobre la evaluación de estrategias predictivas y la brecha entre capacidad estadística y rendimiento financiero real.
+
+## **2.1  Herramientas y plataformas para la inversión en activos financieros**
 
 Actualmente existen numerosas plataformas destinadas al análisis de mercados financieros y al apoyo a la inversión. Entre las más populares destacan Yahoo Finance (Yahoo Finance, 2026) y TradingView (TradingView, 2026), que ofrecen distintos niveles de acceso según el tipo de suscripción.
 
@@ -55,366 +141,438 @@ En un nivel más profesional destaca Bloomberg Terminal (Bloomberg L.P., 2026), 
 
 A pesar de las amplias funcionalidades disponibles, estas plataformas están orientadas principalmente al análisis financiero tradicional y al trading algorítmico basado en reglas definidas manualmente. Es importante diferenciar este enfoque del uso de técnicas de aprendizaje automático. Las pruebas retrospectivas tradicionales consisten en evaluar estrategias predefinidas utilizando datos históricos —por ejemplo, mediante reglas fijas de compra y venta basadas en indicadores técnicos—. En cambio, los modelos de aprendizaje automático buscan aprender patrones complejos directamente a partir de los datos para realizar predicciones futuras, adaptándose dinámicamente a nuevas condiciones del mercado.
 
-Las plataformas analizadas no proporcionan de forma integrada herramientas completas para el entrenamiento, validación y despliegue de modelos de aprendizaje automático. Incluso en entornos avanzados como Bloomberg Terminal, el desarrollo de modelos predictivos suele realizarse externamente mediante lenguajes y bibliotecas especializadas, como Python junto con frameworks de ciencia de datos y aprendizaje automático (Pedregosa et al., 2011). Esta situación justifica el interés en desarrollar soluciones específicas que integren obtención de datos, análisis financiero y modelos de aprendizaje automático dentro de un mismo entorno.
+Las plataformas analizadas no proporcionan de forma integrada herramientas completas para el entrenamiento, validación y despliegue de modelos de aprendizaje automático. Incluso en entornos avanzados como Bloomberg Terminal, el desarrollo de modelos predictivos suele realizarse externamente mediante lenguajes y bibliotecas especializadas, como Python junto con frameworks de ciencia de datos y aprendizaje automático (Pedregosa et al., 2011). Posteriormente, los resultados deben reintegrarse en la plataforma o conectarse directamente con brókers para ejecutar operaciones. Esta situación justifica el interés en desarrollar soluciones específicas que integren obtención de datos, análisis financiero y modelos de aprendizaje automático dentro de un mismo entorno.
 
-### 2.2 Modelos predictivos para datos financieros
+## **2.2  Series temporales financieras y retos de predicción**
 
-La predicción de series temporales financieras constituye una de las principales aplicaciones del análisis cuantitativo en mercados financieros. Una serie temporal puede definirse como una secuencia de observaciones ordenadas cronológicamente, donde cada valor depende potencialmente de los anteriores. En finanzas, ejemplos habituales son el precio de cierre de una acción, el volumen negociado o los retornos de un activo.
+La predicción de series temporales financieras constituye una de las principales aplicaciones del análisis cuantitativo en mercados financieros. En este contexto, una serie temporal puede definirse como una secuencia de observaciones ordenadas cronológicamente, donde cada valor depende potencialmente de los anteriores. En finanzas, ejemplos habituales son el precio de cierre de una acción, el volumen negociado o los retornos de un activo.
 
-El precio de los activos financieros suele considerarse una serie no estacionaria, ya que sus propiedades estadísticas cambian con el tiempo. Esta no estacionariedad dificulta el modelado y la predicción directa de los precios. Por este motivo, gran parte de la literatura trabaja con los retornos financieros en lugar de los precios absolutos, ya que los retornos presentan un comportamiento más cercano a la estacionariedad y facilitan el uso de modelos estadísticos y de aprendizaje automático.
+El precio de los activos financieros suele considerarse una serie no estacionaria, ya que sus propiedades estadísticas cambian con el tiempo debido a factores económicos, políticos o sociales. Esta no estacionariedad dificulta el modelado y la predicción directa de los precios. Por este motivo, gran parte de la literatura trabaja con los retornos financieros en lugar de los precios absolutos, ya que los retornos presentan un comportamiento más cercano a la estacionariedad y facilitan el uso de modelos estadísticos y de aprendizaje automático.
 
-La predicción de series temporales financieras presenta una dificultad adicional derivada de la hipótesis del mercado eficiente (Fama, 1970). Esta hipótesis establece que el precio de los activos refleja toda la información disponible en el mercado, por lo que resulta extremadamente difícil obtener ventajas predictivas consistentes utilizando únicamente información histórica. En consecuencia, los movimientos futuros del mercado presentan un elevado componente aleatorio y una baja relación señal-ruido.
+En este contexto, el objetivo del trabajo no es predecir con precisión el precio futuro de los activos, sino evaluar si existe una señal débil que permita anticipar la dirección del movimiento en horizontes cortos. Por ello, el problema se formula como una tarea de clasificación binaria sobre el signo del retorno futuro, y no como una regresión directa sobre precios.
 
-En el ámbito de los modelos estadísticos clásicos, las cadenas de Markov modelan el sistema mediante un conjunto finito de estados y probabilidades de transición entre ellos, donde el estado futuro depende únicamente del estado actual. En finanzas, se han utilizado para modelar cambios de régimen de mercado y variaciones en volatilidad (Hamilton, 1989). Los modelos ARIMA (*Autoregressive Integrated Moving Average*), aunque ampliamente utilizados en predicción de series temporales (Box et al., 2015), no se emplean en este trabajo al no haberse mostrado competitivos frente a los enfoques basados en aprendizaje automático en el contexto de clasificación de dirección de mercado.
+En las series temporales financieras resulta especialmente relevante el estudio de la autocorrelación, es decir, la dependencia existente entre valores observados en distintos instantes temporales. Analizar si los valores pasados contienen información útil para predecir los futuros es fundamental para determinar la aplicabilidad de determinados modelos predictivos. Lo y MacKinlay (1988) demostraron que los precios de las acciones no siguen exactamente un paseo aleatorio (*random walk*), aunque las desviaciones observadas son pequeñas y su explotabilidad práctica es limitada.
 
-Los modelos basados en árboles de decisión han ganado popularidad en el ámbito financiero debido a su robustez y capacidad para modelar relaciones no lineales. Aunque no incorporan de forma explícita el orden temporal de los datos, pueden utilizar información histórica mediante ingeniería de características. Random Forest (Breiman, 2001) combina múltiples árboles generados a partir de subconjuntos aleatorios de datos y variables, reduciendo el sobreajuste mediante votación. XGBoost (Chen y Guestrin, 2016) construye modelos secuencialmente corrigiendo en cada iteración los errores de los estimadores anteriores. Ambos métodos han sido ampliamente empleados en predicción de retornos y clasificación de tendencias bursátiles (Krauss et al., 2017).
+La predicción de series temporales financieras presenta una dificultad adicional derivada de la hipótesis del mercado eficiente (Fama, 1970). Esta hipótesis establece que el precio de los activos refleja toda la información disponible en el mercado, por lo que resulta extremadamente difícil obtener ventajas predictivas consistentes utilizando únicamente información histórica. En consecuencia, los movimientos futuros del mercado presentan un elevado componente aleatorio y una baja relación señal-ruido, lo que limita la capacidad predictiva de muchos modelos.
 
-Las redes neuronales recurrentes (RNN) están diseñadas específicamente para procesar datos secuenciales, manteniendo información de estados anteriores mediante conexiones recurrentes. Las redes LSTM (*Long Short-Term Memory*) incorporan mecanismos de memoria y compuertas que permiten conservar información relevante durante periodos prolongados (Hochreiter y Schmidhuber, 1997). Las redes GRU (*Gated Recurrent Unit*) simplifican esta arquitectura reduciendo el número de parámetros y el coste computacional (Cho et al., 2014). Ambos modelos han sido utilizados ampliamente para la predicción de precios, retornos y volatilidad (Fischer y Krauss, 2018). No obstante, el uso de modelos de aprendizaje profundo en finanzas presenta dificultades relacionadas con la disponibilidad limitada de datos y el riesgo de sobreajuste a ruido.
+## **2.3  Modelos predictivos para datos financieros**
 
-En general, los modelos estadísticos clásicos destacan por su interpretabilidad y por requerir una menor cantidad de datos. Sin embargo, presentan limitaciones para capturar relaciones no lineales complejas. Por otro lado, los métodos de aprendizaje automático ofrecen una mayor capacidad de modelado, aunque requieren más datos, mayor capacidad computacional y presentan una interpretabilidad más reducida.
+La literatura sobre predicción financiera cuantitativa ha desarrollado una amplia variedad de enfoques, que van desde los modelos estadísticos clásicos de series temporales hasta las arquitecturas de aprendizaje profundo más recientes. Cada familia de modelos refleja hipótesis distintas sobre la estructura de dependencia de los datos financieros: los métodos clásicos asumen formas de dependencia paramétrica y bien caracterizadas, mientras que los modelos de aprendizaje automático buscan aprender esas estructuras directamente a partir de los datos. En las subsecciones siguientes se describen los enfoques relevantes para este trabajo.
 
-### 2.3 Evaluación de estrategias predictivas: fundamentos conceptuales
+### **2.3.1  Modelos estadísticos clásicos**
 
-La evaluación de modelos predictivos en el contexto financiero presenta particularidades que van más allá de las métricas estándar de aprendizaje automático. Esta sección introduce los conceptos fundamentales necesarios para interpretar correctamente los resultados del Capítulo 4.
+Entre los enfoques tradicionales para la predicción de series temporales destacan los modelos ARIMA (*Autoregressive Integrated Moving Average*). Estos modelos combinan componentes autorregresivos y de medias móviles para capturar dependencias temporales en la serie, y han sido ampliamente utilizados en finanzas para la predicción de precios y volatilidad debido a su simplicidad e interpretabilidad (Box et al., 2015). Sin embargo, su capacidad para capturar relaciones no lineales es limitada, lo que restringe su aplicabilidad en el contexto de este trabajo, donde el problema se formula como clasificación binaria sobre el signo del retorno.
 
-#### Métricas de clasificación y sus limitaciones
+Otro enfoque clásico son las cadenas de Markov, en las que el sistema se modela mediante un conjunto finito de estados y probabilidades de transición entre ellos. La hipótesis fundamental es que el estado futuro depende únicamente del estado actual y no de toda la trayectoria previa. En finanzas, los modelos de Markov se han utilizado para modelar cambios de régimen de mercado, tendencias alcistas y bajistas o variaciones en volatilidad (Hamilton, 1989). A diferencia de ARIMA, este enfoque se adapta directamente al problema de clasificación binaria considerado en este trabajo, razón por la cual se incluye como modelo de referencia en los experimentos.
 
-En problemas de clasificación binaria de dirección de mercado, la precisión estándar (*accuracy*) puede resultar engañosa cuando las clases están desbalanceadas: un modelo que siempre prediga la clase mayoritaria obtendría una precisión aparentemente aceptable sin aportar información predictiva real. La precisión equilibrada (*balanced accuracy*) corrige este problema promediando la tasa de acierto sobre cada clase. El coeficiente de correlación de Matthews (MCC) considera los cuatro elementos de la matriz de confusión y proporciona una medida más robusta en escenarios desbalanceados. El ROC-AUC evalúa la capacidad discriminativa del modelo a través de todos los umbrales de decisión posibles.
+### **2.3.2  Árboles de decisión**
 
-En el contexto de la predicción financiera, López de Prado (2018) señala que incluso valores de precisión equilibrada del orden del 53% pueden ser económicamente significativos si son robustos y estables en el tiempo. Sin embargo, la significancia estadística no implica necesariamente rentabilidad real: una pequeña ventaja estadística puede quedar completamente eliminada por los costes de transacción derivados de la operativa activa.
+Los modelos basados en árboles de decisión han ganado popularidad en el ámbito financiero debido a su robustez y capacidad para modelar relaciones no lineales. Aunque estos modelos no incorporan de forma explícita el orden temporal de los datos, pueden utilizar información histórica mediante ingeniería de características, incluyendo retardos, medias móviles o indicadores técnicos como variables de entrada.
 
-#### Validación temporal y backtesting
+Random Forest (Breiman, 2001) es un método de aprendizaje ensamblado que combina múltiples árboles de decisión generados a partir de subconjuntos aleatorios de datos y variables. La predicción final se obtiene mediante votación o promedio entre los distintos árboles, lo que reduce el sobreajuste y mejora la capacidad de generalización. En finanzas se ha utilizado para la predicción de retornos y movimientos de mercado debido a su estabilidad frente al ruido característico de los datos financieros (Krauss et al., 2017).
 
-La validación de modelos sobre series temporales financieras requiere respetar estrictamente el orden cronológico de los datos. El método clásico de validación cruzada en *K* particiones no resulta adecuado para series temporales, ya que puede permitir que el modelo se entrene con datos futuros respecto a los empleados en la validación, generando estimaciones artificialmente optimistas (López de Prado, 2018).
+XGBoost (Chen y Guestrin, 2016) es una técnica de potenciación de gradiente basada en árboles de decisión que construye modelos secuencialmente, corrigiendo en cada iteración los errores cometidos por los árboles anteriores. Este enfoque permite capturar relaciones complejas y suele ofrecer un alto rendimiento predictivo. XGBoost ha sido ampliamente empleado en problemas financieros, especialmente en predicción de precios y clasificación de tendencias bursátiles (Krauss et al., 2017).
 
-El *backtesting* —evaluación retrospectiva de una estrategia sobre datos históricos— constituye la herramienta estándar para estimar el comportamiento de una estrategia en producción. Sin embargo, presenta riesgos propios: el sobreajuste al período de evaluación, el sesgo de selección de la ventana temporal o la no consideración de los costes de fricción reales pueden conducir a estimaciones excesivamente optimistas que no se reproducen en condiciones reales de mercado.
+### **2.3.3  Redes neuronales recurrentes**
 
-#### De la predicción a la rentabilidad financiera
+Las redes neuronales recurrentes (RNN) están diseñadas específicamente para procesar datos secuenciales, ya que mantienen información de estados anteriores mediante conexiones recurrentes. Esto las hace especialmente adecuadas para el análisis de series temporales financieras.
 
-La brecha entre la capacidad predictiva estadística y la rentabilidad financiera real es uno de los fenómenos mejor documentados en la literatura de *machine learning* aplicado a finanzas. Esta brecha tiene varias causas. En primer lugar, los costes de transacción —comisiones, diferencial entre precio de compra y venta, impacto de mercado— erosionan directamente el margen generado por el modelo. En segundo lugar, la disponibilidad de la información: si la señal predictiva proviene de datos ya incorporados por el mercado antes de la apertura de la sesión, la ventaja estadística detectada puede no ser explotable en la práctica. En tercer lugar, el período de simulación puede no ser representativo del comportamiento general del mercado si coincide con un régimen de mercado particular.
+Sin embargo, las RNN tradicionales presentan dificultades para capturar dependencias a largo plazo debido a problemas como el desvanecimiento del gradiente. Para solucionar estas limitaciones surgieron arquitecturas más avanzadas: las redes LSTM (*Long Short-Term Memory*) incorporan mecanismos de memoria y compuertas que permiten conservar información relevante durante periodos prolongados (Hochreiter y Schmidhuber, 1997). De forma similar, las redes GRU (*Gated Recurrent Unit*) simplifican esta arquitectura reduciendo el número de parámetros y el coste computacional (Cho et al., 2014). Ambos modelos reciben habitualmente como entrada ventanas temporales de observaciones pasadas para predecir valores futuros de la serie.
 
-Métricas financieras como el ratio de Sharpe (Sharpe, 1966) —cociente entre el exceso de retorno y la volatilidad de la estrategia— o la pérdida máxima (*maximum drawdown*) permiten contextualizar el rendimiento ajustado al riesgo y compararlo con estrategias de referencia pasivas, como la estrategia de comprar y mantener el índice.
+En el ámbito financiero, LSTM y GRU se han utilizado ampliamente para la predicción de precios, retornos y volatilidad debido a su capacidad para capturar patrones temporales complejos (Fischer y Krauss, 2018).
+
+No obstante, el uso de modelos de aprendizaje profundo en finanzas presenta ciertas dificultades relacionadas con la disponibilidad limitada de datos. Aunque las series financieras contienen miles de observaciones, esta cantidad sigue siendo reducida en comparación con otros dominios del aprendizaje profundo, donde suelen emplearse millones de ejemplos. Como consecuencia, estos modelos pueden aprender ruido o variaciones aleatorias en lugar de patrones generales. López de Prado (2018) recomienda complementar las redes neuronales con ingeniería de características, incorporando indicadores técnicos, variables macroeconómicas o transformaciones estadísticas que faciliten el aprendizaje y mejoren la capacidad de generalización del modelo.
+
+En general, los modelos estadísticos clásicos destacan por su interpretabilidad y por requerir una menor cantidad de datos para su entrenamiento. Sin embargo, presentan limitaciones para capturar relaciones no lineales complejas presentes en los mercados financieros. Por otro lado, los métodos de aprendizaje automático ofrecen una mayor capacidad de modelado y pueden detectar patrones más sofisticados, aunque requieren más datos, mayor capacidad computacional y presentan una interpretabilidad más reducida.
+
+## **2.4  De la predicción al rendimiento financiero**
+
+La construcción de un modelo predictivo es solo el primer paso hacia un sistema de inversión algorítmica operativo. Entre la capacidad estadística de un clasificador y su rentabilidad financiera real existe una brecha conceptual y práctica que conviene entender antes de interpretar los resultados experimentales.
+
+**Backtesting y evaluación fuera de muestra.** El *backtesting* es el proceso mediante el cual se simula el comportamiento histórico de una estrategia de inversión utilizando datos pasados. Su objetivo es estimar cómo habría funcionado la estrategia si se hubiera ejecutado en tiempo real. En el contexto de modelos de aprendizaje automático, la evaluación fuera de muestra mediante una ventana temporal expansiva (o deslizante) emula el proceso de decisión real: el modelo se entrena exclusivamente con información disponible hasta el momento de la predicción y se evalúa sobre un período posterior. En este trabajo, cada ventana de evaluación comprende aproximadamente 63 sesiones bursátiles, equivalentes a un trimestre de mercado. Esta granularidad trimestral permite acumular un número suficiente de observaciones para obtener estimaciones estables de las métricas de clasificación mientras se mantiene una frecuencia de actualización razonable para el sistema.
+
+**De la clasificación al trading.** Una vez que el modelo genera predicciones binarias sobre la dirección de cada activo, es necesario traducirlas en operaciones concretas. En este trabajo se adopta una estrategia *long-only*: cuando el modelo predice una subida (señal = 1), se abre una posición larga; cuando predice una bajada (señal = 0), no se mantiene posición en ese activo. Las posiciones se ponderan de forma uniforme entre todos los activos con señal activa en cada sesión, y se reequilibran diariamente.
+
+**Costes de transacción.** Los mercados financieros reales implican fricciones que no están presentes en la evaluación estadística. Las comisiones de intermediación y la horquilla entre precio de compra y venta suponen un coste por operación que, en estrategias de alta rotación como la predicción diaria, puede llegar a superar el exceso de rentabilidad generado por el modelo. En este trabajo se aplica un coste fijo de 10 puntos básicos por lado (20 puntos básicos por operación de ida y vuelta), valor representativo del mercado español para carteras de tamaño moderado.
+
+**Métricas financieras.** Para evaluar el comportamiento de la estrategia de trading se utilizan cuatro métricas principales. La *rentabilidad bruta* mide el beneficio acumulado antes de considerar costes de transacción. La *rentabilidad neta* refleja el beneficio real una vez descontados dichos costes. La *pérdida máxima* (*maximum drawdown*) cuantifica la mayor caída experimentada desde un máximo hasta un mínimo consecutivo, indicando el riesgo de pérdida en el peor escenario histórico. El *ratio de Sharpe* (Sharpe, 1966) relaciona el exceso de rentabilidad diaria sobre el activo sin riesgo con la volatilidad de los retornos, proporcionando una medida de rentabilidad ajustada al riesgo.
+
+**Estrategias de referencia.** Los resultados del modelo deben contextualizarse frente a estrategias pasivas o naïve que no requieren capacidad predictiva. Se consideran tres referencias: (i) *comprar y mantener* el IBEX 35, que actúa como benchmark del comportamiento del mercado durante el período; (ii) un *clasificador aleatorio*, que genera señales de compra o venta de forma aleatoria, cuya distribución de resultados se obtiene mediante 1.000 simulaciones bootstrap; y (iii) una estrategia de *momentum* ingenuo, que predice que la dirección futura del activo coincidirá con la tendencia observada durante los últimos cinco días.
+
+**La brecha estadística-financiera.** Una precisión equilibrada estadísticamente significativa no garantiza rentabilidad financiera. Por un lado, la magnitud del efecto predictivo en mercados eficientes es intrínsecamente pequeña —diferencias de pocas décimas de punto porcentual sobre el 50%—, lo que deja poco margen antes de que los costes la anulen. Por otro, la señal puede provenir de información que el mercado ya ha procesado parcialmente antes de que se ejecuten las órdenes, reduciendo su explotabilidad real. Esta distinción entre significancia estadística y viabilidad económica es fundamental para interpretar los resultados del Capítulo 4.
 
 ---
 
-## Capítulo 3. Metodología y desarrollo del sistema
+**Capítulo 3**
 
-### 3.1 Arquitectura general del sistema
+# **Metodología y desarrollo del sistema**
 
-La Figura 3 muestra el esquema general de la arquitectura del sistema desarrollado. El sistema parte de dos fuentes principales de información: los datos de mercado y las noticias financieras. Ambos flujos convergen en una base de datos centralizada, desde la cual se ejecutan los modelos de predicción. Las predicciones generadas son consumidas por tres servicios: una página web de visualización, un boletín informativo automatizado y un bot de trading.
+Este capítulo describe el sistema desarrollado, desde su arquitectura general hasta los detalles de implementación de cada componente. La estructura sigue el flujo natural del sistema: primero se presenta la arquitectura de conjunto, luego las fuentes de datos y su preprocesamiento, a continuación los modelos y los servicios automatizados que consumen sus predicciones, y finalmente el protocolo experimental empleado para evaluarlos.
 
-![Figura 3](figura_3.png)
+## **3.1  Arquitectura general del sistema**
 
-*Figura 3. Diagrama de arquitectura del sistema automatizado. Los dos flujos de entrada —datos de mercado y noticias financieras— convergen en una base de datos centralizada, a partir de la cual se generan predicciones que alimentan la página web, el boletín informativo y el bot de trading.*
+La Figura 3 muestra el diagrama de arquitectura del sistema completo. El pipeline parte de dos fuentes de datos externas: los datos de mercado OHLCV (*open, high, low, close, volume*) de los activos del IBEX 35 y los índices de referencia, y un flujo continuo de noticias financieras procedentes de la prensa económica española. Ambas fuentes se almacenan en una base de datos centralizada en la nube (Supabase) y en una réplica local SQLite para entrenamiento y análisis.
 
-La arquitectura sigue una separación clara de responsabilidades en bloques independientes. Cada tarea del pipeline se ejecuta de forma desacoplada mediante automatizaciones gestionadas con GitHub Actions (GitHub Inc., 2026). Este enfoque mejora la robustez y mantenibilidad del sistema: un fallo en una etapa concreta no interrumpe necesariamente el resto del flujo de trabajo.
+A partir de los datos de mercado se genera el conjunto de características que alimenta los modelos predictivos. Los modelos, entrenados periódicamente sobre el histórico disponible, producen predicciones diarias de dirección y probabilidad para cada activo. Estas predicciones se almacenan en la base de datos y son consumidas por tres servicios: una página web de visualización, un boletín informativo automatizado y un bot de trading. Las noticias, por su parte, se procesan mediante un módulo de inteligencia artificial generativa para extraer metadatos de relevancia y sentimiento, y se integran en la página web y el boletín, pero no forman parte del entrenamiento de los modelos predictivos actuales.
 
-El bloque de datos de mercado construye y mantiene una base de datos histórica de información bursátil actualizada. Las automatizaciones verifican que tanto el mercado español como el estadounidense hayan cerrado antes de actualizar los registros diarios, evitando almacenar valores incompletos. Los datos se almacenan en una base de datos en la nube mediante Supabase (Supabase Inc., 2026), y periódicamente se migran a una base de datos local SQLite para tareas de entrenamiento y experimentación.
+Todas las etapas del pipeline —actualización de datos, generación de predicciones, procesamiento de noticias y envío del boletín— se ejecutan como tareas automatizadas mediante GitHub Actions (GitHub Inc., 2026), de forma desacoplada e independiente entre sí.
 
-El bloque de predicción recupera de la base de datos en la nube las observaciones más recientes de cada activo —aproximadamente 300 sesiones por activo— para construir las características y generar nuevas predicciones con los modelos ya entrenados. Las predicciones resultantes se almacenan de nuevo en la base de datos centralizada, desde donde son consumidas por los servicios finales.
+*Figura 3. Diagrama de arquitectura del sistema automatizado.*
 
-### 3.2 Datos y fuentes de información
+![][image3]
 
-#### Series temporales financieras
+## **3.2  Datos y fuentes de información**
 
-Se recopilaron series temporales diarias correspondientes a los activos financieros del IBEX 35. Cada registro incluye el precio de apertura, el precio máximo y mínimo de la sesión, el precio de cierre ajustado y el volumen de negociación. Los precios ajustados incorporan correcciones por dividendos y operaciones corporativas, garantizando la consistencia de la serie histórica a efectos de comparación temporal.
+### **3.2.1  Datos financieros**
 
-Los activos considerados corresponden a las compañías pertenecientes al IBEX 35 durante el período de estudio: ACS, Acerinox, Aena, Amadeus IT Group, Acciona, Acciona Energía, BBVA, Bankinter, CaixaBank, Cellnex Telecom, Colonial, Endesa, Enagás, Fluidra, Ferrovial, Grifols, IAG, Iberdrola, Inditex, Logista, Mapfre, Merlin Properties, ArcelorMittal, Naturgy, Puig, Redeia, Banco Sabadell, Banco Santander, Telefónica y Unicaja Banco.
+Se recopilaron series temporales diarias de precios ajustados (*adjusted close*) y volumen para los activos del IBEX 35 y para los índices de referencia IBEX 35, S&P 500 y VIX. Los precios ajustados incorporan correcciones por dividendos y ampliaciones de capital, de modo que los retornos calculados sobre ellos reflejan fielmente el rendimiento económico total del activo. Todos los datos fueron obtenidos mediante la librería yfinance (Ranaroussi, 2023), que actúa como interfaz hacia Yahoo Finance.
 
-El conjunto de datos contiene 129.910 registros, comprendidos entre enero de 2006 y abril de 2026. La fecha de inicio no es arbitraria: aunque algunas compañías disponen de datos anteriores, antes de 2006 existen inconsistencias relevantes en determinados activos, como fechas faltantes, volúmenes negativos o nulos, precios erróneos y discontinuidades temporales. Durante el preprocesamiento se filtraron los registros con volumen nulo o negativo. Es importante señalar que el universo de activos está sujeto a **sesgo de supervivencia**, ya que únicamente se incluyen los componentes actuales del IBEX 35, omitiendo empresas históricamente excluidas del índice; este sesgo puede inflar ligeramente las métricas de rendimiento.
+Las compañías incluidas corresponden a los integrantes del IBEX 35 durante el período de estudio: ACS, Acerinox, Aena, Amadeus IT Group, Acciona, Acciona Energía, BBVA, Bankinter, CaixaBank, Cellnex Telecom, Colonial, Endesa, Enagás, Fluidra, Ferrovial, Grifols, IAG, Iberdrola, Inditex, Logista, Mapfre, Merlin Properties, ArcelorMittal, Naturgy, Puig, Redeia, Banco Sabadell, Banco Santander, Telefónica y Unicaja Banco. El universo fijado presenta un potencial sesgo de supervivencia, ya que incluye únicamente empresas que han permanecido en el índice a lo largo del período; compañías que fueron excluidas o entraron en concurso de acreedores no están representadas. Este sesgo tiende a inflar ligeramente las métricas de rendimiento en datos históricos.
 
-Además de las compañías individuales, se recopilaron indicadores de mercado e índices de referencia: el IBEX 35, el S&P 500 y el índice de volatilidad VIX. El histórico de estos índices está disponible desde fechas anteriores a 2006, lo que permite disponer de una ventana de precalentamiento suficiente para construir características basadas en ventanas móviles amplias. Dado que los mercados español y estadounidense operan en calendarios distintos con festivos diferentes, fue necesario alinear ambos calendarios: los flujos (retornos, variaciones) se rellenan con cero en los días en que el mercado correspondiente permanece cerrado, mientras que las variables de estado (niveles, volatilidades) se propagan hacia adelante (*forward fill*).
+El conjunto de datos contiene 129.910 registros comprendidos entre enero de 2006 y abril de 2026. La fecha de inicio no es arbitraria: antes de 2006 existen inconsistencias en determinados activos, como fechas faltantes, volúmenes nulos o precios erróneos. Durante el preprocesamiento se eliminaron sesiones con volumen nulo o negativo para evitar que registros correspondientes a días de mercado cerrado o errores de datos contaminen el conjunto de entrenamiento.
 
-Todos estos datos fueron obtenidos mediante la librería yfinance (Ranaroussi, 2023), que actúa como interfaz de acceso a Yahoo Finance.
+La alineación de calendarios bursátiles constituye un aspecto técnico relevante: el mercado español y el estadounidense no comparten exactamente los mismos días festivos. Cuando el mercado americano permanece cerrado en una fecha en que el español sí opera, se aplica un relleno hacia adelante (*forward fill*) sobre las variables procedentes del S&P 500 y el VIX; cuando la ausencia de movimiento es estructural, el retorno se sustituye por cero. De este modo se evitan discontinuidades artificiales en las series de variables de contexto de mercado.
 
-#### Noticias financieras
+### **3.2.2  Noticias financieras**
 
-Adicionalmente, se recopiló un conjunto de noticias financieras procedentes del diario económico Expansión, concretamente de las secciones de economía, mercados, empresas y ahorro, abarcando el período comprendido desde enero de 2026. **Estas noticias no forman parte del entrenamiento de los modelos predictivos actuales**; constituyen una fuente de información cualitativa almacenada en el sistema para futuras extensiones relacionadas con análisis de sentimiento y modelado multimodal.
+Adicionalmente, se recopiló un conjunto de noticias financieras procedentes del diario económico Expansión, concretamente de las secciones de economía, mercados, empresas y ahorro, abarcando el período desde enero de 2026. Para cada noticia se almacenan los campos originales —título, cuerpo, sección, URL y fecha de publicación— así como atributos derivados generados automáticamente: categoría temática, relevancia estimada en [0,1], sentimiento (positivo, negativo o neutro) y compañías mencionadas.
 
-Para cada noticia se almacenan los siguientes campos originales: título, cuerpo, sección, URL y fecha de publicación. A partir de estos datos se generan automáticamente varios atributos derivados: la categoría de la noticia (específica de compañía, macroeconómica, sentimiento de mercado o ruido general), la relevancia estimada en el rango [0, 1], el sentimiento asociado (positivo, negativo o neutro) y las compañías mencionadas.
+Es importante destacar que las noticias no forman parte del entrenamiento de los modelos predictivos actuales. Su procesamiento y almacenamiento se orientan a futuras extensiones del sistema relacionadas con análisis de sentimiento y modelado multimodal, y a su integración en los servicios de cara al usuario —página web y boletín informativo—.
 
-### 3.3 Preparación de datos y definición de la señal
+El sistema también almacena información del servicio de boletín, incluyendo la dirección de correo electrónico y la fecha de suscripción de cada usuario, para gestionar el envío automatizado de informes.
 
-#### Definición de la señal
+## **3.3  Preparación de datos y definición de la señal**
 
-La señal se construye a partir del retorno logarítmico futuro del activo. Para cada día *t*, se calcula el retorno logarítmico entre el precio de cierre en *t* y el precio de cierre en *t* + *h*, donde *h* representa el horizonte temporal considerado:
+### **3.3.1  Definición de la señal**
+
+La variable objetivo se construye a partir del retorno logarítmico futuro del activo. Para cada día $t$ se calcula el retorno logarítmico entre el precio de cierre en $t$ y el precio de cierre en $t+h$, donde $h$ es el horizonte temporal:
 
 $$r_{t,h} = \ln\left(\frac{P_{t+h}}{P_t}\right)$$
 
-donde $P_t$ es el precio de cierre ajustado del activo en el instante *t* y $P_{t+h}$ es el precio de cierre ajustado tras un horizonte temporal *h*. A partir de este valor, la variable objetivo se define de forma binaria:
+donde $P_t$ es el precio de cierre ajustado en el instante $t$. A partir de este valor, la variable objetivo se define de forma binaria:
 
 $$y_t = \begin{cases} 1 & \text{si } r_{t,h} > 0 \\ 0 & \text{en caso contrario} \end{cases}$$
 
-Los horizontes considerados son de 1 y 5 días. El horizonte de 1 día permite evaluar la capacidad del modelo para anticipar la dirección inmediata del mercado. El horizonte de 5 días busca capturar tendencias ligeramente más estables y menos sensibles al ruido diario.
+Una señal igual a 1 indica que el precio futuro es superior al precio actual (subida). Los horizontes considerados son $h = 1$ día y $h = 5$ días. El horizonte de un día evalúa la capacidad del modelo para anticipar la dirección inmediata del mercado; el de cinco días busca modelar tendencias ligeramente más estables y menos sensibles al ruido diario, aproximándose al comportamiento semanal del activo.
 
-#### Exploración de datos
+### **3.3.2  Exploración de datos**
 
-La predicción de series financieras constituye un problema especialmente complejo debido a la propia naturaleza de los retornos bursátiles. Los retornos logarítmicos suelen presentar un comportamiento próximo al de un proceso de ruido blanco, caracterizado por una elevada aleatoriedad y una baja dependencia temporal entre observaciones consecutivas (Fama, 1970).
+La predicción de series financieras constituye un problema especialmente complejo debido a la propia naturaleza de los retornos bursátiles. En particular, los retornos logarítmicos suelen presentar un comportamiento próximo al de un proceso de ruido blanco, caracterizado por una elevada aleatoriedad y una baja dependencia temporal entre observaciones consecutivas. Esto implica que los movimientos pasados del mercado contienen una cantidad limitada de información útil para anticipar movimientos futuros (Fama, 1970).
 
-La Figura 1 muestra la evolución temporal de los retornos logarítmicos de un activo representativo del IBEX 35. Puede observarse que la serie presenta oscilaciones rápidas y aparentemente irregulares, sin patrones visuales persistentes ni tendencias fácilmente identificables.
-
-![Figura 1](figura_1.png)
-
-*Figura 1. Evolución temporal de los retornos logarítmicos diarios de un activo representativo del IBEX 35. La serie presenta oscilaciones rápidas sin tendencia persistente, evidenciando el elevado nivel de ruido característico de las series financieras.*
+La Figura 1 muestra la evolución temporal de los retornos logarítmicos de un activo representativo del IBEX 35. Puede observarse que la serie presenta oscilaciones rápidas y aparentemente irregulares, sin patrones visuales persistentes ni tendencias fácilmente identificables, lo que evidencia el elevado nivel de ruido presente en la señal financiera.
 
 El análisis de autocorrelación representado en la Figura 2 refuerza esta idea. Los coeficientes de autocorrelación para distintos retardos se mantienen próximos a cero, lo que indica una débil relación lineal entre los retornos actuales y los retornos pasados, en línea con los resultados de Lo y MacKinlay (1988).
 
-![Figura 2](figura_2.png)
+![][image1]![][image2]  
+*Figura 1. Evolución temporal de los retornos logarítmicos diarios de un activo representativo del IBEX 35.*  
+*Figura 2. Función de autocorrelación (ACF) de los retornos logarítmicos diarios.*
 
-*Figura 2. Función de autocorrelación (ACF) de los retornos logarítmicos diarios. Los coeficientes se mantienen próximos a cero para todos los retardos, lo que confirma la débil dependencia temporal de la serie.*
+Estas características suponen un desafío importante para los modelos de aprendizaje automático. En problemas donde la señal contiene una alta proporción de ruido y una estructura temporal limitada, la capacidad predictiva de los modelos tiende a reducirse considerablemente (López de Prado, 2018).
 
-#### Feature engineering
+### **3.3.3  Feature engineering**
 
-Con el objetivo de mejorar la capacidad predictiva de los modelos y facilitar el aprendizaje de patrones temporales consistentes, se llevó a cabo un proceso de ingeniería de características (*feature engineering*) sobre las series financieras originales. En lugar de utilizar precios absolutos o retornos simples, se emplearon retornos logarítmicos, lo que permite representar las variaciones relativas del precio de forma más consistente a lo largo del tiempo y reduce los problemas asociados a las diferencias de escala entre activos.
+Con el objetivo de mejorar la capacidad predictiva de los modelos y facilitar el aprendizaje de patrones temporales consistentes, se llevó a cabo un proceso de ingeniería de características (*feature engineering*) sobre las series financieras originales. En lugar de utilizar precios absolutos o volúmenes sin procesar, se emplearon retornos logarítmicos, ratios y transformaciones normalizadas, evitando magnitudes absolutas cuya escala cambia con el tiempo y puede introducir artefactos en los modelos basados en árboles de decisión (López de Prado, 2018).
 
-Todas las características temporales se construyeron respetando estrictamente la causalidad temporal: cada ventana de datos utiliza únicamente información disponible hasta el instante actual, sin incorporar datos futuros en ninguna transformación o cálculo. Asimismo, se eliminaron variables que pudieran introducir sesgos no deseados, como identificadores explícitos (fecha exacta, nombre de la compañía) y variables intermedias utilizadas únicamente para construir nuevas características.
+Todas las características se construyeron respetando estrictamente la causalidad temporal: cada ventana de datos utiliza únicamente información disponible hasta el instante actual, sin incorporar datos futuros en ningún cálculo. Se eliminaron también identificadores explícitos como la fecha exacta o el nombre de la compañía, para evitar que el modelo aprenda patrones específicos de empresa o dependencias temporales espurias.
 
-Las características generadas se agrupan en las siguientes categorías:
+Las variables generadas se agrupan en seis categorías:
 
-**Retornos.** Retorno logarítmico a 1, 5, 10 y 20 días; retorno intradía (cierre menos apertura normalizado); hueco (*gap*) entre apertura del día y cierre del día anterior; momentum 12-1 meses (solo H5).
+**Retornos.** Retorno logarítmico en horizontes de 1, 5, 10 y 20 días; retorno intradía (diferencia cierre-apertura normalizada); y hueco (*gap*) entre la apertura del día y el cierre del día anterior.
 
-**Volatilidad.** Desviación estándar de retornos en ventanas de 5, 10 y 20 días; ratio de volatilidades corto/largo plazo (5/20); Average True Range normalizado ATR(14); bandas de Bollinger %B (posición del precio dentro de las bandas); pendiente de regresión lineal del precio (10 días); distancia relativa al máximo y mínimo de las ventanas de 10 y 20 días.
+**Volatilidad y estructura de vela.** Desviación estándar de retornos en ventana de 5 días; ratio de volatilidades corto/largo plazo (5/20); *Average True Range* (ATR, 14 días); y variables de vela japonesa: tamaño del cuerpo, mecha superior e inferior.
 
-**Volumen y liquidez.** Ratio de volumen reciente frente al promedio (1/5 y 1/20 días); pendiente del OBV (On-Balance Volume, ventana 10 días); ratio de iliquidez de Amihud (2002) sobre ventana de 10 días; retorno ponderado por volumen.
+**Volumen y liquidez.** Ratios de volumen reciente frente a volumen promedio (1/5 y 1/20 días); pendiente del *On-Balance Volume* (OBV, 10 días); e iliquidez de Amihud (2002) en ventana de 10 días.
 
-**Indicadores técnicos.** Medias móviles simples y exponenciales en ratios (5/20 y 10/50); histograma MACD normalizado por precio (12, 26, 9); RSI(14); autocorrelación de retornos en ventana de 10 días.
+**Indicadores técnicos.** Ratio de medias móviles (5/20 y 10/50); MACD (12, 26, 9); posición relativa en las Bandas de Bollinger (20 días); pendiente de regresión lineal del precio (10 días); distancia relativa al máximo (10 y 20 días); distancia relativa al mínimo (10 y 20 días); RSI (14 días); y autocorrelación de retornos en ventana de 10 días.
 
-**Variables de mercado.** Amplitud de mercado del IBEX 35 calculada mediante *leave-one-out* (fracción de valores con retorno positivo), tanto a 1 día como media móvil a 10 días; retorno relativo del activo frente al IBEX 35 a 5 y 20 días; volatilidad del IBEX 35 (10 días) y ratio de volatilidades (10/60); volatilidad relativa del activo frente al IBEX 35 (20 días); volatilidad del S&P 500 (20 días) y ratio de volatilidades (20/100); variación estandarizada del VIX en 5 días; percentil del VIX en los últimos 250 días.
+**Variables de mercado.** Amplitud del mercado IBEX 35 en 1 y 10 días (fracción de valores con retorno positivo); retorno relativo del activo frente al índice (5 y 20 días); volatilidad del IBEX 35 (10 días) y su ratio corto/largo plazo (10/60); volatilidad relativa del activo frente al índice (20 días); volatilidad del S&P 500 (20 días) y su ratio (20/100); variación del VIX en 5 días; y percentil del VIX sobre los últimos 250 días.
 
-**Variables temporales.** Día de la semana (solo H1): codificado como entero para los modelos de árbol, y mediante codificación sinusoidal (*sin/cos*) para las redes neuronales recurrentes, con el objetivo de reflejar la naturaleza cíclica del calendario semanal. Mes del año (solo H5).
+**Variables temporales.** Día de la semana, representado mediante codificación categórica en modelos de árbol y mediante codificación sinusoidal en las redes neuronales recurrentes para preservar la naturaleza cíclica del calendario.
 
-La Tabla 1 presenta un resumen de las características finales utilizadas.
+La Tabla 1 recoge el listado completo de características con su definición.
 
-**Tabla 1. Características generadas mediante feature engineering. Los números entre paréntesis indican el tamaño de la ventana temporal empleada en cada cálculo.**
+*Tabla 1. Características generadas mediante feature engineering. Los números entre paréntesis indican el tamaño de la ventana temporal empleada.*
 
 | Característica | Explicación breve | Característica | Explicación breve |
-|---|---|---|---|
-| Logaritmo retorno (1; 5; 10; 20) | Retorno logarítmico en distintos horizontes temporales | Retorno intradía (1) | Diferencia entre precio de cierre y apertura normalizada |
+| :---- | :---- | :---- | :---- |
+| Logaritmo retorno (1;5;10;20) | Retorno logarítmico en distintos horizontes temporales | Retorno intradía (1) | Diferencia entre precio de cierre y apertura normalizada |
 | Volatilidad (5) | Desviación estándar de retornos en ventana de 5 días | Cuerpo | Tamaño absoluto del cuerpo de la vela japonesa |
 | Ratio volatilidad (5/20) | Cociente entre volatilidades de corto y largo plazo | Mecha superior | Proporción de la mecha superior respecto al rango total |
 | Rango verdadero medio (14) | Average True Range; medida de volatilidad intradía | Mecha inferior | Proporción de la mecha inferior respecto al rango total |
-| Ratio media móvil (5/20; 10/50) | Cociente entre medias móviles de distintos periodos | Hueco | Diferencia entre apertura del día y cierre del día anterior |
-| MACD (12, 26, 9) | Diferencia entre medias exponenciales de distinta longitud | Día de la semana | Variable cíclica (codificación sinusoidal en RNN) |
-| Bandas de Bollinger (20) | Posición del precio dentro de las bandas superior e inferior | Amplitud del mercado (1; 10) | Proporción de valores del IBEX 35 con retorno positivo (leave-one-out) |
-| Pendiente (10) | Pendiente de la regresión lineal del precio sobre una ventana de 10 días | Retorno relativo IBEX (5; 20) | Diferencia entre retorno del activo y retorno del índice |
-| Distancia al máximo (10; 20) | Distancia relativa al máximo de la ventana | Volatilidad IBEX (10) | Desviación estándar de retornos del IBEX 35 |
-| Distancia al mínimo (10; 20) | Distancia relativa al mínimo de la ventana | Ratio volatilidad IBEX (10/60) | Cociente de volatilidades del IBEX 35 en distintos horizontes |
+| Ratio media móvil (5/20;10/50) | Cociente entre medias móviles de distintos periodos | Hueco | Diferencia entre apertura del día y cierre del día anterior |
+| MACD (12,26,9) | Diferencia entre medias exponenciales de distinta longitud | Día de la semana | Variable cíclica (codificación sinusoidal en RNN) |
+| Bandas de Bollinger (20) | Distancia del precio respecto a la banda superior e inferior | Amplitud del mercado (1;10) | Proporción de valores del IBEX 35 con retorno positivo |
+| Pendiente (10) | Pendiente de la regresión lineal del precio sobre una ventana de 10 días | Retorno relativo IBEX (5;20) | Diferencia entre retorno del activo y retorno del índice |
+| Distancia al máximo (10;20) | Distancia relativa al máximo de la ventana | Volatilidad IBEX (10) | Desviación estándar de retornos del IBEX 35 |
+| Distancia al mínimo (10;20) | Distancia relativa al mínimo de la ventana | Ratio volatilidad IBEX (10/60) | Cociente de volatilidades del IBEX 35 en distintos horizontes |
 | RSI (14) | Índice de fuerza relativa en ventana de 14 días | Volatilidad relativa IBEX (20) | Cociente entre volatilidad del activo y la del índice |
-| Ratio volumen (1/5; 1/20) | Cociente entre el volumen reciente y el volumen promedio | Volatilidad S&P 500 (20) | Desviación estándar de retornos del S&P 500 |
-| Pendiente del OBV (10) | Tendencia del volumen on-balance en una ventana de 10 días | Ratio volatilidad S&P 500 (20; 100) | Cociente entre volatilidades del S&P 500 en distintos horizontes |
-| Iliquidez Amihud (10) | Ratio de iliquidez de Amihud (2002): impacto del precio por unidad de volumen | Cambio VIX (5) | Variación estandarizada del índice de volatilidad implícita en 5 días |
+| Ratio volumen (1/5;1/20) | Cociente entre el volumen reciente y el volumen promedio | Volatilidad S&P (20) | Desviación estándar de retornos del S&P 500 |
+| Pendiente del OBV (10) | Tendencia del volumen on-balance en una ventana de 10 días | Ratio volatilidad S&P (20;100) | Cociente entre volatilidades del S&P 500 en distintos horizontes |
+| Iliquidez Amihud (10) | Ratio de iliquidez de Amihud (2002): impacto del precio por unidad de volumen | Cambio VIX (5) | Variación del índice de volatilidad implícita en 5 días |
 | Retornos autocorrelacionados (10) | Autocorrelación de los retornos en una ventana de 10 días | Percentil VIX (250) | Percentil del VIX actual respecto al histórico de los últimos 250 días |
 
-### 3.4 Modelos predictivos
+## **3.4  Modelos predictivos**
 
-#### Modelo de Markov
+Se evalúan cinco familias de modelos que representan distintas hipótesis sobre la estructura de los datos financieros: cadenas de Markov, Random Forest, XGBoost, LSTM y GRU. En todos los casos el problema se formula como clasificación binaria (subida/bajada) y la salida es una probabilidad $P(\text{subida} \mid X_t)$; la predicción discreta se obtiene umbralando en 0,5. La Tabla 2 resume los inputs, outputs e hiperparámetros principales de cada modelo.
 
-El modelo de Markov de primer orden discretiza el retorno logarítmico del día anterior (`log_ret_1`) en *n* = 3 estados mediante cuantiles equiprobables, obteniendo tres cubos: retorno bajo (tercil inferior), neutro (tercil central) y alto (tercil superior). El estado del sistema en cada instante *t* queda definido por el cubo al que pertenece el retorno del día anterior. La probabilidad de transición $P(\text{up} \mid s)$ para cada estado *s* se estima como la fracción empírica de movimientos alcistas observados tras ese estado en el período de entrenamiento, aplicando suavizado de Laplace (*alpha* = 1) para gestionar estados no observados. En inferencia, el modelo mapea el retorno observado al cubo correspondiente y devuelve $P(\text{up} \mid s)$; si el estado no fue observado durante el entrenamiento, se devuelve la fracción base de movimientos alcistas del conjunto de entrenamiento. La predicción binaria se obtiene comparando $P(\text{up} \mid s)$ con el umbral 0,5.
+*Tabla 2. Resumen de los modelos implementados: entradas, salidas e hiperparámetros principales.*
 
-#### Modelos de árbol (Random Forest y XGBoost)
+| Modelo | Entradas | Salida | Hiperparámetros principales |
+| :---- | :---- | :---- | :---- |
+| Markov | log_ret_1 (retorno del día anterior) | P(subida) | n_states=3 (cuantiles), order=1, α=1,0 (Laplace) |
+| Random Forest | 41 características (matriz plana) | P(subida) | n_estimators=500, max_depth=5, max_features=0,3, min_samples_leaf=50 |
+| XGBoost | 41 características (matriz plana) | P(subida) | n_estimators=300, learning_rate=0,05, max_depth=3, min_child_weight=100, subsample=0,7 |
+| LSTM | Ventana temporal × 41 características | P(subida) | 1 capa recurrente, hidden units moderado, dropout, early stopping |
+| GRU | Ventana temporal × 41 características | P(subida) | 1 capa recurrente, hidden units moderado, dropout, early stopping |
 
-Random Forest entrena 500 árboles sobre subconjuntos aleatorios de datos y variables, obteniendo la predicción final por votación mayoritaria. La configuración adoptada limita deliberadamente la complejidad individual de cada árbol (profundidad máxima 5, mínimo de 50 observaciones por hoja, 30% de variables por división) para forzar que la capacidad del modelo emerja de la agregación y no del ajuste individual.
+**Modelo de Markov.** El modelo discretiza el espacio de retornos en $n = 3$ estados cuantílicos (tercil inferior, medio y superior) que representan movimientos bajistas, neutros y alcistas. El estado actual queda determinado por el retorno logarítmico del día anterior (log_ret_1). A partir del conjunto de entrenamiento se estima la matriz de transición $P(\text{subida} \mid \text{estado})$ como la frecuencia empírica de movimientos alcistas en cada estado, con suavizado de Laplace ($\alpha = 1$) para gestionar estados no observados. La predicción es, por tanto, $P(\text{subida}) = P_{s_t \to 1}$, donde $s_t$ es el estado actual. El modelo emplea solo dos clases de predicción: subida ($y=1$) o bajada ($y=0$), en coherencia con la formulación binaria del resto de modelos.
 
-XGBoost construye árboles secuencialmente corrigiendo los errores residuales de los estimadores anteriores mediante potenciación de gradiente. La parada anticipada (*early stopping*) sobre una partición temporal interna del 80/20 determina el número óptimo de rondas de boosting, evitando el sobreajuste sin sacrificar capacidad. Los árboles son poco profundos (profundidad máxima 3) y aplican submuestreo estocástico tanto de filas como de columnas.
+**Random Forest.** Método de aprendizaje ensamblado que combina 500 árboles de decisión poco profundos (profundidad máxima 5) entrenados sobre subconjuntos aleatorios de datos y variables (30% de características por partición). La restricción explícita de la complejidad individual de cada árbol —junto con el límite de 50 observaciones mínimas por hoja— favorece la generalización y previene el ajuste excesivo a patrones espurios en datos financieros de alta varianza.
 
-#### Redes neuronales recurrentes (LSTM y GRU)
+**XGBoost.** Técnica de potenciación de gradiente que construye modelos secuencialmente, corrigiendo los errores del árbol anterior. Los árboles son muy superficiales (profundidad máxima 3) para que la complejidad emerja de la acumulación de muchos estimadores débiles. Se emplea parada temprana (*early stopping*) con una partición temporal 80/20 dentro de cada ventana de entrenamiento para determinar el número óptimo de iteraciones y evitar el sobreajuste.
 
-Tanto LSTM como GRU reciben como entrada una secuencia de los *T* = 20 días más recientes de características. Las características se estandarizan (*z-score*) usando únicamente estadísticos del conjunto de entrenamiento. El día de la semana se codifica mediante sin/cos cíclico antes de la normalización. La arquitectura es deliberadamente compacta: una única capa recurrente con estado oculto de 64 unidades y *dropout* de 0,3, seguida de una capa lineal de salida. El modelo se comparte entre los 30 tickers (pooling cross-seccional). El entrenamiento emplea AdamW con *learning rate* 3×10⁻⁴ y parada anticipada con paciencia de 10 épocas sobre una partición temporal interna del 20% del conjunto de entrenamiento.
+**LSTM y GRU.** Las redes LSTM y GRU reciben como entrada una ventana temporal de observaciones pasadas expresadas como secuencias de las 41 características. Se utilizan arquitecturas deliberadamente compactas —una única capa recurrente con capacidad de representación moderada, *dropout* y parada temprana— para limitar la flexibilidad del modelo y priorizar la estabilidad fuera de muestra sobre señales de baja relación señal-ruido. Las características de entrada se normalizan con un escalador ajustado exclusivamente sobre los datos de entrenamiento de cada ventana para evitar fugas de información.
 
-**Tabla 2. Resumen de los modelos predictivos: entradas, salidas e hiperparámetros principales.**
+## **3.5  Servicios automatizados del sistema**
 
-| Modelo | Entrada | Salida | Hiperparámetros principales |
-|---|---|---|---|
-| Markov | `log_ret_1` (discretizado, 3 estados) | P(up \| estado) | n\_states=3, order=1, alpha=1.0 (Laplace) |
-| Random Forest | Vector de 40 características (H1) / 42 (H5) | P(up), clase binaria | n\_estimators=500, max\_depth=5, max\_features=0.3, min\_samples\_leaf=50 |
-| XGBoost | Vector de 40 características (H1) / 42 (H5) | P(up), clase binaria | max\_depth=3, lr=0.05, subsample=0.7, early\_stopping=30 rondas |
-| LSTM | Secuencia (T=20, F=41) de características normalizadas | P(up), clase binaria | hidden=64, layers=1, dropout=0.3, ES patience=10, AdamW lr=3×10⁻⁴ |
-| GRU | Secuencia (T=20, F=41) de características normalizadas | P(up), clase binaria | hidden=64, layers=1, dropout=0.3, ES patience=10, AdamW lr=3×10⁻⁴ |
+Los modelos entrenados no solo sirven para evaluación académica: sus predicciones se integran en tres servicios de cara al usuario y en un sistema de almacenamiento centralizado. Todos estos componentes son operados por automatizaciones de GitHub Actions que se ejecutan diariamente en días laborables.
 
-### 3.5 Servicios automatizados del sistema
+### **3.5.1  Procesamiento de noticias**
 
-#### Página web
+El módulo de procesamiento de noticias extrae de forma automática las publicaciones del diario Expansión mediante sus feeds RSS (secciones economía, mercados y empresas) y las enriquece con metadatos mediante un agente de inteligencia artificial generativa. El agente, basado en el modelo openai/gpt-oss-120b (OpenAI, 2025) ejecutado en la infraestructura de Groq (Groq, 2026), procesa las noticias en lotes de aproximadamente diez artículos por llamada para equilibrar eficiencia y calidad de las respuestas. Para cada artículo extrae: categoría temática (noticia específica de compañía, macroeconómica, sentimiento de mercado o ruido general), compañías del IBEX 35 mencionadas, sentimiento (positivo, negativo o neutro) y relevancia estimada en [0,1]. La relevancia combina la evaluación semántica del modelo de lenguaje con reglas heurísticas basadas en palabras clave de eventos corporativos relevantes (dividendos, OPAs, resultados, fusiones, cambios regulatorios), lo que hace el sistema más robusto e interpretable que un enfoque puramente basado en inteligencia artificial generativa. Los metadatos resultantes se almacenan en Supabase y se consultan desde la página web y el boletín informativo.
 
-La solución se despliega mediante GitHub Pages como una aplicación web estática basada en HTML, CSS y JavaScript. La interfaz principal muestra predicciones para la siguiente sesión bursátil: cada activo aparece en una tarjeta individual con la dirección esperada del movimiento (verde: alcista, rojo: bajista) y la probabilidad asociada. Al seleccionar un activo, el usuario accede a una vista detallada con cotización actual, gráficos financieros e indicadores técnicos configurables.
+### **3.5.2  Página web**
 
-En la parte inferior se incorpora un panel de noticias financieras en tiempo real con desplazamiento horizontal automático. La web también describe la arquitectura del modelo empleado e incluye una declaración de transparencia sobre las limitaciones del sistema. Las predicciones se actualizan automáticamente cada día laborable mediante GitHub Actions tras el cierre de los mercados.
+La interfaz de usuario se ha desplegado como aplicación web estática en GitHub Pages, implementada en HTML, CSS y JavaScript sin dependencias de servidor. Al cargarse, el cliente JavaScript realiza dos solicitudes asíncronas: (i) lee el fichero `predictions.json` desde el repositorio, que contiene las predicciones del día generadas por el modelo RF h=1; (ii) consume los feeds RSS de Expansión a través de un proxy público para el panel de noticias en directo.
 
-#### Boletín informativo
+Las predicciones se muestran como tarjetas individuales ordenadas por probabilidad descendente (8 tarjetas por página, con navegación), con código de colores verde/rojo para señales alcistas/bajistas y la probabilidad $P(\text{Buy}|X_t)$ mostrada explícitamente. Cada tarjeta enlaza directamente al perfil del activo en Yahoo Finance. El panel inferior reproduce titulares del día mediante un *ticker* de desplazamiento horizontal continuo, similar a los cintillos informativos televisivos, con pausa al pasar el ratón. La web también incluye una sección de descripción del modelo y una declaración de responsabilidad que precisa que las predicciones no constituyen asesoramiento financiero.
 
-El sistema genera diariamente un boletín por correo electrónico para los usuarios suscritos. El correo incluye las tres predicciones de mayor confianza del modelo y las diez noticias financieras más relevantes del día anterior, ordenadas según su relevancia estimada. El envío se realiza mediante el servidor SMTP de Gmail y soporta listas de distribución de hasta 500 destinatarios. Las direcciones de correo se almacenan en la base de datos en la nube.
+![][image4]  
+*Figura 4. Interfaz principal de la página web.*
 
-#### Procesamiento de noticias
+### **3.5.3  Boletín informativo**
 
-El módulo de procesamiento de noticias emplea un agente basado en modelos de lenguaje para analizar cada noticia y extraer: categoría temática, compañías mencionadas y sentimiento (positivo, negativo, neutro). Se utiliza el modelo openai/gpt-oss-120b (OpenAI, 2025) a través de la infraestructura de inferencia de Groq. Para mejorar la eficiencia dentro de los límites del plan gratuito, se agrupan aproximadamente diez noticias por llamada al modelo. La relevancia se calcula mediante un enfoque híbrido que combina la estimación semántica del modelo de lenguaje con reglas heurísticas basadas en palabras clave (dividendos, OPAs, resultados, adquisiciones, cambios regulatorios).
+Cada mañana, los usuarios suscritos reciben por correo electrónico un informe generado automáticamente con las tres predicciones de mayor confianza de la sesión anterior y las diez noticias de mayor relevancia estimada del día precedente. El boletín se construye como un documento HTML con las mismas convenciones visuales que la web —tipografía, paleta de colores y estructura de tarjetas— adaptado a las restricciones de los clientes de correo. El envío se realiza mediante el servidor SMTP de Gmail y puede llegar a hasta 500 destinatarios. Las direcciones de suscripción se gestionan en la base de datos Supabase, desde la que el script de envío recupera la lista de destinatarios activos en cada ejecución.
 
-#### Bot de trading
+![][image5]![][image6]  
+*Figura 5. Ejemplo del boletín informativo diario.*
 
-El bot de trading lee diariamente las predicciones almacenadas y ejecuta las operaciones correspondientes a través de Interactive Brokers. Selecciona las *k* = 3 predicciones de mayor confianza y distribuye el capital proporcionalmente entre ellas. Se conecta localmente al puerto habilitado por la aplicación del bróker una vez el usuario ha iniciado sesión, e implementa lógica de reconexión automática. La tarea se programa mediante PowerShell para ejecutarse cada día laborable a las 9:00 (apertura del IBEX 35) y cerrarse a las 16:45.
+### **3.5.4  Almacenamiento de predicciones y bot de trading**
 
-### 3.6 Protocolo experimental
+El bloque de predicción constituye el núcleo del pipeline automatizado. Cada día laborable, una vez que tanto el mercado español como el estadounidense han cerrado, la automatización recupera las observaciones más recientes de cada activo desde Supabase (aproximadamente 300 sesiones por activo, suficientes para calcular todas las características con ventanas amplias), genera las predicciones con los modelos entrenados, y las almacena en la base de datos en la nube y en el fichero `predictions.json` del repositorio para su consumo por la web.
 
-#### Validación temporal con ventana expansiva
+El bot de trading lee diariamente las predicciones almacenadas y ejecuta las operaciones correspondientes al inicio de cada sesión bursátil mediante la API de Interactive Brokers (Interactive Brokers, 2026). Se conecta localmente al puerto habilitado por la aplicación del bróker, consulta el estado de la cuenta y envía órdenes de compra para los activos con señal alcista. Todas las posiciones reciben el mismo peso dentro de la cartera. La automatización corre como tarea programada de PowerShell entre las 9:00 y las 16:45 (hora española). Las pruebas iniciales se realizaron sobre una cuenta de simulación con 100.000 euros de capital ficticio proporcionado por el bróker.
 
-En problemas de predicción financiera basados en series temporales resulta fundamental respetar el orden cronológico de los datos durante todo el proceso de entrenamiento y validación. Mezclar observaciones futuras en el entrenamiento produce estimaciones artificialmente optimistas que no se mantienen en producción (López de Prado, 2018).
+## **3.6  Protocolo experimental**
 
-El protocolo de validación combina dos niveles complementarios. El primero es la **validación cruzada purgada con ventana expansiva**, empleada para la estimación de métricas de clasificación. El entrenamiento comienza con una ventana inicial de 750 sesiones bursátiles (aproximadamente tres años) y se amplía progresivamente en pasos trimestrales (63 sesiones). A diferencia de la validación cruzada estándar en *K* particiones, que ignora el orden cronológico y puede mezclar datos futuros con datos pasados, la variante expansiva mantiene estrictamente la causalidad temporal: en cada fold, el conjunto de test siempre es posterior al de entrenamiento. Se introduce además un embargo de un día entre el último día de entrenamiento y el primer día de test, para reducir la correlación entre las observaciones más recientes de cada período.
+Esta sección describe el procedimiento completo de entrenamiento y evaluación utilizado para obtener los resultados del Capítulo 4. El protocolo se diseña para simular de forma rigurosa las condiciones de producción, respetando en todo momento la causalidad temporal.
 
-Para el horizonte de un día se obtienen 70 ventanas de evaluación; para el horizonte de cinco días, 66 ventanas. El escalador de características se ajusta exclusivamente con los datos de entrenamiento de cada fold y se aplica a los conjuntos de validación y test, evitando fugas de información distribucional.
+**Validación cruzada purgada con ventana expansiva.** El método clásico de validación cruzada en $K$ particiones no es adecuado para series temporales porque mezcla datos futuros con datos pasados, generando estimaciones irreales. En su lugar se emplea validación cruzada purgada (López de Prado, 2018): las particiones de entrenamiento y evaluación respetan estrictamente el orden cronológico, y se introduce un período de embargo de un día entre la última observación de entrenamiento y la primera de evaluación para reducir correlaciones entre muestras adyacentes.
 
-#### Métricas de clasificación
+La validación cruzada purgada y la evaluación con ventana expansiva son dos caras del mismo procedimiento: en cada iteración se amplía el conjunto de entrenamiento con los datos más recientes disponibles, se genera un artefacto entrenado hasta ese punto temporal, y se evalúa sobre la ventana inmediatamente siguiente. De esta forma, la validación cruzada proporciona estimaciones de rendimiento en múltiples ventanas temporales, acumulando evidencia sobre la estabilidad del modelo, mientras que la evaluación final fuera de muestra utiliza el artefacto entrenado hasta el punto temporal más reciente disponible.
 
-La precisión equilibrada (*balanced accuracy*) se emplea como métrica principal de optimización, ya que corrige el posible desbalance entre clases. El MCC complementa el análisis al considerar los cuatro elementos de la matriz de confusión. El ROC-AUC evalúa la capacidad discriminativa del modelo a través de todos los umbrales posibles.
+**Diseño de las ventanas.** El entrenamiento comienza con una primera ventana inicial de 750 sesiones bursátiles (aproximadamente tres años de mercado). A continuación, las ventanas avanzan en pasos trimestrales de aproximadamente 63 sesiones bursátiles. Cada ventana de evaluación comprende también 63 sesiones. Este diseño produce 70 ventanas de evaluación para el horizonte de un día y 66 para el de cinco días.
 
-Para evaluar si la precisión equilibrada media de cada modelo es estadísticamente superior al azar, se aplica una **prueba *t* de una muestra** con hipótesis nula $H_0: \mu = 0{,}5$ e hipótesis alternativa $H_a: \mu > 0{,}5$, utilizando como observaciones las puntuaciones obtenidas en las distintas ventanas de evaluación temporal. Dado que las ventanas de evaluación proceden de una serie temporal y pueden presentar dependencia, este contraste debe interpretarse como una evidencia exploratoria de señal predictiva, no como una prueba definitiva de independencia estadística. Los valores de $\pm$ reportados en la Tabla 3 corresponden a la desviación estándar de las puntuaciones entre ventanas.
+**Métricas de clasificación.** La precisión equilibrada (*balanced accuracy*) actúa como métrica principal de optimización, ya que corrige el posible desbalance entre clases y proporciona una medida equilibrada del rendimiento global. El coeficiente de correlación de Matthews (MCC) complementa este análisis al considerar los cuatro elementos de la matriz de confusión, siendo robusto ante desbalances. El ROC-AUC evalúa la capacidad discriminativa del modelo a través de todos los umbrales de decisión posibles.
 
-#### Métricas financieras y simulación de trading
+**Contraste de significación.** Para evaluar si la precisión equilibrada media de cada modelo es estadísticamente superior al azar, se aplica una prueba $t$ de una muestra con hipótesis nula $H_0: \mu = 0{,}5$ e hipótesis alternativa $H_a: \mu > 0{,}5$, utilizando como observaciones las puntuaciones obtenidas en las distintas ventanas de evaluación temporal. Este contraste mide si las predicciones son mejores que el azar, pero no permite comparar directamente un modelo frente a otro; para ello se emplean contrastes pareados entre modelos (Sección 4.1).
 
-La evaluación financiera traslada las predicciones del modelo a un entorno de simulación de trading. La rentabilidad acumulada bruta mide el beneficio total antes de considerar costes de transacción; la rentabilidad neta incorpora dichos costes. La pérdida máxima (*drawdown* máximo) cuantifica la mayor caída experimentada desde un máximo hasta un mínimo consecutivo. El ratio de Sharpe (Sharpe, 1966) relaciona el exceso de retorno con la volatilidad de la estrategia.
-
-El período de simulación comprende del 1 de mayo al 1 de junio de 2026. La cartera inicial es de 100.000 euros. La estrategia es exclusivamente *long*: cuando el modelo predice alza (pred=1), se abre una posición larga en el activo; cuando predice baja (pred=0), no se toma posición. Las posiciones se abren al inicio de cada sesión bursátil y se cierran al inicio de la siguiente, en función de las predicciones del día. El tamaño de las posiciones es uniforme entre los activos con predicción positiva, y se rebalancea diariamente. El coste de transacción aplicado es de 10 puntos básicos por operación de compraventa, cubriendo comisiones y diferencial compra-venta.
-
-Se incluyen tres estrategias de referencia: (i) **comprar y mantener**, que consiste en mantener una posición larga en el índice IBEX 35 durante todo el período, sin rebalanceo; (ii) **clasificador aleatorio**, que genera señales de compra con probabilidad 0,5 de forma independiente para cada activo y sesión (ejecutado una sola vez, no promediado); y (iii) **momentum**, que predice que la dirección futura del activo coincidirá con el signo del retorno acumulado durante los últimos 5 días.
+**Métricas financieras y protocolo de trading.** La simulación financiera fuera de muestra se ejecuta sobre el período del 1 de mayo al 1 de junio de 2026. La cartera parte de 100.000 euros con las siguientes reglas: (i) estrategia *long-only*: se abren posiciones largas en todos los activos con predicción de subida (señal = 1) y no se toman posiciones en activos con predicción de bajada (señal = 0); (ii) la señal se genera al cierre del día $t$ con datos disponibles hasta ese momento; (iii) la entrada se ejecuta a la apertura del día $t+1$ y la salida al cierre de $t+1$ para $h=1$; (iv) las posiciones se ponderan de forma uniforme entre todos los activos activos y se reequilibran diariamente; (v) se aplica un coste de transacción de 10 puntos básicos por lado (20 puntos básicos por operación de ida y vuelta). El clasificador aleatorio se promedia sobre 1.000 simulaciones bootstrap para obtener estimaciones estables de sus métricas.
 
 ---
 
-## Capítulo 4. Resultados experimentales
+**Capítulo 4**
 
-### 4.1 Resultados predictivos de los modelos
+# **Resultados experimentales**
 
-**Tabla 3. Métricas de los modelos en validación cruzada con ventana expansiva, ordenadas de mayor a menor precisión equilibrada. *H* hace referencia al horizonte de predicción en días. Los valores ± corresponden a la desviación estándar entre ventanas de evaluación. La columna "Significativo" indica si la precisión equilibrada es estadísticamente superior al 50% según la prueba *t* de una muestra (α = 0,05).**
+Este capítulo presenta los resultados obtenidos en la evaluación experimental. Se organiza en cuatro secciones: resultados de clasificación en validación cruzada expandida y contrastes estadísticos entre modelos, análisis de importancia de variables, resultados de la simulación financiera, y una discusión integradora que relaciona ambas dimensiones de la evaluación.
 
-| Modelo | Precisión equilibrada (%) | ROC-AUC | MCC | Significativo |
-|---|---|---|---|---|
-| Random Forest (H1) | 53,16 ± 3,28 | 0,5448 | 0,0649 | SÍ |
-| GRU (H1) | 52,74 ± 3,06 | 0,5431 | 0,0564 | SÍ |
-| XGBoost (H1) | 52,55 ± 3,28 | 0,5381 | 0,0541 | SÍ |
-| LSTM (H1) | 52,34 ± 2,64 | 0,5383 | 0,0486 | SÍ |
-| Random Forest (H5) | 51,76 ± 4,64 | 0,5301 | 0,0399 | SÍ |
-| LSTM (H5) | 51,68 ± 3,64 | 0,5245 | 0,0371 | SÍ |
-| GRU (H5) | 51,58 ± 3,59 | 0,5261 | 0,0356 | SÍ |
-| XGBoost (H5) | 50,70 ± 3,46 | 0,5250 | 0,0145 | NO |
-| Markov (H5) | 50,10 ± 1,18 | 0,5048 | 0,0016 | NO |
-| Markov (H1) | 49,92 ± 0,92 | 0,4974 | −0,0016 | NO |
+## **4.1  Resultados predictivos de los modelos**
 
-La Tabla 3 recoge el rendimiento medio en validación cruzada con ventana expansiva de los modelos evaluados para los horizontes de un día y cinco días. Los resultados sugieren la presencia de una **señal predictiva débil pero estadísticamente distinguible del azar** para los modelos de árbol y las redes recurrentes.
+La Tabla 3 recoge el rendimiento medio en validación cruzada expandida de los modelos evaluados para los horizontes de predicción de uno y cinco días. Los valores de ± corresponden al error estándar de la media entre ventanas de evaluación.
 
-En el horizonte de un día, Random Forest, XGBoost, GRU y LSTM muestran precisiones equilibradas significativamente superiores al 50%, con valores *t* elevados. La magnitud absoluta de la diferencia es reducida: todos los modelos se sitúan entre el 52% y el 54%. López de Prado (2018) señala que en contextos financieros una precisión del orden del 53% puede ser indicativa de señal explotable si es robusta y estable, aunque no garantiza rentabilidad real. Este resultado es coherente con el rango de 52-55% reportado en la literatura para predicción diaria de renta variable (Krauss et al., 2017). El ROC-AUC y el MCC refuerzan este patrón: los valores de MCC, aunque positivos, son reducidos en términos absolutos (siempre por debajo de 0,07), lo que es consistente con la literatura sobre eficiencia de mercado en índices bursátiles desarrollados (Fama, 1970).
+*Tabla 3. Métricas de los modelos en validación cruzada expandida, ordenadas de mayor a menor precisión equilibrada. H hace referencia al horizonte de predicción en días. La columna "Significativo" indica si la precisión equilibrada es estadísticamente superior al 50% según la prueba t de una muestra (α = 0,05).*
 
-El modelo de Markov en ambos horizontes se mantiene prácticamente en el 50% de precisión equilibrada; la prueba *t* no rechaza la hipótesis nula, lo que indica que la información contenida en el estado discreto del retorno pasado no es suficiente para predecir la dirección futura del mercado.
+| Modelo | Precisión equilibrada (%) | ROC AUC | MCC | Significativo |
+| :---- | :---- | :---- | :---- | ----- |
+| Random Forest (H1) | 53,16 ± 0,39 | 0,5448 | 0,0649 | SÍ |
+| GRU (H1) | 52,74 ± 0,36 | 0,5431 | 0,0564 | SÍ |
+| XGBoost (H1) | 52,55 ± 0,39 | 0,5381 | 0,0541 | SÍ |
+| LSTM (H1) | 52,34 ± 0,31 | 0,5383 | 0,0486 | SÍ |
+| Random Forest (H5) | 51,76 ± 0,57 | 0,5301 | 0,0399 | SÍ |
+| LSTM (H5) | 51,68 ± 0,45 | 0,5245 | 0,0371 | SÍ |
+| GRU (H5) | 51,58 ± 0,44 | 0,5261 | 0,0356 | SÍ |
+| XGBoost (H5) | 50,70 ± 0,43 | 0,5250 | 0,0145 | NO |
+| Markov (H5) | 50,10 ± 0,15 | 0,5048 | 0,0016 | NO |
+| Markov (H1) | 49,92 ± 0,11 | 0,4974 | -0,0016 | NO |
 
-Para el horizonte de cinco días, el rendimiento general se deteriora moderadamente. XGBoost pierde su significación estadística (p > 0,05) con un MCC de 0,0145, lo que sugiere que su ventaja predictiva es predominantemente de muy corto plazo.
+Los resultados sugieren la existencia de una señal predictiva débil pero detectable en la dirección del IBEX 35. En términos de precisión equilibrada, todos los modelos superan el umbral del azar —a excepción del modelo de Markov en ambos horizontes, que se mantiene prácticamente en el 50% (49,92% y 50,10%, respectivamente)—. La prueba $t$ de una muestra confirma que las diferencias del modelo de Markov no son estadísticamente significativas, lo que indica que la información contenida en los estados discretos del retorno pasado no es suficiente para predecir de forma sistemática la dirección futura del mercado.
 
-Ha de tenerse en cuenta que la prueba estadística utilizada asume independencia entre ventanas, lo que puede no sostenerse en series temporales. Los resultados deben interpretarse, por tanto, como evidencia exploratoria de la presencia de señal predictiva, no como una confirmación definitiva.
+En el horizonte de un día, los cuatro modelos restantes muestran una precisión equilibrada significativamente superior al azar (p < 0,001 en todos los casos), con valores superiores al 52%. Aunque las diferencias absolutas respecto al 50% son reducidas, Random Forest alcanza el mejor desempeño (53,16%), seguido de GRU y XGBoost. Este resultado es coherente con el benchmark de la literatura, que sitúa el rendimiento de modelos de aprendizaje automático en predicción diaria de renta variable entre el 52% y el 55% de precisión equilibrada (Krauss et al., 2017). El ROC-AUC y el MCC refuerzan este patrón: los valores de MCC, siempre inferiores a 0,07, confirman que la magnitud del efecto es reducida en términos absolutos, consistente con la hipótesis del mercado eficiente en su forma débil (Fama, 1970).
 
-### 4.2 Importancia de variables
+Para el horizonte de cinco días, el rendimiento general se deteriora moderadamente. Random Forest, LSTM y GRU mantienen su significación estadística, si bien con mayor variabilidad entre ventanas. XGBoost no puede rechazar la hipótesis nula a nivel α = 0,05 en el horizonte de cinco días, lo que sugiere que su ventaja predictiva es predominantemente de corto plazo.
 
-El análisis de importancia de variables en los modelos de árbol —calculada como la reducción media de impureza (*mean decrease in impurity*) normalizada sobre todos los árboles del ensemble— revela un patrón consistente con implicaciones interpretativas relevantes.
+**Comparación pareada entre modelos.** El contraste de una muestra frente a 0,5 permite evaluar si cada modelo supera el azar, pero no si un modelo es significativamente mejor que otro. Para abordar esta cuestión se realizaron contrastes $t$ pareados entre todos los pares de modelos, utilizando las puntuaciones por ventana de validación como observaciones. Las Tablas 4 y 5 resumen los resultados en forma de matrices de victorias para los horizontes H1 y H5, respectivamente, donde "Mejor" indica que el modelo de fila supera significativamente al modelo de columna (p < 0,05, bilateral), y "Ns" indica ausencia de diferencia significativa.
 
-![Figura 6](figura_6.png)
+*Tabla 4. Matriz de comparaciones pareadas (prueba t bilateral) para H=1. "Mejor": el modelo fila supera significativamente al modelo columna; "Ns": diferencia no significativa.*
 
-*Figura 6. Importancia relativa de las características en los modelos de árbol (Random Forest y XGBoost) para los horizontes H1 y H5. Las variables macroeconómicas, en particular la variación estandarizada del VIX y las métricas de volatilidad del S&P 500, dominan los rankings de importancia en ambos horizontes.*
+|  | Markov (H1) | RF (H1) | XGB (H1) | GRU (H1) | LSTM (H1) |
+| ----- | ----- | ----- | ----- | ----- | ----- |
+| Markov (H1) | — | Peor | Peor | Peor | Peor |
+| RF (H1) | Mejor | — | Mejor | Ns | Mejor |
+| XGB (H1) | Mejor | Peor | — | Ns | Ns |
+| GRU (H1) | Mejor | Ns | Ns | — | Ns |
+| LSTM (H1) | Mejor | Peor | Ns | Ns | — |
 
-En el horizonte de un día, la variable más influyente es la variación estandarizada del VIX estadounidense, seguida de métricas de volatilidad relativa del S&P 500. En el horizonte de cinco días, este patrón se mantiene con las variables macroeconómicas de origen externo encabezando los rankings. La preponderancia de estas señales sobre los indicadores técnicos individuales de cada acción sugiere que la dirección del mercado español está condicionada estructuralmente por el contexto macroeconómico global.
+*Tabla 5. Matriz de comparaciones pareadas (prueba t bilateral) para H=5.*
 
-Estos resultados son directamente interpretables para los modelos de árbol. Para las arquitecturas recurrentes LSTM y GRU, la estructura interna es inherentemente más opaca y no permite extraer una importancia de variables equivalente, por lo que no es posible extrapolar directamente estas conclusiones a dichos modelos.
+|  | Markov (H5) | RF (H5) | XGB (H5) | GRU (H5) | LSTM (H5) |
+| ----- | ----- | ----- | ----- | ----- | ----- |
+| Markov (H5) | — | Peor | Ns | Peor | Peor |
+| RF (H5) | Mejor | — | Mejor | Ns | Ns |
+| XGB (H5) | Ns | Peor | — | Ns | Peor |
+| GRU (H5) | Mejor | Ns | Ns | — | Ns |
+| LSTM (H5) | Mejor | Mejor | Ns | Ns | — |
 
-### 4.3 Resultados de la simulación financiera
+En H1, Random Forest se distingue de forma significativa de Markov, XGBoost y LSTM, mientras que su diferencia con GRU no alcanza significación estadística. En H5, Random Forest supera significativamente a Markov y XGBoost, y no muestra diferencias significativas frente a GRU ni LSTM. La lectura de estas matrices confirma que no existe un modelo claramente dominante: la mayoría de las diferencias entre los modelos de aprendizaje automático no son estadísticamente significativas, especialmente en H5.
 
-**Tabla 4. Resultados de la simulación de trading para distintas estrategias durante el período de prueba (1 de mayo – 1 de junio de 2026). La estrategia "Mejor modelo" corresponde a Random Forest con horizonte H1. Los valores de rentabilidad son acumulados en el período.**
+Para la implementación en producción se optó por Random Forest tanto en H1 como en H5, dado que presenta la mayor precisión equilibrada media en ambos horizontes (53,16% y 51,76%, respectivamente) y, como se muestra en la Sección 4.3, también produce los mejores resultados financieros fuera de muestra.
 
-| Estrategia | Rentabilidad bruta (%) | Rentabilidad neta (%) | Pérdida máxima (%) | Ratio de Sharpe |
-|---|---|---|---|---|
-| Mejor modelo (RF H1) | +0,25% | −1,74% | −2,70% | −5,150 |
-| Comprar y mantener | +1,15% | +1,15% | −2,93% | 0,825 |
-| Clasificador aleatorio | +3,40% | +0,54% | −3,20% | 0,484 |
-| Momentum | +2,30% | −0,52% | −4,31% | −0,768 |
+## **4.2  Importancia de variables**
 
-La Tabla 4 muestra los resultados de la simulación de trading. La estrategia basada en Random Forest con horizonte de un día presenta una rentabilidad bruta ligeramente positiva (+0,25%), lo que indica que el modelo conserva cierta capacidad predictiva. Sin embargo, tras incorporar los costes de transacción, la rentabilidad neta pasa a ser negativa (−1,74%), con un ratio de Sharpe muy desfavorable (−5,150). La estrategia de comprar y mantener obtiene un mejor comportamiento tanto en rentabilidad neta (+1,15%) como en ratio de Sharpe (0,825).
+La importancia de variables se calculó a partir del atributo `feature_importances_` de los modelos Random Forest y XGBoost, que mide la reducción media de impureza de Gini ponderada por el número de muestras que pasan por cada nodo en todos los árboles del conjunto. Este método proporciona una estimación de la contribución relativa de cada característica al rendimiento predictivo del modelo de árbol, y se puede calcular directamente a partir de la estructura interna del modelo sin necesidad de técnicas de perturbación externas.
 
-Conviene señalar que el período de simulación es de un mes, lo que constituye una muestra reducida, y que los resultados pueden estar fuertemente condicionados por el régimen de mercado específico de ese período. En particular, el clasificador aleatorio alcanza una rentabilidad bruta de +3,40% antes de costes, resultado que refleja el comportamiento alcista general del mercado durante esas semanas y no una capacidad predictiva real. La simulación debe interpretarse principalmente como un ejercicio exploratorio orientado a ilustrar la diferencia entre capacidad predictiva estadística y rentabilidad financiera real, no como una evaluación concluyente del sistema.
+La Figura 6 muestra la importancia relativa de las características en los modelos de árbol para los horizontes H1 y H5.
 
-### 4.4 Discusión
+![][image7]  
+*Figura 6. Importancia relativa de las características en los modelos de árbol (Random Forest y XGBoost) para los horizontes H1 y H5.*
 
-Los resultados de los capítulos anteriores permiten extraer el mensaje central de este trabajo: **los modelos de aprendizaje automático muestran una mejora estadística pequeña pero indicativa respecto al azar, pero esta mejora no se traduce en rentabilidad financiera positiva una vez se incorporan los costes de transacción reales y se compara con estrategias de referencia pasivas**.
+El patrón es consistente en ambos horizontes: las variables más influyentes son la variación estandarizada del VIX estadounidense y métricas de volatilidad y actividad del S&P 500, seguidas de indicadores de amplitud del mercado IBEX 35. Este resultado indica que el estado del mercado americano —su nivel de tensión y actividad— constituye la señal más informativa para predecir la dirección del IBEX 35. La preponderancia de estas señales sobre los indicadores técnicos individuales de cada acción sugiere que la dirección del mercado español está fuertemente condicionada por el contexto macroeconómico global, y que los modelos han aprendido a explotar esta dependencia estructural.
 
-La señal predictiva identificada proviene principalmente de variables macroeconómicas externas —variación del VIX y volatilidad del S&P 500—, lo que sugiere una dependencia estructural del IBEX 35 respecto al contexto global. Sin embargo, esta información queda disponible tras el cierre de Wall Street, y el mercado europeo puede incorporarla parcialmente durante los intercambios nocturnos antes de la apertura del IBEX 35 del día siguiente. En consecuencia, aunque el modelo detecte patrones estadísticamente significativos durante el entrenamiento, dicha ventaja puede no ser completamente explotable en condiciones reales.
+Cabe destacar que la importancia de Gini es específica de los modelos de árbol y no puede extrapolarse directamente a las arquitecturas recurrentes LSTM y GRU, cuya opacidad interna impide este tipo de análisis sin recurrir a técnicas de explicabilidad adicionales como SHAP o permutation importance.
 
-El impacto acumulado de los costes de transacción es determinante: la operativa diaria sobre una cartera diversificada implica un elevado número de operaciones que erosionan completamente el reducido margen predictivo. Este resultado es coherente con la hipótesis del mercado eficiente en su forma débil (Fama, 1970) y recuerda una limitación fundamental del aprendizaje automático en finanzas: la significancia estadística es condición necesaria pero no suficiente para la rentabilidad práctica.
+## **4.3  Resultados de la simulación financiera**
+
+La Tabla 6 muestra los resultados obtenidos en la simulación de trading fuera de muestra (1 de mayo – 1 de junio de 2026) para las distintas estrategias. Las reglas de operativa son las descritas en la Sección 3.6: estrategia *long-only*, posición abierta a la apertura de $t+1$ y cerrada al cierre de $t+1$, ponderación uniforme, coste de 10 puntos básicos por lado, y clasificador aleatorio promediado sobre 1.000 simulaciones bootstrap.
+
+*Tabla 6. Resultados de la simulación de trading para distintas estrategias durante el período de prueba (1 de mayo – 1 de junio de 2026). Los valores de rentabilidad son acumulados en el período.*
+
+| Estrategia | Rentabilidad bruta (%) | Rentabilidad neta (%) | Pérdida máxima (%) | Ratio Sharpe |
+| :---- | ----- | ----- | ----- | ----- |
+| RF (H5) | +12,42% | +9,12% | −5,24% | 5,566 |
+| Comprar y mantener | +3,27% | +3,27% | −2,93% | 1,908 |
+| Clasificador aleatorio | +3,03% | −0,81% | −3,28% | −0,970 |
+| Momentum | +1,92% | −1,88% | −4,31% | −2,008 |
+| RF (H1) | −0,50% | −3,26% | −4,21% | −7,793 |
+
+Los resultados revelan una diferencia notable entre los dos horizontes del mismo modelo. La estrategia basada en Random Forest con horizonte de cinco días es la única que supera a todas las referencias, con una rentabilidad neta del +9,12% y un ratio de Sharpe de 5,566, muy por encima del *buy & hold* (+3,27%, Sharpe 1,908). La estrategia de RF H1, en cambio, presenta una rentabilidad bruta ligeramente negativa (−0,50%), que se convierte en −3,26% neta una vez aplicados los costes de transacción, con un ratio de Sharpe muy desfavorable (−7,793).
+
+Este contraste entre H1 y H5 ilustra el papel crítico de los costes de transacción en estrategias de alta frecuencia diaria. La operativa diaria sobre una cartera diversificada de 30 activos implica un número elevado de operaciones que erosionan completamente el pequeño exceso de rentabilidad bruta del modelo H1. El horizonte de cinco días reduce sustancialmente la rotación de la cartera, manteniendo posiciones abiertas durante más tiempo y amortizando mejor los costes fijos por operación sobre un retorno acumulado mayor.
+
+La estrategia de comprar y mantener obtiene un buen comportamiento relativo (Sharpe 1,908), coherente con el período de mercado analizado. El clasificador aleatorio, aunque con rentabilidad bruta positiva, resulta negativo en términos netos, confirmando que la operativa activa consume los retornos de mercado si no existe señal predictiva real. La estrategia de momentum presenta un rendimiento intermedio en términos brutos pero termina en negativo tras costes, lo que sugiere que la inercia de cinco días no es suficientemente robusta para compensar la fricción transaccional.
+
+## **4.4  Discusión de los resultados**
+
+Los resultados presentados en este capítulo permiten articular un mensaje principal: los modelos de aprendizaje automático detectan una señal predictiva débil pero estadísticamente significativa en la dirección del IBEX 35, pero esa señal solo se traduce en rentabilidad real cuando se gestiona adecuadamente la frecuencia operativa y, con ella, el impacto de los costes de transacción.
+
+Desde la perspectiva estadística, Random Forest H1 y H5 lideran el ranking de precisión equilibrada y son significativamente superiores al modelo de Markov en ambos horizontes. Las diferencias entre los modelos de aprendizaje automático entre sí son en su mayor parte no significativas, lo que indica que en el margen de rendimiento disponible en un mercado desarrollado todas las arquitecturas convergen hacia un límite similar. Los valores de MCC, siempre inferiores a 0,07, confirman que la magnitud del efecto es reducida en términos absolutos, consistente con la hipótesis del mercado eficiente en su forma débil (Fama, 1970).
+
+Desde la perspectiva financiera, el horizonte de predicción importa tanto como el modelo. RF H5 supera ampliamente a todas las referencias con un Sharpe de 5,566, mientras que RF H1 —a pesar de tener la mayor precisión estadística— no es explotable con costes realistas. Este resultado es consistente con la discusión conceptual de la Sección 2.4: una pequeña ventaja estadística puede no ser suficiente para superar la fricción de la operativa diaria.
+
+El análisis de importancia de variables refuerza la hipótesis de que la señal proviene principalmente del contexto macroeconómico global —en particular del VIX y del S&P 500—. Dado que esta información se hace pública tras el cierre de Wall Street, el mercado europeo tiene tiempo de incorporarla parcialmente antes de la apertura del IBEX 35, lo que limita su explotabilidad en H1 pero deja más margen en H5, donde el modelo integra señales de varios días consecutivos.
+
+En conjunto, el sistema desarrollado demuestra que es posible construir un pipeline de inversión algorítmica completo con herramientas de código abierto y presupuesto cero, y obtener resultados financieros positivos en una simulación fuera de muestra con el horizonte adecuado. Sin embargo, el período de evaluación es corto (un mes) y los resultados pueden estar condicionados por el régimen de mercado específico de ese período; la validación en ventanas temporales más largas es necesaria antes de extraer conclusiones generalizables.
 
 ---
 
-## Capítulo 5. Conclusiones
+**Capítulo 5**
 
-Este trabajo ha abordado el problema de la predicción de dirección del mercado bursátil español mediante técnicas de aprendizaje automático, integrando los resultados en un sistema automatizado de extremo a extremo. A continuación se presentan las principales conclusiones derivadas del estudio.
+# **Conclusiones**
 
-**Sobre la capacidad predictiva de los modelos.** Los resultados demuestran que los modelos basados en árboles de decisión (Random Forest, XGBoost) y redes neuronales recurrentes (GRU, LSTM) presentan una señal predictiva débil pero estadísticamente distinguible del azar sobre la dirección del IBEX 35, con precisiones equilibradas situadas entre el 52% y el 54% para el horizonte de un día. Este resultado es coherente con el rango de 52-55% reportado en la literatura para predicción diaria de renta variable (Krauss et al., 2017). El modelo de Markov, por el contrario, no supera el umbral del azar en ningún horizonte.
+Este trabajo ha abordado el problema de la predicción de dirección del mercado bursátil español mediante técnicas de aprendizaje automático, integrando los resultados en un sistema automatizado de extremo a extremo. A continuación se presentan las principales conclusiones derivadas del estudio, actualizadas para incluir los resultados de los modelos en el horizonte de cinco días.
 
-**Sobre la naturaleza de la señal predictiva.** La señal predictiva identificada proviene principalmente de variables macroeconómicas externas, en particular de la variación del VIX y de métricas de actividad del S&P 500. Este hallazgo sugiere que la dirección del mercado español está condicionada en mayor medida por el contexto global que por los indicadores técnicos individuales de cada acción, resultado consistente con la literatura sobre transmisión de información entre mercados internacionales.
+**Sobre la capacidad predictiva de los modelos.** Los resultados obtenidos demuestran que los modelos de aprendizaje automático basados en árboles de decisión (Random Forest, XGBoost) y redes neuronales recurrentes (GRU, LSTM) poseen una capacidad predictiva estadísticamente superior al azar sobre la dirección del IBEX 35, aunque la magnitud del efecto es reducida. Random Forest es el modelo con mejor rendimiento en el horizonte de un día (precisión equilibrada 53,16%) y en el de cinco días (51,76%), resultado coherente con el rango de 52-55% reportado en la literatura para predicción diaria de renta variable (Krauss et al., 2017). El modelo de Markov, por el contrario, no supera el umbral del azar en ningún horizonte, lo que indica que la información contenida en los estados discretos del retorno pasado no es suficiente para predecir de forma sistemática la dirección futura del mercado. La mayor parte de las diferencias entre los modelos de aprendizaje automático no son estadísticamente significativas en los contrastes pareados, lo que sugiere que en el margen de rendimiento disponible en un mercado eficiente todas las arquitecturas convergen hacia un límite similar.
 
-**Sobre la brecha entre capacidad estadística y rentabilidad real.** A pesar de que los modelos presentan una precisión equilibrada estadísticamente significativa, la operativa diaria genera un número elevado de transacciones cuyos costes de fricción eliminan completamente el reducido margen predictivo. La estrategia de comprar y mantener supera en rentabilidad neta a todas las estrategias activas durante el período analizado.
+**Sobre el impacto del horizonte de predicción.** La extensión del análisis al horizonte de cinco días revela diferencias sustanciales tanto en la significación estadística de los modelos como, especialmente, en su viabilidad financiera. Mientras que en H1 los cuatro modelos de aprendizaje automático son estadísticamente significativos, en H5 XGBoost pierde su ventaja sobre el azar. Más relevante aún es el impacto en la simulación financiera: RF H5 genera una rentabilidad neta del +9,12% con un ratio de Sharpe de 5,566, superando ampliamente al *buy & hold* (+3,27%, Sharpe 1,908) y a todas las demás referencias. Este resultado contrasta con RF H1, cuya operativa diaria sobre una cartera diversificada acumula costes de transacción que convierten una pequeña ventaja estadística en una rentabilidad neta negativa (−3,26%). La reducción de la rotación de cartera al pasar de H1 a H5 es, por tanto, el factor determinante para la viabilidad económica del sistema.
 
-**Sobre el horizonte temporal.** El rendimiento predictivo se deteriora de forma moderada al ampliar el horizonte de predicción de uno a cinco días. XGBoost pierde su significación estadística en H5, lo que sugiere que la señal que capta este modelo es predominantemente de muy corto plazo.
+**Sobre la naturaleza de la señal predictiva.** El análisis de importancia de variables mediante la impureza de Gini de los modelos de árbol revela que la señal predictiva proviene principalmente de variables macroeconómicas externas, en particular de la variación del VIX y de métricas de actividad del S&P 500. Este hallazgo sugiere que la dirección del mercado español está condicionada en mayor medida por el contexto macroeconómico global que por los indicadores técnicos individuales de cada acción. Sin embargo, esta dependencia implica también que la señal puede ser parcialmente anticipada por el propio mercado antes de la apertura de la sesión bursátil, lo que contribuye a limitar su explotabilidad en operativas de muy corto plazo.
 
-**Sobre el sistema construido.** Más allá de los resultados predictivos, este trabajo demuestra la viabilidad de construir un sistema de análisis financiero automatizado y completo —desde la ingesta de datos hasta la ejecución de operaciones— utilizando exclusivamente herramientas gratuitas y de código abierto. La arquitectura integra un pipeline de datos en la nube, múltiples modelos de aprendizaje automático, una página web con predicciones actualizadas diariamente, un boletín informativo automatizado y un bot de trading conectado a un bróker real.
+**Sobre la brecha entre capacidad estadística y rentabilidad real.** La evaluación financiera evidencia con claridad la diferencia entre significancia estadística y explotabilidad económica. A pesar de que todos los modelos de aprendizaje automático presentan una precisión equilibrada estadísticamente significativa en H1, la operativa diaria genera un número elevado de transacciones cuyos costes terminan por eliminar completamente el reducido margen predictivo. Es solo en el horizonte de cinco días, donde la rotación de cartera es menor y el coste de transacción se amortiza sobre retornos acumulados mayores, donde el sistema demuestra ser financieramente rentable.
 
-**Limitaciones del estudio.** El trabajo presenta diversas limitaciones. El universo de activos está sujeto a sesgo de supervivencia, ya que únicamente se incluyen los componentes actuales del IBEX 35. El período de simulación financiera es reducido (un mes), por lo que los resultados pueden estar condicionados por el régimen de mercado específico de ese período. Los modelos no incorporan las noticias financieras recopiladas como variables de entrada. Los costes de transacción utilizados son fijos y no modelizan el impacto de mercado de órdenes de tamaño elevado.
+**Sobre el sistema desarrollado.** Más allá de los resultados predictivos, el trabajo demuestra que es posible construir un sistema de análisis financiero automatizado completo —datos, modelos, predicciones, visualización, boletín y bot de trading— utilizando exclusivamente herramientas gratuitas y de código abierto. La arquitectura desacoplada basada en GitHub Actions garantiza la reproducibilidad y facilita la incorporación de nuevos componentes o mejoras futuras.
 
-En definitiva, este trabajo confirma que los mercados financieros desarrollados presentan ineficiencias débiles estadísticamente detectables mediante modelos de aprendizaje automático, pero que la traducción de estas señales en rentabilidad real es muy difícil debido a los costes de transacción, la rapidez con que el mercado incorpora información pública y la baja magnitud del efecto predictivo.
+En definitiva, este trabajo confirma que los mercados financieros desarrollados presentan ineficiencias débiles y estadísticamente detectables mediante modelos de aprendizaje automático, pero que la traducción de estas señales en rentabilidad real depende críticamente del horizonte temporal y del control de los costes de transacción. El valor del sistema desarrollado reside no solo en los resultados obtenidos, sino en la demostración de que un pipeline de inversión algorítmica completo puede construirse con recursos accesibles y metodología rigurosa.
 
 ---
 
-## Capítulo 6. Trabajo futuro
+**Capítulo 6**
 
-En una línea de trabajo futura, uno de los aspectos más relevantes consiste en ampliar de forma significativa la base de datos utilizada, incorporando un mayor volumen de información histórica de noticias para capturar mejor la evolución de los patrones informativos y su relación con los movimientos del mercado. La integración de noticias en el proceso de predicción posibilitaría incorporar información cualitativa mediante representaciones vectoriales de los textos (*embeddings*), capturando matices semánticos más ricos que una simple clasificación de sentimiento.
+# **Trabajo futuro**
 
-Asimismo, resulta pertinente ampliar el conjunto de variables explicativas mediante la inclusión de indicadores macroeconómicos adicionales, como la tasa de empleo, la inflación u otras métricas de actividad económica. También se abre la puerta a explorar combinaciones de indicadores menos convencionales, dado que muchas de las variables utilizadas en este trabajo son indicadores técnicos clásicos ampliamente seguidos por el mercado, lo que puede limitar su capacidad de generar ventaja diferencial.
+En una línea de trabajo futura, uno de los aspectos más relevantes consiste en ampliar de forma significativa la base de datos utilizada, incorporando un mayor volumen de información histórica de noticias. El incremento del horizonte temporal, abarcando períodos de varios años, permitiría capturar mejor la evolución de los patrones informativos y su relación con los movimientos del mercado. En este contexto, la integración de noticias en el proceso de predicción adquiere un papel especialmente relevante, ya que posibilitaría incorporar información cualitativa que complementa los datos estrictamente financieros.
 
-Desde una perspectiva de gestión del riesgo, sería interesante incorporar reglas de gestión dinámica del tamaño de las posiciones en función de la volatilidad y definir zonas de entrada y salida del mercado basadas en la confianza del modelo, lo que puede contribuir tanto a mejorar la rentabilidad ajustada al riesgo como a dotar al sistema de mayor robustez en distintos regímenes de mercado.
+En cuanto al tratamiento de la información textual, en lugar de limitarse a una clasificación simplificada del sentimiento asociado a las noticias, se plantea la posibilidad de utilizar representaciones vectoriales de los textos. Este enfoque permite capturar matices semánticos más ricos y relaciones más complejas entre documentos, lo que podría traducirse en una mejora en la calidad de las señales generadas.
+
+Asimismo, resulta pertinente ampliar el conjunto de variables explicativas mediante la inclusión de indicadores macroeconómicos adicionales, como la tasa de empleo, la inflación u otras métricas de actividad económica. Este tipo de variables pueden aportar una visión más global del entorno financiero, mejorando la capacidad del modelo para adaptarse a diferentes regímenes de mercado.
+
+Por otro lado, se abre la puerta a explorar nuevas fuentes de información o combinaciones de indicadores menos convencionales que puedan identificar señales con mayor capacidad explicativa y potencial predictivo. Muchas de las variables utilizadas en este trabajo son indicadores técnicos clásicos ampliamente seguidos por el mercado, lo que puede limitar su capacidad de generar ventaja si son anticipados por otros participantes.
+
+Desde una perspectiva de gestión del riesgo y la operativa, sería interesante incorporar reglas de gestión dinámica del tamaño de las posiciones en función de la volatilidad, así como definir zonas de entrada y salida del mercado basadas en la confianza del modelo. Estos enfoques, propios de la gestión de carteras, pueden contribuir tanto a mejorar la rentabilidad ajustada al riesgo como a dotar al sistema de mayor robustez en distintos regímenes de mercado.
 
 Finalmente, la calibración de probabilidades del modelo —mediante técnicas como la escala de Platt o la regresión isotónica— podría mejorar la utilidad de las probabilidades generadas para el dimensionamiento de posiciones, ya que actualmente estas probabilidades no pueden interpretarse en sentido estadístico estricto.
 
 ---
 
-## Bibliografía
+# **Bibliografía**
 
-Amihud, Y. (2002). Illiquidity and stock returns: Cross-section and time-series effects. *Journal of Financial Markets*, (5), 31-56.
+Amihud, Y. (2002). Illiquidity and stock returns: Cross-section and time-series effects. Journal of Financial Markets, 5(1), 31-56. https://doi.org/10.1016/S1386-4181(01)00024-6
 
-Bloomberg L.P. (2026). *Bloomberg Terminal*. Recuperat 15 de maig del 2026, des de https://www.bloomberg.com/professional/solution/bloomberg-terminal/
+Bloomberg L.P. (s. f.). Bloomberg Terminal. Bloomberg Professional Services. Recuperado el 15 de mayo de 2026, de https://professional.bloomberg.com/products/bloomberg-terminal/
 
-Box, G. E. P., Jenkins, G. M., Reinsel, G. C., y Ljung, G. M. (2015). *Time Series Analysis: Forecasting and Control* (5.ª ed.). Hoboken: John Wiley & Sons.
+Box, G. E. P., Jenkins, G. M., Reinsel, G. C., y Ljung, G. M. (2015). Time series analysis: Forecasting and control (5.ª ed.). John Wiley & Sons.
 
-Breiman, L. (2001). Random forests. *Machine Learning*, (45), 5-32.
+Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5-32. https://doi.org/10.1023/A:1010933404324
 
-Chen, T., y Guestrin, C. (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785-794.
+Chen, T., y Guestrin, C. (2016). XGBoost: A scalable tree boosting system. En Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '16) (pp. 785-794). Association for Computing Machinery. https://doi.org/10.1145/2939672.2939785
 
-Cho, K., van Merrienboer, B., Gulcehre, C., Bahdanau, D., Bougares, F., Schwenk, H., y Bengio, Y. (2014). Learning phrase representations using RNN encoder-decoder for statistical machine translation. *Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)*, 1724-1734.
+Cho, K., van Merriënboer, B., Gülçehre, Ç., Bahdanau, D., Bougares, F., Schwenk, H., y Bengio, Y. (2014). Learning phrase representations using RNN encoder-decoder for statistical machine translation. En Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP) (pp. 1724-1734). Association for Computational Linguistics. https://aclanthology.org/D14-1179/
 
-Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. *The Journal of Finance*, (25), 383-417.
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The Journal of Finance, 25(2), 383-417. https://doi.org/10.1111/j.1540-6261.1970.tb00518.x
 
-Fischer, T., y Krauss, C. (2018). Deep learning with long short-term memory networks for financial market predictions. *European Journal of Operational Research*, (270), 654-669.
+Fischer, T., y Krauss, C. (2018). Deep learning with long short-term memory networks for financial market predictions. European Journal of Operational Research, 270(2), 654-669. https://doi.org/10.1016/j.ejor.2017.11.054
 
-GitHub Inc. (2026). *GitHub Actions — Automate your workflow from idea to production*. Recuperat 15 de maig del 2026, des de https://docs.github.com/en/actions
+GitHub. (s. f.). GitHub Actions documentation. Recuperado el 15 de mayo de 2026, de https://docs.github.com/actions
 
-Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica*, (57), 357-384.
+Groq. (s. f.). GroqCloud documentation. Recuperado el 15 de mayo de 2026, de https://console.groq.com/docs/overview
 
-Hochreiter, S., y Schmidhuber, J. (1997). Long short-term memory. *Neural Computation*, (9), 1735-1780.
+Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. Econometrica, 57(2), 357-384. https://doi.org/10.2307/1912559
 
-Krauss, C., Do, X. A., y Huck, N. (2017). Deep neural networks, gradient-boosted trees, random forests: Statistical arbitrage on the S&P 500. *European Journal of Operational Research*, (259), 689-702.
+Hochreiter, S., y Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735-1780. https://doi.org/10.1162/neco.1997.9.8.1735
 
-Lo, A. W., y MacKinlay, A. C. (1988). Stock market prices do not follow random walks: Evidence from a simple specification test. *The Review of Financial Studies*, (1), 41-66.
+Interactive Brokers. (s. f.). IB Gateway. Recuperado el 15 de mayo de 2026, de https://www.interactivebrokers.com/en/trading/ibgateway-stable.php
 
-López de Prado, M. (2018). *Advances in Financial Machine Learning*. Hoboken: John Wiley & Sons.
+Krauss, C., Do, X. A., y Huck, N. (2017). Deep neural networks, gradient-boosted trees, random forests: Statistical arbitrage on the S&P 500. European Journal of Operational Research, 259(2), 689-702. https://doi.org/10.1016/j.ejor.2016.10.031
 
-OpenAI. (2025). *GPT-oss-120b* (versió 2025). OpenAI. https://openai.com
+Lo, A. W., y MacKinlay, A. C. (1988). Stock market prices do not follow random walks: Evidence from a simple specification test. The Review of Financial Studies, 1(1), 41-66. https://doi.org/10.1093/rfs/1.1.41
 
-Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., y Duchesnay, E. (2011). Scikit-learn: Machine learning in Python. *Journal of Machine Learning Research*, (12), 2825-2830.
+López de Prado, M. (2018). Advances in financial machine learning. John Wiley & Sons.
 
-Ranaroussi, R. (2023). *yfinance: Yahoo! Finance market data downloader*. Recuperat 15 de maig del 2026, des de https://github.com/ranaroussi/yfinance
+OpenAI. (2025, 5 de agosto). gpt-oss-120b & gpt-oss-20b model card. OpenAI. https://openai.com/index/gpt-oss-model-card/
 
-Sharpe, W. F. (1966). Mutual fund performance. *The Journal of Business*, (39), 119-138.
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., VanderPlas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., y Duchesnay, É. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12, 2825-2830. https://www.jmlr.org/papers/v12/pedregosa11a.html
 
-Supabase Inc. (2026). *Supabase: The Open Source Firebase Alternative*. Recuperat 15 de maig del 2026, des de https://supabase.com
+Aroussi, R. (s. f.). yfinance: Download market data from Yahoo! Finance's API. GitHub. Recuperado el 15 de mayo de 2026, de https://github.com/ranaroussi/yfinance
 
-TradingView Inc. (2026). *TradingView — Track All Markets*. Recuperat 15 de maig del 2026, des de https://www.tradingview.com
+Sharpe, W. F. (1966). Mutual fund performance. The Journal of Business, 39(1, Part 2), 119-138. https://doi.org/10.1086/294846
 
-Yahoo Finance. (2026). *Yahoo Finance — Stock Market Live, Quotes, Business & Finance News*. Recuperat 15 de maig del 2026, des de https://finance.yahoo.com
+Supabase Inc. (s. f.). Supabase documentation. Recuperado el 15 de mayo de 2026, de https://supabase.com/docs
+
+TradingView. (s. f.). TradingView. Recuperado el 15 de mayo de 2026, de https://www.tradingview.com
+
+Yahoo Finance. (s. f.). Yahoo Finance. Recuperado el 15 de mayo de 2026, de https://finance.yahoo.com
+
+Welch, B. L. (1947). The generalization of 'Student's' problem when several different population variances are involved. Biometrika, 34(1/2), 28-35. https://doi.org/10.2307/2332510
+
+---
+
+# **Apéndice**
