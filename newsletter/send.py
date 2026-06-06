@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     load_env()
     html = build_newsletter()
-    text = "Boletín diario 10**6, parte de mi trabajo de final de grado."
+    text = "Boletín diario 10**6, parte de mi trabajo de final de grado. Consulta todas las predicciones aquí -> https://alexhayadela.github.io/10tothe6_TFG_2025_AlexDeLaHaya/docs/."
     recipients = [os.environ.get("EMAIL_USER")] if args.mock else get_recipients()
 
     send_newsletter(text, html, recipients)
