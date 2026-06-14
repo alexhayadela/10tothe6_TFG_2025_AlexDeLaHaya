@@ -2,7 +2,7 @@ name: Database
 
 on:
   schedule:
-    - cron: '0 8 * * TUE-SAT'  
+    - cron: '0 4 * * TUE-SAT'  
   workflow_dispatch:
     
 jobs:

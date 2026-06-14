@@ -2,7 +2,7 @@
 
 This repository contains the code for my final degree thesis. The goal is to build a tool that empowers investors to obtain powerful insights at a glance. By leveraging multimodal, data-driven analysis, the system aims to support smarter investment decisions and potentially achieve better returns compared to traditional techniques.
 
-Read my final degree thesis [here](https://dummyimage.com/800x400/2d2d2d/ffffff&text=WIP+%7C+Coming+Soon).
+Read my final degree thesis [here](TFG.pdf).
 
 ----
 
